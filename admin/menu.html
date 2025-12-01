@@ -1303,6 +1303,7 @@
 
         function removeImage(e) {
             e.stopPropagation();
+            e.preventDefault();
             uploadedImageData = null;
             document.getElementById('itemImage').value = '';
             imageUploadArea.classList.remove('has-image');
@@ -1314,7 +1315,41 @@
                     <span>ou glissez-déposez ici</span>
                 </div>
             `;
-            document.getElementById('imageFile').addEventListener('change', arguments.callee);
+            // Re-attach event listener
+            setupImageUpload();
+        }
+
+        // Setup image upload event listener
+        function setupImageUpload() {
+            const fileInput = document.getElementById('imageFile');
+            if (!fileInput) return;
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    uploadedImageData = event.target.result;
+                    imageUploadArea.classList.add('has-image');
+                    imageUploadArea.innerHTML = `
+                        <input type="file" id="imageFile" accept="image/*" style="display:none;">
+                        <img src="${uploadedImageData}" class="image-preview" alt="Preview">
+                        <button type="button" class="image-remove" onclick="removeImage(event)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    document.getElementById('itemImage').value = uploadedImageData;
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            // Also handle click on imageUploadArea to trigger file input
+            imageUploadArea.onclick = (e) => {
+                if (e.target.closest('.image-remove')) return;
+                const input = document.getElementById('imageFile');
+                if (input) input.click();
+            };
         }
 
         // Modal functions
@@ -1332,24 +1367,8 @@
                     <span>ou glissez-déposez ici</span>
                 </div>
             `;
-            // Re-attach event listener
-            document.getElementById('imageFile').addEventListener('change', async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    uploadedImageData = event.target.result;
-                    imageUploadArea.classList.add('has-image');
-                    imageUploadArea.innerHTML = `
-                        <img src="${uploadedImageData}" class="image-preview" alt="Preview">
-                        <button type="button" class="image-remove" onclick="removeImage(event)">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    document.getElementById('itemImage').value = uploadedImageData;
-                };
-                reader.readAsDataURL(file);
-            });
+            // Attach event listener
+            setupImageUpload();
             menuModal.classList.add('open');
         }
 
@@ -1358,6 +1377,7 @@
             if (!item) return;
 
             editingId = id;
+            uploadedImageData = null;
             document.getElementById('modalTitle').textContent = 'Modifier le Plat';
             document.getElementById('itemId').value = id;
             document.getElementById('itemName').value = item.name;
@@ -1368,14 +1388,29 @@
             document.getElementById('itemImage').value = item.image || '';
 
             if (item.image) {
+                uploadedImageData = item.image;
                 imageUploadArea.classList.add('has-image');
                 imageUploadArea.innerHTML = `
+                    <input type="file" id="imageFile" accept="image/*" style="display:none;">
                     <img src="${item.image}" class="image-preview" alt="Preview">
                     <button type="button" class="image-remove" onclick="removeImage(event)">
                         <i class="fas fa-times"></i>
                     </button>
                 `;
+            } else {
+                imageUploadArea.classList.remove('has-image');
+                imageUploadArea.innerHTML = `
+                    <input type="file" id="imageFile" accept="image/*">
+                    <div class="upload-placeholder">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Cliquez pour uploader une image</p>
+                        <span>ou glissez-déposez ici</span>
+                    </div>
+                `;
             }
+            
+            // Attach event listener for image change
+            setupImageUpload();
 
             menuModal.classList.add('open');
         }
