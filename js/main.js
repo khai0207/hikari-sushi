@@ -53,21 +53,16 @@ function type() {
 // Start typing effect
 setTimeout(type, 1500);
 
-// ===== HEADER & TOP BAR SCROLL EFFECT =====
+// ===== HEADER SCROLL EFFECT =====
 const header = document.querySelector('.header');
-const topBar = document.querySelector('.top-bar');
 const backToTop = document.querySelector('.back-to-top');
 
 window.addEventListener('scroll', () => {
-    const scrollY = window.scrollY;
-    
-    if (scrollY > 100) {
+    if (window.scrollY > 100) {
         header.classList.add('scrolled');
-        topBar.classList.add('scrolled');
         backToTop.classList.add('visible');
     } else {
         header.classList.remove('scrolled');
-        topBar.classList.remove('scrolled');
         backToTop.classList.remove('visible');
     }
 });
