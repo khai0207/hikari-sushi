@@ -44,6 +44,11 @@ async function apiRequest(endpoint, options = {}) {
             throw new Error(data.error || 'API request failed');
         }
         
+        // Normalize response: items -> data for consistency
+        if (data.items && !data.data) {
+            data.data = data.items;
+        }
+        
         return data;
     } catch (error) {
         console.error('API Error:', error);
@@ -176,10 +181,10 @@ const HikariReservations = {
         return apiRequest(`/api/admin/reservations${query}`);
     },
 
-    async updateStatus(id, status) {
+    async update(id, data) {
         return apiRequest(`/api/admin/reservations/${id}`, {
             method: 'PUT',
-            body: JSON.stringify({ status })
+            body: JSON.stringify(data)
         });
     },
 
@@ -231,22 +236,53 @@ const HikariStats = {
     }
 };
 
-// Export all APIs
+// ===== UPLOAD API =====
+async function uploadImage(file, folder = 'general') {
+    // For now, return a placeholder - Cloudflare R2 can be added later
+    // Users should use external image hosting like Unsplash, Imgur, etc.
+    return { 
+        success: false, 
+        error: 'Image upload requires Cloudflare R2. Please use an image URL instead.' 
+    };
+}
+
+// Export main API object with consistent interface
 window.HikariAPI = {
-    Auth: HikariAuth,
-    Content: HikariContent,
-    Menu: HikariMenu,
-    Reservations: HikariReservations,
-    Gallery: HikariGallery,
-    Settings: HikariSettings,
-    Stats: HikariStats
+    // Auth methods directly on HikariAPI
+    login: HikariAuth.login.bind(HikariAuth),
+    logout: HikariAuth.logout.bind(HikariAuth),
+    isLoggedIn: HikariAuth.isLoggedIn.bind(HikariAuth),
+    protectAdminPage: HikariAuth.protectPage.bind(HikariAuth),
+    getCurrentUser: () => {
+        const token = getToken();
+        if (!token) return null;
+        // Decode JWT to get user info (basic decode, not verification)
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return { email: payload.email, name: payload.name };
+        } catch (e) {
+            return { email: 'admin@hikari-sushi.fr' };
+        }
+    },
+
+    // Nested APIs for different resources
+    content: HikariContent,
+    menu: HikariMenu,
+    reservations: HikariReservations,
+    gallery: HikariGallery,
+    settings: HikariSettings,
+    stats: HikariStats,
+    
+    // Upload function
+    uploadImage: uploadImage
 };
 
-// Also export individual for convenience
+// Also export individual modules for direct access if needed
 window.HikariAuth = HikariAuth;
 window.HikariContent = HikariContent;
 window.HikariMenu = HikariMenu;
 window.HikariReservations = HikariReservations;
 window.HikariGallery = HikariGallery;
+window.HikariSettings = HikariSettings;
 window.HikariSettings = HikariSettings;
 window.HikariStats = HikariStats;
