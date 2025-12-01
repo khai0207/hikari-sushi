@@ -1319,18 +1319,60 @@
             setupImageUpload();
         }
 
+        // Compress image to reduce size
+        function compressImage(file, maxWidth = 800, quality = 0.7) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Resize if too large
+                        if (width > maxWidth) {
+                            height = (height * maxWidth) / width;
+                            width = maxWidth;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Convert to JPEG with compression
+                        const compressedData = canvas.toDataURL('image/jpeg', quality);
+                        resolve(compressedData);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
         // Setup image upload event listener
         function setupImageUpload() {
             const fileInput = document.getElementById('imageFile');
             if (!fileInput) return;
             
-            fileInput.addEventListener('change', (e) => {
+            fileInput.addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
                 
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    uploadedImageData = event.target.result;
+                // Show loading
+                imageUploadArea.innerHTML = `
+                    <div class="upload-placeholder">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Compression en cours...</p>
+                    </div>
+                `;
+                
+                try {
+                    // Compress image
+                    uploadedImageData = await compressImage(file, 800, 0.7);
+                    
                     imageUploadArea.classList.add('has-image');
                     imageUploadArea.innerHTML = `
                         <input type="file" id="imageFile" accept="image/*" style="display:none;">
@@ -1340,8 +1382,21 @@
                         </button>
                     `;
                     document.getElementById('itemImage').value = uploadedImageData;
-                };
-                reader.readAsDataURL(file);
+                    
+                    // Show size info
+                    const sizeKB = Math.round(uploadedImageData.length / 1024);
+                    console.log(`Image compressed to ${sizeKB} KB`);
+                    
+                    if (sizeKB > 500) {
+                        showToast('Image très grande, compression supplémentaire...', 'warning');
+                        uploadedImageData = await compressImage(file, 600, 0.5);
+                        document.querySelector('.image-preview').src = uploadedImageData;
+                        document.getElementById('itemImage').value = uploadedImageData;
+                    }
+                } catch (error) {
+                    showToast('Erreur de compression', 'error');
+                    console.error(error);
+                }
             });
             
             // Also handle click on imageUploadArea to trigger file input
