@@ -3,165 +3,478 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion Contenu - HIKARI Admin</title>
+    <title>Contenu - HIKARI Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/admin.css">
     <style>
-        .content-section {
-            background: var(--dark-light);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
+        :root {
+            --gold: #c9a962;
+            --gold-light: #dbb872;
+            --gold-dark: #a88b4a;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --bg-card-hover: #1a1a1a;
+            --bg-input: #1a1a1a;
+            --text-light: #ffffff;
+            --text-muted: #888888;
+            --border-color: #2a2a2a;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --sidebar-width: 260px;
         }
-        .content-section h3 {
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #0d0d0d 0%, #0a0a0a 100%);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .sidebar-logo img { width: 45px; height: 45px; }
+
+        .sidebar-logo span {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.15em;
+        }
+
+        .sidebar-nav { flex: 1; padding: 1rem 0; }
+        .sidebar-nav ul { list-style: none; }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item a:hover, .nav-item.active a {
+            background: rgba(201, 169, 98, 0.1);
             color: var(--gold);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            border-left-color: var(--gold);
         }
-        .content-section h3 i {
-            font-size: 0.9em;
+
+        .nav-item i { width: 20px; text-align: center; }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
         }
-        .content-item {
-            margin-bottom: 20px;
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
         }
-        .content-item label {
-            display: block;
-            margin-bottom: 8px;
-            color: #ccc;
-            font-size: 14px;
-        }
-        .content-item input,
-        .content-item textarea {
+
+        .btn-logout {
             width: 100%;
-            padding: 12px 15px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-        .content-item input:focus,
-        .content-item textarea:focus {
-            border-color: var(--gold);
-            outline: none;
-        }
-        .content-item textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        .content-item .hint {
-            font-size: 12px;
-            color: #888;
-            margin-top: 5px;
-        }
-        .save-section-btn {
-            background: var(--gold);
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
             transition: all 0.3s;
         }
-        .save-section-btn:hover {
-            background: var(--gold-light);
-            transform: translateY(-2px);
+
+        .btn-logout:hover {
+            border-color: var(--danger);
+            color: var(--danger);
         }
-        .save-section-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
         }
-        .content-actions {
+
+        .admin-header {
             display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
         }
-        .tab-buttons {
+
+        .header-left {
             display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .content-area { padding: 2rem; }
+
+        /* Tabs */
+        .content-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
             flex-wrap: wrap;
         }
+
         .tab-btn {
-            padding: 10px 20px;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            border-radius: 8px;
-            color: #fff;
+            padding: 12px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-muted);
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 14px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
+
         .tab-btn:hover {
-            background: rgba(255,255,255,0.2);
+            border-color: var(--gold);
+            color: var(--gold);
         }
+
         .tab-btn.active {
             background: var(--gold);
+            border-color: var(--gold);
             color: #000;
         }
-        .content-tab {
+
+        /* Tab Content */
+        .tab-content {
             display: none;
         }
-        .content-tab.active {
+
+        .tab-content.active {
             display: block;
+        }
+
+        /* Content Card */
+        .content-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .content-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content-card-header i {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 12px;
+            color: #000;
+            font-size: 1.25rem;
+        }
+
+        .content-card-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .content-card-header p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .content-card-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Image Upload */
+        .image-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--gold);
+            background: rgba(201, 169, 98, 0.05);
+        }
+
+        .image-upload-area.has-image {
+            padding: 0;
+            border-style: solid;
+        }
+
+        .image-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-placeholder i {
+            font-size: 3rem;
+            color: var(--gold);
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .upload-placeholder p {
+            color: var(--text-muted);
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
+        .image-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 36px;
+            height: 36px;
+            background: var(--danger);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(201, 169, 98, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .content-card-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-color: var(--success); }
+        .toast.success i { color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        .toast.error i { color: var(--danger); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-toggle { display: block; }
+        }
+
+        @media (max-width: 768px) {
+            .content-area { padding: 1rem; }
+            .admin-header { padding: 1rem; }
         }
     </style>
 </head>
-<body class="admin-page">
+<body>
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="dashboard.html" class="sidebar-logo">
-                <img src="../images/logo.png" alt="HIKARI" class="sidebar-logo-img">
+            <a href="../index.html" class="sidebar-logo">
+                <img src="../images/logo.png" alt="HIKARI">
                 <span>HIKARI</span>
             </a>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="fas fa-chevron-left"></i>
-            </button>
         </div>
+
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item">
-                <i class="fas fa-home"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="menu.html" class="nav-item">
-                <i class="fas fa-utensils"></i>
-                <span>Menu</span>
-            </a>
-            <a href="reservations.html" class="nav-item">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Réservations</span>
-                <span class="badge" id="pendingBadge">0</span>
-            </a>
-            <a href="content.html" class="nav-item active">
-                <i class="fas fa-edit"></i>
-                <span>Contenu</span>
-            </a>
-            <a href="settings.html" class="nav-item">
-                <i class="fas fa-cog"></i>
-                <span>Paramètres</span>
-            </a>
+            <ul>
+                <li class="nav-item">
+                    <a href="dashboard.html">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="menu.html">
+                        <i class="fas fa-utensils"></i>
+                        <span>Menu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reservations.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Réservations</span>
+                        <span class="nav-badge" id="pendingBadge">0</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="content.html">
+                        <i class="fas fa-edit"></i>
+                        <span>Contenu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
         </nav>
+
         <div class="sidebar-footer">
-            <div class="user-info">
-                <i class="fas fa-user-circle"></i>
-                <span id="userEmail">admin</span>
-            </div>
-            <button class="logout-btn" id="logoutBtn">
+            <button class="btn-logout" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Déconnexion</span>
             </button>
@@ -170,279 +483,250 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <header class="content-header">
-            <button class="mobile-toggle" id="mobileToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="header-title">
+        <header class="admin-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <h1>Gestion du Contenu</h1>
-                <p>Modifiez les textes et images du site</p>
             </div>
         </header>
 
-        <div class="content-body">
-            <!-- Tab Navigation -->
-            <div class="tab-buttons">
+        <div class="content-area">
+            <!-- Tabs -->
+            <div class="content-tabs">
                 <button class="tab-btn active" data-tab="hero">
                     <i class="fas fa-home"></i> Accueil
                 </button>
                 <button class="tab-btn" data-tab="about">
                     <i class="fas fa-info-circle"></i> À Propos
                 </button>
-                <button class="tab-btn" data-tab="contact">
-                    <i class="fas fa-phone"></i> Contact
+                <button class="tab-btn" data-tab="concept">
+                    <i class="fas fa-star"></i> Concept
                 </button>
-                <button class="tab-btn" data-tab="footer">
-                    <i class="fas fa-copyright"></i> Footer
+                <button class="tab-btn" data-tab="reservation">
+                    <i class="fas fa-calendar"></i> Réservation
+                </button>
+                <button class="tab-btn" data-tab="contact">
+                    <i class="fas fa-envelope"></i> Contact
                 </button>
             </div>
 
             <!-- Hero Section -->
-            <div class="content-tab active" id="tab-hero">
-                <div class="content-section">
-                    <h3><i class="fas fa-home"></i> Section Accueil (Hero)</h3>
-                    
-                    <div class="content-item">
-                        <label>Titre Principal</label>
-                        <input type="text" id="hero_title" data-section="hero" data-key="title" placeholder="Ex: L'Art du Sushi Authentique">
-                        <p class="hint">Le titre principal qui s'affiche en grand</p>
+            <div class="tab-content active" id="tab-hero">
+                <form id="heroForm" class="content-card">
+                    <div class="content-card-header">
+                        <i class="fas fa-home"></i>
+                        <div>
+                            <h2>Section Accueil (Hero)</h2>
+                            <p>La première section que vos visiteurs voient</p>
+                        </div>
                     </div>
-                    
-                    <div class="content-item">
-                        <label>Sous-titre</label>
-                        <input type="text" id="hero_subtitle" data-section="hero" data-key="subtitle" placeholder="Ex: 光 HIKARI">
+                    <div class="content-card-body">
+                        <div class="form-group">
+                            <label>Titre Principal</label>
+                            <input type="text" id="hero_title" value="L'art de la cuisine japonaise">
+                        </div>
+                        <div class="form-group">
+                            <label>Sous-titre</label>
+                            <textarea id="hero_subtitle">Découvrez une expérience culinaire unique où tradition et modernité se rencontrent</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Texte du Bouton</label>
+                            <input type="text" id="hero_button" value="Réserver une table">
+                        </div>
                     </div>
-                    
-                    <div class="content-item">
-                        <label>Description</label>
-                        <textarea id="hero_description" data-section="hero" data-key="description" placeholder="Description sous le titre..."></textarea>
-                    </div>
-                    
-                    <div class="content-item">
-                        <label>Texte du Bouton</label>
-                        <input type="text" id="hero_button" data-section="hero" data-key="button_text" placeholder="Ex: Découvrir">
-                    </div>
-                    
-                    <div class="content-item">
-                        <label>Image de Fond (URL)</label>
-                        <input type="url" id="hero_bg" data-section="hero" data-key="background_image" placeholder="https://...">
-                        <p class="hint">URL de l'image de fond de la section accueil</p>
-                    </div>
-                    
-                    <div class="content-actions">
-                        <button class="save-section-btn" onclick="saveSection('hero')">
-                            <i class="fas fa-save"></i> Enregistrer
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
 
             <!-- About Section -->
-            <div class="content-tab" id="tab-about">
-                <div class="content-section">
-                    <h3><i class="fas fa-info-circle"></i> Section À Propos</h3>
-                    
-                    <div class="content-item">
-                        <label>Titre</label>
-                        <input type="text" id="about_title" data-section="about" data-key="title" placeholder="Ex: Notre Histoire">
+            <div class="tab-content" id="tab-about">
+                <form id="aboutForm" class="content-card">
+                    <div class="content-card-header">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <h2>Section À Propos</h2>
+                            <p>Présentez votre restaurant</p>
+                        </div>
                     </div>
-                    
-                    <div class="content-item">
-                        <label>Sous-titre</label>
-                        <input type="text" id="about_subtitle" data-section="about" data-key="subtitle" placeholder="Ex: NOTRE HISTOIRE">
+                    <div class="content-card-body">
+                        <div class="form-group">
+                            <label>Titre</label>
+                            <input type="text" id="about_title" value="Notre Histoire">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="about_description" rows="6">HIKARI incarne la quintessence de la gastronomie japonaise à Paris. Notre équipe de chefs expérimentés, formés au Japon, vous propose une cuisine authentique et raffinée.</textarea>
+                        </div>
                     </div>
-                    
-                    <div class="content-item">
-                        <label>Paragraphe 1</label>
-                        <textarea id="about_paragraph1" data-section="about" data-key="paragraph1" placeholder="Premier paragraphe..."></textarea>
-                    </div>
-                    
-                    <div class="content-item">
-                        <label>Paragraphe 2</label>
-                        <textarea id="about_paragraph2" data-section="about" data-key="paragraph2" placeholder="Deuxième paragraphe..."></textarea>
-                    </div>
-                    
-                    <div class="content-item">
-                        <label>Image (URL)</label>
-                        <input type="url" id="about_image" data-section="about" data-key="image" placeholder="https://...">
-                    </div>
-                    
-                    <div class="content-actions">
-                        <button class="save-section-btn" onclick="saveSection('about')">
-                            <i class="fas fa-save"></i> Enregistrer
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
                         </button>
                     </div>
-                </div>
+                </form>
+            </div>
+
+            <!-- Concept Section -->
+            <div class="tab-content" id="tab-concept">
+                <form id="conceptForm" class="content-card">
+                    <div class="content-card-header">
+                        <i class="fas fa-star"></i>
+                        <div>
+                            <h2>Section Concept</h2>
+                            <p>Présentez votre concept unique</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="form-group">
+                            <label>Titre</label>
+                            <input type="text" id="concept_title" value="Notre Concept">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="concept_description" rows="6">Une fusion parfaite entre tradition japonaise et innovation culinaire. Chaque plat est préparé avec les meilleurs ingrédients sélectionnés avec soin.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Point Fort 1</label>
+                            <input type="text" id="concept_point1" value="Ingrédients frais et de qualité">
+                        </div>
+                        <div class="form-group">
+                            <label>Point Fort 2</label>
+                            <input type="text" id="concept_point2" value="Chefs expérimentés">
+                        </div>
+                        <div class="form-group">
+                            <label>Point Fort 3</label>
+                            <input type="text" id="concept_point3" value="Ambiance authentique">
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Reservation Section -->
+            <div class="tab-content" id="tab-reservation">
+                <form id="reservationForm" class="content-card">
+                    <div class="content-card-header">
+                        <i class="fas fa-calendar"></i>
+                        <div>
+                            <h2>Section Réservation</h2>
+                            <p>Texte de la section réservation</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="form-group">
+                            <label>Titre</label>
+                            <input type="text" id="reservation_title" value="Réservez Votre Table">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="reservation_description">Pour une expérience gastronomique inoubliable, réservez votre table dès maintenant. Notre équipe sera ravie de vous accueillir.</textarea>
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <!-- Contact Section -->
-            <div class="content-tab" id="tab-contact">
-                <div class="content-section">
-                    <h3><i class="fas fa-phone"></i> Informations de Contact</h3>
-                    
-                    <div class="content-item">
-                        <label>Téléphone</label>
-                        <input type="text" id="contact_phone" data-section="contact" data-key="phone" placeholder="Ex: 05 61 55 50 77">
+            <div class="tab-content" id="tab-contact">
+                <form id="contactForm" class="content-card">
+                    <div class="content-card-header">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h2>Section Contact</h2>
+                            <p>Informations de contact</p>
+                        </div>
                     </div>
-                    
-                    <div class="content-item">
-                        <label>Email</label>
-                        <input type="email" id="contact_email" data-section="contact" data-key="email" placeholder="Ex: hikari.sushi31@gmail.com">
+                    <div class="content-card-body">
+                        <div class="form-group">
+                            <label>Titre</label>
+                            <input type="text" id="contact_title" value="Nous Contacter">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="contact_description">Une question ? Besoin d'informations ? N'hésitez pas à nous contacter.</textarea>
+                        </div>
                     </div>
-                    
-                    <div class="content-item">
-                        <label>Adresse</label>
-                        <textarea id="contact_address" data-section="contact" data-key="address" placeholder="17 allée des Soupirs, 31000 Toulouse"></textarea>
-                    </div>
-                    
-                    <div class="content-item">
-                        <label>Lien Google Maps</label>
-                        <input type="url" id="contact_maps" data-section="contact" data-key="maps_url" placeholder="https://maps.google.com/...">
-                    </div>
-                    
-                    <div class="content-actions">
-                        <button class="save-section-btn" onclick="saveSection('contact')">
-                            <i class="fas fa-save"></i> Enregistrer
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
                         </button>
                     </div>
-                </div>
-                
-                <div class="content-section">
-                    <h3><i class="fas fa-share-alt"></i> Réseaux Sociaux</h3>
-                    
-                    <div class="content-item">
-                        <label>Facebook</label>
-                        <input type="url" id="social_facebook" data-section="social" data-key="facebook" placeholder="https://facebook.com/...">
-                    </div>
-                    
-                    <div class="content-item">
-                        <label>Instagram</label>
-                        <input type="url" id="social_instagram" data-section="social" data-key="instagram" placeholder="https://instagram.com/...">
-                    </div>
-                    
-                    <div class="content-item">
-                        <label>TripAdvisor</label>
-                        <input type="url" id="social_tripadvisor" data-section="social" data-key="tripadvisor" placeholder="https://tripadvisor.com/...">
-                    </div>
-                    
-                    <div class="content-actions">
-                        <button class="save-section-btn" onclick="saveSection('social')">
-                            <i class="fas fa-save"></i> Enregistrer
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer Section -->
-            <div class="content-tab" id="tab-footer">
-                <div class="content-section">
-                    <h3><i class="fas fa-copyright"></i> Pied de Page</h3>
-                    
-                    <div class="content-item">
-                        <label>Description du Restaurant</label>
-                        <textarea id="footer_description" data-section="footer" data-key="description" placeholder="Description courte du restaurant..."></textarea>
-                    </div>
-                    
-                    <div class="content-item">
-                        <label>Texte Copyright</label>
-                        <input type="text" id="footer_copyright" data-section="footer" data-key="copyright" placeholder="Ex: © 2024 HIKARI Sushi & Roll. Tous droits réservés">
-                    </div>
-                    
-                    <div class="content-actions">
-                        <button class="save-section-btn" onclick="saveSection('footer')">
-                            <i class="fas fa-save"></i> Enregistrer
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="content-section">
-                    <h3><i class="fas fa-clock"></i> Horaires d'Ouverture</h3>
-                    
-                    <div class="content-item">
-                        <label>Lundi</label>
-                        <input type="text" id="hours_monday" data-section="hours" data-key="monday" placeholder="Ex: 19h - 22h">
-                    </div>
-                    
-                    <div class="content-item">
-                        <label>Mardi - Dimanche (Midi)</label>
-                        <input type="text" id="hours_lunch" data-section="hours" data-key="lunch" placeholder="Ex: 12h - 14h30">
-                    </div>
-                    
-                    <div class="content-item">
-                        <label>Mardi - Dimanche (Soir)</label>
-                        <input type="text" id="hours_dinner" data-section="hours" data-key="dinner" placeholder="Ex: 19h - 22h">
-                    </div>
-                    
-                    <div class="content-actions">
-                        <button class="save-section-btn" onclick="saveSection('hours')">
-                            <i class="fas fa-save"></i> Enregistrer
-                        </button>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </main>
 
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div class="toast" id="toast">
-        <i class="toast-icon fas fa-check-circle"></i>
-        <span class="toast-message"></span>
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
     </div>
 
-    <!-- D1 API Client -->
     <script src="../js/api-client.js"></script>
-
     <script>
-        // Protect admin page
+        // Protect page
         HikariAPI.protectAdminPage();
 
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
         const mobileToggle = document.getElementById('mobileToggle');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
 
-        // Toggle sidebar
-        sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
-        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
+        // Mobile toggle
+        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
 
         // Logout
-        logoutBtn.addEventListener('click', () => HikariAPI.logout());
+        document.getElementById('logoutBtn').addEventListener('click', () => HikariAPI.logout());
 
-        // Tab switching
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                document.querySelectorAll('.content-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-            });
-        });
-
-        // Show toast
+        // Toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            toast.querySelector('.toast-icon').className = 'toast-icon fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
-            toast.querySelector('.toast-message').textContent = message;
+            toast.querySelector('i').className = 'fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+            document.getElementById('toastMessage').textContent = message;
             toast.className = 'toast show ' + type;
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
+
+        // Tab switching
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+            });
+        });
 
         // Load content
         async function loadContent() {
             try {
                 const result = await HikariAPI.content.getAll();
-                if (result.success && result.content) {
-                    // Populate all fields
-                    document.querySelectorAll('[data-section][data-key]').forEach(input => {
-                        const section = input.dataset.section;
-                        const key = input.dataset.key;
-                        if (result.content[section] && result.content[section][key]) {
-                            input.value = result.content[section][key];
+                if (result.success && result.data) {
+                    result.data.forEach(item => {
+                        const element = document.getElementById(item.key);
+                        if (element) {
+                            element.value = item.value;
                         }
                     });
                 }
@@ -451,48 +735,54 @@
             }
         }
 
-        // Save section
-        async function saveSection(section) {
-            const inputs = document.querySelectorAll(`[data-section="${section}"]`);
-            const btn = event.target.closest('.save-section-btn');
-            
+        // Save content helper
+        async function saveContent(form, fields) {
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...';
-            
-            let success = true;
-            
-            for (const input of inputs) {
-                const key = input.dataset.key;
-                const value = input.value;
-                
-                try {
-                    const result = await HikariAPI.content.update(section, key, value);
-                    if (!result.success) {
-                        success = false;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+
+            try {
+                for (const field of fields) {
+                    const element = document.getElementById(field);
+                    if (element) {
+                        await HikariAPI.content.update(field, element.value);
                     }
-                } catch (error) {
-                    success = false;
                 }
+                showToast('Contenu enregistré!');
+            } catch (error) {
+                showToast('Erreur: ' + error.message, 'error');
             }
-            
+
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
-            
-            if (success) {
-                showToast('Contenu enregistré avec succès');
-            } else {
-                showToast('Erreur lors de la sauvegarde', 'error');
-            }
+            btn.innerHTML = originalText;
         }
 
-        // Set user info
-        const currentUser = HikariAPI.getCurrentUser();
-        if (currentUser) {
-            document.getElementById('userEmail').textContent = currentUser.email;
-        }
+        // Form handlers
+        document.getElementById('heroForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveContent(e.target, ['hero_title', 'hero_subtitle', 'hero_button']);
+        });
 
-        // Make saveSection global
-        window.saveSection = saveSection;
+        document.getElementById('aboutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveContent(e.target, ['about_title', 'about_description']);
+        });
+
+        document.getElementById('conceptForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveContent(e.target, ['concept_title', 'concept_description', 'concept_point1', 'concept_point2', 'concept_point3']);
+        });
+
+        document.getElementById('reservationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveContent(e.target, ['reservation_title', 'reservation_description']);
+        });
+
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveContent(e.target, ['contact_title', 'contact_description']);
+        });
 
         // Initialize
         loadContent();

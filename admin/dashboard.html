@@ -8,19 +8,527 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        :root {
+            --gold: #c9a962;
+            --gold-light: #dbb872;
+            --gold-dark: #a88b4a;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --bg-card-hover: #1a1a1a;
+            --bg-input: #1a1a1a;
+            --text-light: #ffffff;
+            --text-muted: #888888;
+            --border-color: #2a2a2a;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #0d0d0d 0%, #0a0a0a 100%);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .sidebar-logo img {
+            width: 45px;
+            height: 45px;
+        }
+
+        .sidebar-logo span {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.15em;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav ul { list-style: none; }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item a:hover,
+        .nav-item.active a {
+            background: rgba(201, 169, 98, 0.1);
+            color: var(--gold);
+            border-left-color: var(--gold);
+        }
+
+        .nav-item i { width: 20px; text-align: center; }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-logout {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .btn-view-site {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-view-site:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 2rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+        }
+
+        .stat-icon.success {
+            background: linear-gradient(135deg, var(--success), #16a34a);
+            color: #fff;
+        }
+
+        .stat-icon.warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: #fff;
+        }
+
+        .stat-icon.info {
+            background: linear-gradient(135deg, var(--info), #2563eb);
+            color: #fff;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Section */
+        .section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .btn-link {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+
+        .btn-link:hover {
+            color: var(--gold-light);
+        }
+
+        /* Quick Actions */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .action-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-card:hover {
+            border-color: var(--gold);
+            background: rgba(201, 169, 98, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .action-card .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .action-card span {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .customer-name {
+            font-weight: 500;
+        }
+
+        .customer-phone {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .status-confirmed {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-icon.btn-success:hover {
+            border-color: var(--success);
+            color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .btn-icon.btn-danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { border-color: var(--success); }
+        .toast.success i { color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        .toast.error i { color: var(--danger); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-toggle { display: block; }
+        }
+
+        @media (max-width: 768px) {
+            .content-area { padding: 1rem; }
+            .admin-header { padding: 1rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .data-table th, .data-table td { padding: 0.75rem; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .actions-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
 </head>
-<body class="admin-page">
+<body>
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="../index.html" class="sidebar-logo">
-                <img src="../images/logo.png" alt="HIKARI" class="sidebar-logo-img">
-                <span class="logo-text">HIKARI</span>
+                <img src="../images/logo.png" alt="HIKARI">
+                <span>HIKARI</span>
             </a>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="fas fa-bars"></i>
-            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -41,7 +549,7 @@
                     <a href="reservations.html">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Réservations</span>
-                        <span class="badge" id="pendingBadge">0</span>
+                        <span class="nav-badge" id="pendingBadge">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -60,15 +568,6 @@
         </nav>
 
         <div class="sidebar-footer">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="user-details">
-                    <span class="user-name" id="userName">Admin</span>
-                    <span class="user-email" id="userEmail">admin@hikari.fr</span>
-                </div>
-            </div>
             <button class="btn-logout" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Déconnexion</span>
@@ -78,7 +577,6 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
                 <button class="mobile-toggle" id="mobileToggle">
@@ -86,20 +584,17 @@
                 </button>
                 <h1>Dashboard</h1>
             </div>
-            <div class="header-right">
-                <a href="../index.html" target="_blank" class="btn-view-site">
-                    <i class="fas fa-external-link-alt"></i>
-                    Voir le site
-                </a>
-            </div>
+            <a href="../index.html" target="_blank" class="btn-view-site">
+                <i class="fas fa-external-link-alt"></i>
+                Voir le site
+            </a>
         </header>
 
-        <!-- Dashboard Content -->
-        <div class="dashboard-content">
-            <!-- Stats Cards -->
+        <div class="content-area">
+            <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon bg-primary">
+                    <div class="stat-icon primary">
                         <i class="fas fa-utensils"></i>
                     </div>
                     <div class="stat-info">
@@ -108,7 +603,7 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon bg-success">
+                    <div class="stat-icon success">
                         <i class="fas fa-calendar-check"></i>
                     </div>
                     <div class="stat-info">
@@ -117,7 +612,7 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon bg-warning">
+                    <div class="stat-icon warning">
                         <i class="fas fa-clock"></i>
                     </div>
                     <div class="stat-info">
@@ -126,7 +621,7 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon bg-info">
+                    <div class="stat-icon info">
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="stat-info">
@@ -137,10 +632,12 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="quick-actions">
-                <h2>Actions Rapides</h2>
+            <div class="section">
+                <div class="section-header">
+                    <h2>Actions Rapides</h2>
+                </div>
                 <div class="actions-grid">
-                    <a href="menu.html?action=add" class="action-card">
+                    <a href="menu.html" class="action-card">
                         <div class="action-icon">
                             <i class="fas fa-plus"></i>
                         </div>
@@ -152,26 +649,26 @@
                         </div>
                         <span>Voir Réservations</span>
                     </a>
+                    <a href="content.html" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <span>Modifier Contenu</span>
+                    </a>
                     <a href="settings.html" class="action-card">
                         <div class="action-icon">
                             <i class="fas fa-cog"></i>
                         </div>
                         <span>Paramètres</span>
                     </a>
-                    <button class="action-card" id="seedDataBtn">
-                        <div class="action-icon">
-                            <i class="fas fa-database"></i>
-                        </div>
-                        <span>Initialiser Données</span>
-                    </button>
                 </div>
             </div>
 
             <!-- Recent Reservations -->
-            <div class="recent-section">
+            <div class="section">
                 <div class="section-header">
                     <h2>Réservations Récentes</h2>
-                    <a href="reservations.html" class="btn-link">Voir tout</a>
+                    <a href="reservations.html" class="btn-link">Voir tout →</a>
                 </div>
                 <div class="table-container">
                     <table class="data-table">
@@ -186,7 +683,7 @@
                             </tr>
                         </thead>
                         <tbody id="recentReservations">
-                            <tr class="empty-row">
+                            <tr>
                                 <td colspan="6">
                                     <div class="empty-state">
                                         <i class="fas fa-calendar-times"></i>
@@ -201,53 +698,34 @@
         </div>
     </main>
 
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div class="toast" id="toast">
-        <i class="toast-icon fas fa-check-circle"></i>
-        <span class="toast-message"></span>
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
     </div>
 
-    <!-- D1 API Client -->
     <script src="../js/api-client.js"></script>
-
     <script>
-        // Protect admin page
+        // Protect page
         HikariAPI.protectAdminPage();
 
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
         const mobileToggle = document.getElementById('mobileToggle');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const seedDataBtn = document.getElementById('seedDataBtn');
 
-        // Toggle sidebar
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-        });
-
-        mobileToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('mobile-open');
-        });
+        // Mobile toggle
+        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
 
         // Logout
-        logoutBtn.addEventListener('click', () => {
-            HikariAPI.logout();
-        });
+        document.getElementById('logoutBtn').addEventListener('click', () => HikariAPI.logout());
 
-        // Show toast notification
+        // Toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            const icon = toast.querySelector('.toast-icon');
-            const msg = toast.querySelector('.toast-message');
-            
-            icon.className = 'toast-icon fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
-            msg.textContent = message;
+            toast.querySelector('i').className = 'fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+            document.getElementById('toastMessage').textContent = message;
             toast.className = 'toast show ' + type;
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         // Load dashboard data
@@ -285,7 +763,7 @@
             
             if (reservations.length === 0) {
                 tbody.innerHTML = `
-                    <tr class="empty-row">
+                    <tr>
                         <td colspan="6">
                             <div class="empty-state">
                                 <i class="fas fa-calendar-times"></i>
@@ -329,13 +807,8 @@
             `).join('');
         }
 
-        // Get status label
         function getStatusLabel(status) {
-            const labels = {
-                'pending': 'En attente',
-                'confirmed': 'Confirmé',
-                'cancelled': 'Annulé'
-            };
+            const labels = { pending: 'En attente', confirmed: 'Confirmé', cancelled: 'Annulé' };
             return labels[status] || status;
         }
 
@@ -350,56 +823,8 @@
             }
         }
 
-        // Seed data
-        seedDataBtn.addEventListener('click', async () => {
-            if (confirm('Voulez-vous initialiser les données du menu? Cela ajoutera des plats de démonstration.')) {
-                seedDataBtn.disabled = true;
-                seedDataBtn.innerHTML = '<div class="action-icon"><i class="fas fa-spinner fa-spin"></i></div><span>Chargement...</span>';
-                
-                // Seed menu data using D1 API
-                const menuItems = [
-                    { name: 'Sashimi Saumon', description: '6 tranches de saumon frais', price: 12.00, category: 'sashimi', image: 'images/menu/sashimi-salmon.jpg', available: 1 },
-                    { name: 'Sashimi Thon', description: '6 tranches de thon rouge', price: 14.00, category: 'sashimi', image: 'images/menu/sashimi-tuna.jpg', available: 1 },
-                    { name: 'Maki Saumon', description: '6 pièces de maki au saumon', price: 6.50, category: 'maki', image: 'images/menu/maki-salmon.jpg', available: 1 },
-                    { name: 'Maki Avocat', description: '6 pièces de maki à l\'avocat', price: 5.50, category: 'maki', image: 'images/menu/maki-avocado.jpg', available: 1 },
-                    { name: 'California Roll', description: 'Saumon, avocat, concombre, cheese', price: 8.00, category: 'california', image: 'images/menu/california.jpg', available: 1 },
-                    { name: 'Nigiri Assortiment', description: '8 pièces de nigiri variés', price: 15.00, category: 'nigiri', image: 'images/menu/nigiri-assorted.jpg', available: 1 },
-                    { name: 'Ramen Tonkotsu', description: 'Bouillon de porc, chashu, oeuf mollet', price: 14.50, category: 'ramen', image: 'images/menu/ramen-tonkotsu.jpg', available: 1 },
-                    { name: 'Gyoza', description: '6 raviolis japonais grillés', price: 7.00, category: 'accompagnements', image: 'images/menu/gyoza.jpg', available: 1 }
-                ];
-                
-                let success = true;
-                for (const item of menuItems) {
-                    const result = await HikariAPI.menu.create(item);
-                    if (!result.success) {
-                        success = false;
-                        break;
-                    }
-                }
-                
-                if (success) {
-                    showToast('Données initialisées avec succès!');
-                    loadDashboardData();
-                } else {
-                    showToast('Erreur lors de l\'initialisation', 'error');
-                }
-                
-                seedDataBtn.disabled = false;
-                seedDataBtn.innerHTML = '<div class="action-icon"><i class="fas fa-database"></i></div><span>Initialiser Données</span>';
-            }
-        });
-
-        // Set user info
-        const currentUser = HikariAPI.getCurrentUser();
-        if (currentUser) {
-            document.getElementById('userEmail').textContent = currentUser.email;
-            document.getElementById('userName').textContent = currentUser.email.split('@')[0];
-        }
-
         // Initialize
         loadDashboardData();
-
-        // Make updateStatus available globally
         window.updateStatus = updateStatus;
     </script>
 </body>

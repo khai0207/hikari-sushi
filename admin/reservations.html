@@ -8,19 +8,634 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        :root {
+            --gold: #c9a962;
+            --gold-light: #dbb872;
+            --gold-dark: #a88b4a;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --bg-card-hover: #1a1a1a;
+            --bg-input: #1a1a1a;
+            --text-light: #ffffff;
+            --text-muted: #888888;
+            --border-color: #2a2a2a;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #0d0d0d 0%, #0a0a0a 100%);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .sidebar-logo img { width: 45px; height: 45px; }
+
+        .sidebar-logo span {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.15em;
+        }
+
+        .sidebar-nav { flex: 1; padding: 1rem 0; }
+        .sidebar-nav ul { list-style: none; }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item a:hover, .nav-item.active a {
+            background: rgba(201, 169, 98, 0.1);
+            color: var(--gold);
+            border-left-color: var(--gold);
+        }
+
+        .nav-item i { width: 20px; text-align: center; }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-logout {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .content-area { padding: 2rem; }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 14px 14px 48px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 12px 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-tab:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .filter-tab.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: #000;
+        }
+
+        /* Reservations Grid */
+        .reservations-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .reservation-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            align-items: center;
+            gap: 2rem;
+            transition: all 0.3s;
+        }
+
+        .reservation-card:hover {
+            border-color: var(--gold);
+            transform: translateX(5px);
+        }
+
+        .customer-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.125rem;
+            margin-bottom: 4px;
+        }
+
+        .customer-details {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .customer-details span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reservation-date {
+            text-align: center;
+        }
+
+        .date-day {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .date-month {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .reservation-time {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .time-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .guests-count {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .reservation-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .status-confirmed {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-icon {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-icon.success:hover {
+            border-color: var(--success);
+            color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .btn-icon.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gold);
+            opacity: 0.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.open { display: flex; }
+
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-muted);
+        }
+
+        .detail-value {
+            font-weight: 500;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-light);
+            color: var(--text-light);
+        }
+
+        .btn-success {
+            padding: 12px 24px;
+            background: var(--success);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-danger {
+            padding: 12px 24px;
+            background: var(--danger);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            color: var(--gold);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-color: var(--success); }
+        .toast.success i { color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        .toast.error i { color: var(--danger); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-toggle { display: block; }
+        }
+
+        @media (max-width: 768px) {
+            .content-area { padding: 1rem; }
+            .admin-header { padding: 1rem; }
+            .filter-bar { flex-direction: column; }
+            
+            .reservation-card {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .reservation-date,
+            .reservation-time,
+            .reservation-actions {
+                flex-direction: row;
+                justify-content: space-between;
+                padding-top: 1rem;
+                border-top: 1px solid var(--border-color);
+            }
+        }
+    </style>
 </head>
-<body class="admin-page">
+<body>
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="../index.html" class="sidebar-logo">
-                <img src="../images/logo.png" alt="HIKARI" class="sidebar-logo-img">
-                <span class="logo-text">HIKARI</span>
+                <img src="../images/logo.png" alt="HIKARI">
+                <span>HIKARI</span>
             </a>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="fas fa-bars"></i>
-            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -41,7 +656,7 @@
                     <a href="reservations.html">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Réservations</span>
-                        <span class="badge" id="pendingBadge">0</span>
+                        <span class="nav-badge" id="pendingBadge">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -69,85 +684,47 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
                 <button class="mobile-toggle" id="mobileToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1>Réservations</h1>
-            </div>
-            <div class="header-right">
-                <div class="date-picker">
-                    <label for="filterDate">Date:</label>
-                    <input type="date" id="filterDate">
-                </div>
+                <h1>Gestion des Réservations</h1>
             </div>
         </header>
 
-        <!-- Stats Summary -->
-        <div class="reservation-stats">
-            <div class="stat-mini">
-                <span class="stat-mini-value" id="statTotal">0</span>
-                <span class="stat-mini-label">Total</span>
+        <div class="content-area">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Rechercher par nom ou téléphone...">
+                </div>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-status="all">Toutes</button>
+                    <button class="filter-tab" data-status="pending">En attente</button>
+                    <button class="filter-tab" data-status="confirmed">Confirmées</button>
+                    <button class="filter-tab" data-status="cancelled">Annulées</button>
+                </div>
             </div>
-            <div class="stat-mini stat-pending">
-                <span class="stat-mini-value" id="statPending">0</span>
-                <span class="stat-mini-label">En attente</span>
-            </div>
-            <div class="stat-mini stat-confirmed">
-                <span class="stat-mini-value" id="statConfirmed">0</span>
-                <span class="stat-mini-label">Confirmées</span>
-            </div>
-            <div class="stat-mini stat-cancelled">
-                <span class="stat-mini-value" id="statCancelled">0</span>
-                <span class="stat-mini-label">Annulées</span>
-            </div>
-        </div>
 
-        <!-- Filters -->
-        <div class="filters-bar">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Rechercher par nom ou téléphone...">
+            <!-- Reservations Grid -->
+            <div class="reservations-grid" id="reservationsGrid">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
             </div>
-            <div class="filter-tabs">
-                <button class="filter-tab active" data-status="all">Toutes</button>
-                <button class="filter-tab" data-status="pending">En attente</button>
-                <button class="filter-tab" data-status="confirmed">Confirmées</button>
-                <button class="filter-tab" data-status="cancelled">Annulées</button>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fas fa-calendar-times"></i>
+                <h3>Aucune réservation</h3>
+                <p>Les réservations de vos clients apparaîtront ici</p>
             </div>
-        </div>
-
-        <!-- Reservations Table -->
-        <div class="table-container">
-            <table class="data-table" id="reservationsTable">
-                <thead>
-                    <tr>
-                        <th>Client</th>
-                        <th>Contact</th>
-                        <th>Date & Heure</th>
-                        <th>Personnes</th>
-                        <th>Message</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="reservationsBody">
-                    <!-- Data will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Empty State -->
-        <div class="empty-state-large" id="emptyState" style="display: none;">
-            <i class="fas fa-calendar-times"></i>
-            <h3>Aucune réservation</h3>
-            <p>Les réservations apparaîtront ici</p>
         </div>
     </main>
 
-    <!-- Reservation Detail Modal -->
+    <!-- Detail Modal -->
     <div class="modal" id="detailModal">
         <div class="modal-overlay" onclick="closeDetailModal()"></div>
         <div class="modal-content">
@@ -157,137 +734,83 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body" id="reservationDetail">
-                <!-- Detail content -->
+            <div class="modal-body" id="detailContent">
             </div>
-            <div class="modal-actions" id="modalActions">
-                <!-- Actions -->
+            <div class="modal-footer" id="detailFooter">
             </div>
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal" id="deleteModal">
-        <div class="modal-overlay" onclick="closeDeleteModal()"></div>
-        <div class="modal-content modal-small">
-            <div class="modal-header">
-                <h2>Confirmer la suppression</h2>
-                <button class="modal-close" onclick="closeDeleteModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer cette réservation ?</p>
-                <p class="text-muted">Cette action est irréversible.</p>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Annuler</button>
-                <button type="button" class="btn-danger" id="confirmDeleteBtn">
-                    <i class="fas fa-trash"></i>
-                    Supprimer
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div class="toast" id="toast">
-        <i class="toast-icon fas fa-check-circle"></i>
-        <span class="toast-message"></span>
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
     </div>
 
-    <!-- D1 API Client -->
     <script src="../js/api-client.js"></script>
-
     <script>
-        // Protect admin page
+        // Protect page
         HikariAPI.protectAdminPage();
 
         // State
         let reservations = [];
         let currentFilter = 'all';
         let currentSearch = '';
-        let currentDate = '';
-        let deleteId = null;
+        let selectedReservation = null;
 
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
         const mobileToggle = document.getElementById('mobileToggle');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const searchInput = document.getElementById('searchInput');
-        const filterDate = document.getElementById('filterDate');
-        const filterTabs = document.querySelectorAll('.filter-tab');
-        const reservationsBody = document.getElementById('reservationsBody');
+        const reservationsGrid = document.getElementById('reservationsGrid');
         const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const filterTabs = document.querySelectorAll('.filter-tab');
         const detailModal = document.getElementById('detailModal');
-        const deleteModal = document.getElementById('deleteModal');
 
-        // Toggle sidebar
-        sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
-        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
+        // Mobile toggle
+        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
 
         // Logout
-        logoutBtn.addEventListener('click', () => HikariAPI.logout());
+        document.getElementById('logoutBtn').addEventListener('click', () => HikariAPI.logout());
 
-        // Show toast
+        // Toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            toast.querySelector('.toast-icon').className = 'toast-icon fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
-            toast.querySelector('.toast-message').textContent = message;
+            toast.querySelector('i').className = 'fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+            document.getElementById('toastMessage').textContent = message;
             toast.className = 'toast show ' + type;
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         // Load reservations
         async function loadReservations() {
-            reservationsBody.innerHTML = '<tr><td colspan="7" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Chargement...</td></tr>';
+            reservationsGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i></div>';
             
             try {
                 const result = await HikariAPI.reservations.getAll();
-                let allReservations = result.success ? result.data : [];
+                reservations = result.success ? result.data : [];
                 
-                // Filter by date if selected
-                if (currentDate) {
-                    allReservations = allReservations.filter(r => r.date === currentDate);
-                }
+                // Update pending badge
+                const pending = reservations.filter(r => r.status === 'pending').length;
+                document.getElementById('pendingBadge').textContent = pending;
                 
-                reservations = allReservations;
-                updateStats();
                 renderReservations();
             } catch (error) {
-                console.error('Error loading reservations:', error);
-                showToast('Erreur lors du chargement', 'error');
+                console.error('Error:', error);
+                showToast('Erreur de chargement', 'error');
                 reservations = [];
-                updateStats();
                 renderReservations();
             }
-        }
-
-        // Update stats
-        function updateStats() {
-            const total = reservations.length;
-            const pending = reservations.filter(r => r.status === 'pending').length;
-            const confirmed = reservations.filter(r => r.status === 'confirmed').length;
-            const cancelled = reservations.filter(r => r.status === 'cancelled').length;
-
-            document.getElementById('statTotal').textContent = total;
-            document.getElementById('statPending').textContent = pending;
-            document.getElementById('statConfirmed').textContent = confirmed;
-            document.getElementById('statCancelled').textContent = cancelled;
-            document.getElementById('pendingBadge').textContent = pending;
         }
 
         // Render reservations
         function renderReservations() {
             let filtered = reservations;
 
-            // Apply status filter
             if (currentFilter !== 'all') {
                 filtered = filtered.filter(r => r.status === currentFilter);
             }
 
-            // Apply search filter
             if (currentSearch) {
                 const search = currentSearch.toLowerCase();
                 filtered = filtered.filter(r => 
@@ -298,80 +821,66 @@
             }
 
             if (filtered.length === 0) {
-                reservationsBody.innerHTML = '';
-                emptyState.style.display = 'flex';
-                document.getElementById('reservationsTable').style.display = 'none';
+                reservationsGrid.innerHTML = '';
+                emptyState.style.display = 'block';
                 return;
             }
 
             emptyState.style.display = 'none';
-            document.getElementById('reservationsTable').style.display = 'table';
+            
+            // Sort by date descending
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            reservationsBody.innerHTML = filtered.map(res => `
-                <tr data-id="${res.id}">
-                    <td>
-                        <div class="customer-info">
-                            <span class="customer-name">${res.name}</span>
+            reservationsGrid.innerHTML = filtered.map(res => {
+                const date = new Date(res.date);
+                const day = date.getDate();
+                const month = date.toLocaleDateString('fr-FR', { month: 'short' });
+                
+                return `
+                <div class="reservation-card">
+                    <div class="customer-info">
+                        <h3>${res.name}</h3>
+                        <div class="customer-details">
+                            <span><i class="fas fa-phone"></i> ${res.phone}</span>
+                            ${res.email ? `<span><i class="fas fa-envelope"></i> ${res.email}</span>` : ''}
                         </div>
-                    </td>
-                    <td>
-                        <div class="contact-info">
-                            <a href="tel:${res.phone}" class="contact-link">
-                                <i class="fas fa-phone"></i> ${res.phone}
-                            </a>
-                            ${res.email ? `<a href="mailto:${res.email}" class="contact-link"><i class="fas fa-envelope"></i> ${res.email}</a>` : ''}
+                    </div>
+                    <div class="reservation-date">
+                        <div class="date-day">${day}</div>
+                        <div class="date-month">${month}</div>
+                    </div>
+                    <div class="reservation-time">
+                        <div class="time-value">${res.time}</div>
+                        <div class="guests-count">
+                            <i class="fas fa-users"></i> ${res.guests} pers.
                         </div>
-                    </td>
-                    <td>
-                        <div class="datetime-info">
-                            <span class="date"><i class="fas fa-calendar"></i> ${res.date}</span>
-                            <span class="time"><i class="fas fa-clock"></i> ${res.time}</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="guests-badge">
-                            <i class="fas fa-users"></i> ${res.guests}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="message-preview" title="${res.message || 'Pas de message'}">
-                            ${res.message ? (res.message.length > 30 ? res.message.substring(0, 30) + '...' : res.message) : '-'}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="status-badge status-${res.status}">
-                            ${getStatusLabel(res.status)}
-                        </span>
-                    </td>
-                    <td>
+                    </div>
+                    <div class="reservation-actions">
+                        <span class="status-badge status-${res.status}">${getStatusLabel(res.status)}</span>
                         <div class="action-buttons">
-                            <button class="btn-icon" onclick="viewDetail('${res.id}')" title="Voir détails">
+                            <button class="btn-icon" onclick="viewDetails(${res.id})" title="Détails">
                                 <i class="fas fa-eye"></i>
                             </button>
                             ${res.status === 'pending' ? `
-                                <button class="btn-icon btn-success" onclick="updateStatus('${res.id}', 'confirmed')" title="Confirmer">
+                                <button class="btn-icon success" onclick="updateStatus(${res.id}, 'confirmed')" title="Confirmer">
                                     <i class="fas fa-check"></i>
                                 </button>
-                                <button class="btn-icon btn-warning" onclick="updateStatus('${res.id}', 'cancelled')" title="Annuler">
+                                <button class="btn-icon danger" onclick="updateStatus(${res.id}, 'cancelled')" title="Annuler">
                                     <i class="fas fa-times"></i>
                                 </button>
-                            ` : ''}
-                            <button class="btn-icon btn-danger" onclick="confirmDelete('${res.id}')" title="Supprimer">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            ` : `
+                                <button class="btn-icon danger" onclick="deleteReservation(${res.id})" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            `}
                         </div>
-                    </td>
-                </tr>
-            `).join('');
+                    </div>
+                </div>
+            `}).join('');
         }
 
-        // Get status label
         function getStatusLabel(status) {
-            const labels = {
-                'pending': 'En attente',
-                'confirmed': 'Confirmée',
-                'cancelled': 'Annulée'
-            };
+            const labels = { pending: 'En attente', confirmed: 'Confirmé', cancelled: 'Annulé' };
             return labels[status] || status;
         }
 
@@ -391,123 +900,108 @@
             renderReservations();
         });
 
-        // Date filter
-        filterDate.addEventListener('change', (e) => {
-            currentDate = e.target.value;
-            loadReservations();
-        });
+        // View details
+        function viewDetails(id) {
+            selectedReservation = reservations.find(r => r.id === id);
+            if (!selectedReservation) return;
 
-        // View detail
-        function viewDetail(id) {
-            const res = reservations.find(r => r.id === id);
-            if (!res) return;
-
-            document.getElementById('reservationDetail').innerHTML = `
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <label>Nom</label>
-                        <span>${res.name}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Téléphone</label>
-                        <a href="tel:${res.phone}">${res.phone}</a>
-                    </div>
-                    <div class="detail-item">
-                        <label>Email</label>
-                        <span>${res.email || '-'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Personnes</label>
-                        <span>${res.guests}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Date</label>
-                        <span>${res.date}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Heure</label>
-                        <span>${res.time}</span>
-                    </div>
-                    <div class="detail-item full">
-                        <label>Message</label>
-                        <span>${res.message || 'Pas de message'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Status</label>
-                        <span class="status-badge status-${res.status}">${getStatusLabel(res.status)}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Créée le</label>
-                        <span>${res.created_at ? new Date(res.created_at).toLocaleString('fr-FR') : '-'}</span>
-                    </div>
+            const res = selectedReservation;
+            document.getElementById('detailContent').innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Nom</span>
+                    <span class="detail-value">${res.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Téléphone</span>
+                    <span class="detail-value">${res.phone}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value">${res.email || 'Non renseigné'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date</span>
+                    <span class="detail-value">${res.date}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Heure</span>
+                    <span class="detail-value">${res.time}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Nombre de personnes</span>
+                    <span class="detail-value">${res.guests}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Message</span>
+                    <span class="detail-value">${res.message || 'Aucun message'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Statut</span>
+                    <span class="status-badge status-${res.status}">${getStatusLabel(res.status)}</span>
                 </div>
             `;
 
-            document.getElementById('modalActions').innerHTML = `
-                <button type="button" class="btn-secondary" onclick="closeDetailModal()">Fermer</button>
-                ${res.status === 'pending' ? `
-                    <button type="button" class="btn-success" onclick="updateStatus('${res.id}', 'confirmed'); closeDetailModal();">
+            let footer = '<button class="btn-secondary" onclick="closeDetailModal()">Fermer</button>';
+            if (res.status === 'pending') {
+                footer += `
+                    <button class="btn-success" onclick="updateStatus(${res.id}, 'confirmed'); closeDetailModal();">
                         <i class="fas fa-check"></i> Confirmer
                     </button>
-                    <button type="button" class="btn-warning" onclick="updateStatus('${res.id}', 'cancelled'); closeDetailModal();">
+                    <button class="btn-danger" onclick="updateStatus(${res.id}, 'cancelled'); closeDetailModal();">
                         <i class="fas fa-times"></i> Annuler
                     </button>
-                ` : ''}
-            `;
+                `;
+            }
+            document.getElementById('detailFooter').innerHTML = footer;
 
             detailModal.classList.add('open');
         }
 
         function closeDetailModal() {
             detailModal.classList.remove('open');
+            selectedReservation = null;
         }
 
         // Update status
         async function updateStatus(id, status) {
-            const result = await HikariAPI.reservations.update(id, { status });
+            try {
+                const result = await HikariAPI.reservations.update(id, { status });
+                if (result.success) {
+                    showToast(status === 'confirmed' ? 'Réservation confirmée!' : 'Réservation annulée!');
+                    loadReservations();
+                } else {
+                    showToast('Erreur: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showToast('Erreur: ' + error.message, 'error');
+            }
+        }
+
+        // Delete reservation
+        async function deleteReservation(id) {
+            if (!confirm('Voulez-vous supprimer cette réservation?')) return;
             
-            if (result.success) {
-                showToast('Statut mis à jour');
-                loadReservations();
-            } else {
-                showToast('Erreur: ' + result.error, 'error');
+            try {
+                const result = await HikariAPI.reservations.delete(id);
+                if (result.success) {
+                    showToast('Réservation supprimée!');
+                    loadReservations();
+                } else {
+                    showToast('Erreur: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showToast('Erreur: ' + error.message, 'error');
             }
         }
-
-        // Delete confirmation
-        function confirmDelete(id) {
-            deleteId = id;
-            deleteModal.classList.add('open');
-        }
-
-        function closeDeleteModal() {
-            deleteModal.classList.remove('open');
-            deleteId = null;
-        }
-
-        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
-            if (!deleteId) return;
-
-            const result = await HikariAPI.reservations.delete(deleteId);
-
-            if (result.success) {
-                showToast('Réservation supprimée');
-                closeDeleteModal();
-                loadReservations();
-            } else {
-                showToast('Erreur: ' + result.error, 'error');
-            }
-        });
-
-        // Make functions global
-        window.viewDetail = viewDetail;
-        window.closeDetailModal = closeDetailModal;
-        window.updateStatus = updateStatus;
-        window.confirmDelete = confirmDelete;
-        window.closeDeleteModal = closeDeleteModal;
 
         // Initialize
         loadReservations();
+
+        // Make functions global
+        window.viewDetails = viewDetails;
+        window.closeDetailModal = closeDetailModal;
+        window.updateStatus = updateStatus;
+        window.deleteReservation = deleteReservation;
     </script>
 </body>
 </html>

@@ -3,186 +3,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion Admin - HIKARI Sushi</title>
+    <title>Connexion Admin - HIKARI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/admin.css">
-</head>
-<body class="login-page">
-    <!-- Background Animation -->
-    <div class="login-bg">
-        <div class="bg-shape shape-1"></div>
-        <div class="bg-shape shape-2"></div>
-        <div class="bg-shape shape-3"></div>
-    </div>
+    <style>
+        :root {
+            --gold: #c9a962;
+            --gold-light: #dbb872;
+            --gold-dark: #a88b4a;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --text-light: #ffffff;
+            --text-muted: #888888;
+            --border-color: #2a2a2a;
+            --danger: #ef4444;
+        }
 
-    <!-- Login Container -->
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-header {
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(201, 169, 98, 0.1) 0%, transparent 100%);
+        }
+
+        .login-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-logo img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .login-logo span {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.2em;
+        }
+
+        .login-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .login-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            color: var(--text-light);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px rgba(201, 169, 98, 0.1);
+        }
+
+        .input-wrapper input:focus + i,
+        .input-wrapper:focus-within i {
+            color: var(--gold);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #000;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(201, 169, 98, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        .login-footer {
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .login-footer a {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .login-footer a:hover {
+            color: var(--gold-light);
+        }
+
+        /* Decorative elements */
+        .decoration {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(201, 169, 98, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .decoration-1 {
+            top: -100px;
+            right: -100px;
+        }
+
+        .decoration-2 {
+            bottom: -100px;
+            left: -100px;
+        }
+
+        @media (max-width: 480px) {
+            .login-header {
+                padding: 2rem 1.5rem;
+            }
+            
+            .login-body {
+                padding: 1.5rem;
+            }
+            
+            .login-logo img {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .login-logo span {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="decoration decoration-1"></div>
+    <div class="decoration decoration-2"></div>
+
     <div class="login-container">
         <div class="login-card">
-            <!-- Logo -->
-            <div class="login-logo">
-                <img src="../images/logo.png" alt="HIKARI" class="login-logo-img">
-                <h1>HIKARI</h1>
-                <p>Administration</p>
+            <div class="login-header">
+                <a href="../index.html" class="login-logo">
+                    <img src="../images/logo.png" alt="HIKARI">
+                    <span>HIKARI</span>
+                </a>
+                <h1>Administration</h1>
+                <p>Connectez-vous pour accéder au panneau d'administration</p>
             </div>
 
-            <!-- Login Form -->
-            <form class="login-form" id="loginForm">
-                <div class="form-group">
-                    <div class="input-wrapper">
-                        <i class="fas fa-envelope"></i>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
-                            required 
-                            placeholder="Adresse email"
-                            autocomplete="email"
-                        >
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock"></i>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            required 
-                            placeholder="Mot de passe"
-                            autocomplete="current-password"
-                        >
-                        <button type="button" class="toggle-password" id="togglePassword">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Error Message -->
+            <div class="login-body">
                 <div class="error-message" id="errorMessage">
                     <i class="fas fa-exclamation-circle"></i>
-                    <span></span>
+                    <span id="errorText"></span>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="btn-login" id="loginBtn">
-                    <span class="btn-text">Se Connecter</span>
-                    <span class="btn-loader">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </span>
-                </button>
-            </form>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Adresse Email</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" required placeholder="admin@hikari-sushi.fr" autocomplete="email">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
 
-            <!-- Footer -->
+                    <div class="form-group">
+                        <label>Mot de Passe</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" required placeholder="••••••••" autocomplete="current-password">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Se Connecter
+                    </button>
+                </form>
+            </div>
+
             <div class="login-footer">
-                <a href="../index.html" class="back-link">
+                <a href="../index.html">
                     <i class="fas fa-arrow-left"></i>
                     Retour au site
                 </a>
             </div>
         </div>
-
-        <!-- Info Card -->
-        <div class="info-card">
-            <div class="info-content">
-                <h2>Bienvenue</h2>
-                <p>Connectez-vous pour accéder au panneau d'administration et gérer votre restaurant.</p>
-                <ul class="features-list">
-                    <li><i class="fas fa-check"></i> Gérer le menu</li>
-                    <li><i class="fas fa-check"></i> Voir les réservations</li>
-                    <li><i class="fas fa-check"></i> Mettre à jour les images</li>
-                    <li><i class="fas fa-check"></i> Configurer le site</li>
-                </ul>
-            </div>
-            <div class="info-image">
-                <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&h=300&fit=crop" alt="Sushi">
-            </div>
-        </div>
     </div>
 
-    <!-- D1 API Client -->
     <script src="../js/api-client.js"></script>
-    
     <script>
-        // DOM Elements
-        const loginForm = document.getElementById('loginForm');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const loginBtn = document.getElementById('loginBtn');
-        const errorMessage = document.getElementById('errorMessage');
-        const togglePassword = document.getElementById('togglePassword');
-
         // Check if already logged in
         if (HikariAPI.isLoggedIn()) {
             window.location.href = 'dashboard.html';
         }
 
-        // Toggle password visibility
-        togglePassword.addEventListener('click', () => {
-            const type = passwordInput.type === 'password' ? 'text' : 'password';
-            passwordInput.type = type;
-            togglePassword.querySelector('i').classList.toggle('fa-eye');
-            togglePassword.querySelector('i').classList.toggle('fa-eye-slash');
-        });
+        const form = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const loginBtn = document.getElementById('loginBtn');
 
-        // Show error message
         function showError(message) {
-            errorMessage.querySelector('span').textContent = message;
+            errorText.textContent = message;
             errorMessage.classList.add('show');
-            setTimeout(() => {
-                errorMessage.classList.remove('show');
-            }, 5000);
         }
 
-        // Set loading state
-        function setLoading(loading) {
-            loginBtn.classList.toggle('loading', loading);
-            loginBtn.disabled = loading;
+        function hideError() {
+            errorMessage.classList.remove('show');
         }
 
-        // Handle login form submission
-        loginForm.addEventListener('submit', async (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
+            hideError();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
             if (!email || !password) {
                 showError('Veuillez remplir tous les champs');
                 return;
             }
 
-            setLoading(true);
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
 
             try {
                 const result = await HikariAPI.login(email, password);
-
+                
                 if (result.success) {
                     window.location.href = 'dashboard.html';
                 } else {
-                    showError(result.error || 'Identifiants incorrects');
-                    setLoading(false);
+                    showError(result.error || 'Email ou mot de passe incorrect');
                 }
             } catch (error) {
-                showError('Erreur de connexion au serveur');
-                setLoading(false);
+                showError('Erreur de connexion. Veuillez réessayer.');
+                console.error('Login error:', error);
             }
-        });
 
-        // Add input animations
-        const inputs = document.querySelectorAll('input');
-        inputs.forEach(input => {
-            input.addEventListener('focus', () => {
-                input.parentElement.classList.add('focused');
-            });
-            input.addEventListener('blur', () => {
-                if (!input.value) {
-                    input.parentElement.classList.remove('focused');
-                }
-            });
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Se Connecter';
         });
     </script>
 </body>

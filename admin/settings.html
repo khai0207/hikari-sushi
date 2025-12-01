@@ -8,19 +8,370 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        :root {
+            --gold: #c9a962;
+            --gold-light: #dbb872;
+            --gold-dark: #a88b4a;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --bg-card-hover: #1a1a1a;
+            --bg-input: #1a1a1a;
+            --text-light: #ffffff;
+            --text-muted: #888888;
+            --border-color: #2a2a2a;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #0d0d0d 0%, #0a0a0a 100%);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .sidebar-logo img { width: 45px; height: 45px; }
+
+        .sidebar-logo span {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.15em;
+        }
+
+        .sidebar-nav { flex: 1; padding: 1rem 0; }
+        .sidebar-nav ul { list-style: none; }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item a:hover, .nav-item.active a {
+            background: rgba(201, 169, 98, 0.1);
+            color: var(--gold);
+            border-left-color: var(--gold);
+        }
+
+        .nav-item i { width: 20px; text-align: center; }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-logout {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .content-area { padding: 2rem; }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            gap: 1.5rem;
+            max-width: 900px;
+        }
+
+        .settings-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .settings-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-card-header i {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 12px;
+            color: #000;
+            font-size: 1.25rem;
+        }
+
+        .settings-card-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .settings-card-header p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .settings-card-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .hours-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .hours-row {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .hours-row label {
+            margin-bottom: 0;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .hours-row input {
+            padding: 10px 12px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(201, 169, 98, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .settings-card-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-color: var(--success); }
+        .toast.success i { color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        .toast.error i { color: var(--danger); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-toggle { display: block; }
+        }
+
+        @media (max-width: 768px) {
+            .content-area { padding: 1rem; }
+            .admin-header { padding: 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .hours-row { grid-template-columns: 1fr; gap: 0.5rem; }
+        }
+    </style>
 </head>
-<body class="admin-page">
+<body>
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="../index.html" class="sidebar-logo">
-                <img src="../images/logo.png" alt="HIKARI" class="sidebar-logo-img">
-                <span class="logo-text">HIKARI</span>
+                <img src="../images/logo.png" alt="HIKARI">
+                <span>HIKARI</span>
             </a>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="fas fa-bars"></i>
-            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -41,6 +392,7 @@
                     <a href="reservations.html">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Réservations</span>
+                        <span class="nav-badge" id="pendingBadge">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -68,7 +420,6 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
                 <button class="mobile-toggle" id="mobileToggle">
@@ -78,287 +429,212 @@
             </div>
         </header>
 
-        <!-- Settings Content -->
-        <div class="settings-content">
-            <!-- General Settings -->
-            <section class="settings-section">
-                <div class="section-header-settings">
-                    <h2><i class="fas fa-store"></i> Informations du Restaurant</h2>
+        <div class="content-area">
+            <div class="settings-grid">
+                <!-- Restaurant Info -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <i class="fas fa-store"></i>
+                        <div>
+                            <h2>Informations du Restaurant</h2>
+                            <p>Coordonnées et contacts</p>
+                        </div>
+                    </div>
+                    <form id="infoForm">
+                        <div class="settings-card-body">
+                            <div class="form-group">
+                                <label>Nom du Restaurant</label>
+                                <input type="text" id="restaurantName" value="HIKARI - Restaurant Japonais">
+                            </div>
+                            <div class="form-group">
+                                <label>Adresse</label>
+                                <input type="text" id="address" placeholder="123 Rue Example, 75001 Paris">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Téléphone</label>
+                                    <input type="tel" id="phone" placeholder="+33 1 23 45 67 89">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="email" placeholder="contact@hikari-sushi.fr">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-card-footer">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i>
+                                Enregistrer
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <form class="settings-form" id="generalForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="restaurantName">Nom du Restaurant</label>
-                            <input type="text" id="restaurantName" name="restaurantName" value="HIKARI Sushi & Roll">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Téléphone</label>
-                            <input type="tel" id="phone" name="phone" value="05 61 55 50 77">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" value="hikari.sushi31@gmail.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="address">Adresse</label>
-                            <input type="text" id="address" name="address" value="17 allée des Soupirs, 31000 Toulouse">
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary" id="saveGeneralBtn">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-            </section>
 
-            <!-- Opening Hours -->
-            <section class="settings-section">
-                <div class="section-header-settings">
-                    <h2><i class="fas fa-clock"></i> Horaires d'Ouverture</h2>
+                <!-- Opening Hours -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h2>Horaires d'Ouverture</h2>
+                            <p>Définissez vos horaires de service</p>
+                        </div>
+                    </div>
+                    <form id="hoursForm">
+                        <div class="settings-card-body">
+                            <div class="hours-grid">
+                                <div class="hours-row">
+                                    <label>Lundi</label>
+                                    <input type="time" id="mon_open" value="12:00">
+                                    <input type="time" id="mon_close" value="22:00">
+                                </div>
+                                <div class="hours-row">
+                                    <label>Mardi</label>
+                                    <input type="time" id="tue_open" value="12:00">
+                                    <input type="time" id="tue_close" value="22:00">
+                                </div>
+                                <div class="hours-row">
+                                    <label>Mercredi</label>
+                                    <input type="time" id="wed_open" value="12:00">
+                                    <input type="time" id="wed_close" value="22:00">
+                                </div>
+                                <div class="hours-row">
+                                    <label>Jeudi</label>
+                                    <input type="time" id="thu_open" value="12:00">
+                                    <input type="time" id="thu_close" value="22:00">
+                                </div>
+                                <div class="hours-row">
+                                    <label>Vendredi</label>
+                                    <input type="time" id="fri_open" value="12:00">
+                                    <input type="time" id="fri_close" value="23:00">
+                                </div>
+                                <div class="hours-row">
+                                    <label>Samedi</label>
+                                    <input type="time" id="sat_open" value="12:00">
+                                    <input type="time" id="sat_close" value="23:00">
+                                </div>
+                                <div class="hours-row">
+                                    <label>Dimanche</label>
+                                    <input type="time" id="sun_open" value="12:00">
+                                    <input type="time" id="sun_close" value="22:00">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-card-footer">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i>
+                                Enregistrer
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <form class="settings-form" id="hoursForm">
-                    <div class="hours-grid">
-                        <div class="hours-row">
-                            <span class="day-label">Lundi</span>
-                            <div class="hours-inputs">
-                                <div class="hour-group">
-                                    <label>Midi</label>
-                                    <input type="text" name="monday_lunch" value="Fermé">
-                                </div>
-                                <div class="hour-group">
-                                    <label>Soir</label>
-                                    <input type="text" name="monday_dinner" value="19h - 22h">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hours-row">
-                            <span class="day-label">Mardi</span>
-                            <div class="hours-inputs">
-                                <div class="hour-group">
-                                    <label>Midi</label>
-                                    <input type="text" name="tuesday_lunch" value="12h - 14h30">
-                                </div>
-                                <div class="hour-group">
-                                    <label>Soir</label>
-                                    <input type="text" name="tuesday_dinner" value="19h - 22h">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hours-row">
-                            <span class="day-label">Mercredi</span>
-                            <div class="hours-inputs">
-                                <div class="hour-group">
-                                    <label>Midi</label>
-                                    <input type="text" name="wednesday_lunch" value="12h - 14h30">
-                                </div>
-                                <div class="hour-group">
-                                    <label>Soir</label>
-                                    <input type="text" name="wednesday_dinner" value="19h - 22h">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hours-row">
-                            <span class="day-label">Jeudi</span>
-                            <div class="hours-inputs">
-                                <div class="hour-group">
-                                    <label>Midi</label>
-                                    <input type="text" name="thursday_lunch" value="12h - 14h30">
-                                </div>
-                                <div class="hour-group">
-                                    <label>Soir</label>
-                                    <input type="text" name="thursday_dinner" value="19h - 22h">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hours-row">
-                            <span class="day-label">Vendredi</span>
-                            <div class="hours-inputs">
-                                <div class="hour-group">
-                                    <label>Midi</label>
-                                    <input type="text" name="friday_lunch" value="12h - 14h30">
-                                </div>
-                                <div class="hour-group">
-                                    <label>Soir</label>
-                                    <input type="text" name="friday_dinner" value="19h - 22h">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hours-row">
-                            <span class="day-label">Samedi</span>
-                            <div class="hours-inputs">
-                                <div class="hour-group">
-                                    <label>Midi</label>
-                                    <input type="text" name="saturday_lunch" value="12h - 14h30">
-                                </div>
-                                <div class="hour-group">
-                                    <label>Soir</label>
-                                    <input type="text" name="saturday_dinner" value="19h - 22h">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hours-row">
-                            <span class="day-label">Dimanche</span>
-                            <div class="hours-inputs">
-                                <div class="hour-group">
-                                    <label>Midi</label>
-                                    <input type="text" name="sunday_lunch" value="12h - 14h30">
-                                </div>
-                                <div class="hour-group">
-                                    <label>Soir</label>
-                                    <input type="text" name="sunday_dinner" value="19h - 22h">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary" id="saveHoursBtn">
-                            <i class="fas fa-save"></i>
-                            Enregistrer les Horaires
-                        </button>
-                    </div>
-                </form>
-            </section>
 
-            <!-- Social Links -->
-            <section class="settings-section">
-                <div class="section-header-settings">
-                    <h2><i class="fas fa-share-alt"></i> Réseaux Sociaux</h2>
+                <!-- Reservation Settings -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div>
+                            <h2>Paramètres de Réservation</h2>
+                            <p>Configurez les options de réservation</p>
+                        </div>
+                    </div>
+                    <form id="reservationForm">
+                        <div class="settings-card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Capacité Maximum</label>
+                                    <input type="number" id="maxCapacity" min="1" value="50">
+                                    <p class="form-hint">Nombre maximum de couverts par service</p>
+                                </div>
+                                <div class="form-group">
+                                    <label>Personnes par Table (max)</label>
+                                    <input type="number" id="maxGuests" min="1" value="12">
+                                    <p class="form-hint">Nombre maximum de personnes par réservation</p>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Délai Minimum (heures)</label>
+                                    <input type="number" id="minAdvance" min="0" value="2">
+                                    <p class="form-hint">Délai minimum avant une réservation</p>
+                                </div>
+                                <div class="form-group">
+                                    <label>Délai Maximum (jours)</label>
+                                    <input type="number" id="maxAdvance" min="1" value="30">
+                                    <p class="form-hint">Combien de jours à l'avance peut-on réserver</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-card-footer">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i>
+                                Enregistrer
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <form class="settings-form" id="socialForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="facebook"><i class="fab fa-facebook"></i> Facebook</label>
-                            <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/...">
-                        </div>
-                        <div class="form-group">
-                            <label for="instagram"><i class="fab fa-instagram"></i> Instagram</label>
-                            <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/...">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="tripadvisor"><i class="fab fa-tripadvisor"></i> TripAdvisor</label>
-                            <input type="url" id="tripadvisor" name="tripadvisor" placeholder="https://tripadvisor.com/...">
-                        </div>
-                        <div class="form-group">
-                            <label for="google"><i class="fab fa-google"></i> Google Maps</label>
-                            <input type="url" id="google" name="google" placeholder="https://maps.google.com/...">
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary" id="saveSocialBtn">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-            </section>
 
-            <!-- Zenchef Integration -->
-            <section class="settings-section">
-                <div class="section-header-settings">
-                    <h2><i class="fas fa-plug"></i> Intégration Zenchef</h2>
+                <!-- Social Links -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <i class="fas fa-share-alt"></i>
+                        <div>
+                            <h2>Réseaux Sociaux</h2>
+                            <p>Liens vers vos réseaux sociaux</p>
+                        </div>
+                    </div>
+                    <form id="socialForm">
+                        <div class="settings-card-body">
+                            <div class="form-group">
+                                <label><i class="fab fa-facebook"></i> Facebook</label>
+                                <input type="url" id="facebook" placeholder="https://facebook.com/votre-page">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fab fa-instagram"></i> Instagram</label>
+                                <input type="url" id="instagram" placeholder="https://instagram.com/votre-compte">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fab fa-tiktok"></i> TikTok</label>
+                                <input type="url" id="tiktok" placeholder="https://tiktok.com/@votre-compte">
+                            </div>
+                        </div>
+                        <div class="settings-card-footer">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i>
+                                Enregistrer
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="integration-info">
-                    <p>Connectez votre compte Zenchef pour gérer les réservations en ligne.</p>
-                    <div class="form-group">
-                        <label for="zenchefId">ID Zenchef</label>
-                        <input type="text" id="zenchefId" name="zenchefId" placeholder="Votre ID Zenchef">
-                    </div>
-                    <div class="form-group">
-                        <label for="zenchefWidget">Code Widget (optionnel)</label>
-                        <textarea id="zenchefWidget" name="zenchefWidget" rows="3" placeholder="Collez le code du widget Zenchef ici..."></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn-primary" id="saveZenchefBtn">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Firebase Setup Guide -->
-            <section class="settings-section">
-                <div class="section-header-settings">
-                    <h2><i class="fas fa-database"></i> Configuration Firebase</h2>
-                </div>
-                <div class="setup-guide">
-                    <div class="guide-step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>Créer un projet Firebase</h4>
-                            <p>Allez sur <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a> et créez un nouveau projet.</p>
-                        </div>
-                    </div>
-                    <div class="guide-step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>Activer Authentication</h4>
-                            <p>Dans Authentication > Sign-in method, activez "Email/Password".</p>
-                        </div>
-                    </div>
-                    <div class="guide-step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>Créer un compte admin</h4>
-                            <p>Dans Authentication > Users, ajoutez un utilisateur avec votre email et mot de passe.</p>
-                        </div>
-                    </div>
-                    <div class="guide-step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>Activer Firestore</h4>
-                            <p>Dans Firestore Database, créez une base de données en mode test.</p>
-                        </div>
-                    </div>
-                    <div class="guide-step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>Copier la configuration</h4>
-                            <p>Dans Project Settings > Your apps > Web, copiez la configuration dans <code>js/firebase-config.js</code></p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            </div>
         </div>
     </main>
 
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div class="toast" id="toast">
-        <i class="toast-icon fas fa-check-circle"></i>
-        <span class="toast-message"></span>
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
     </div>
 
-    <!-- D1 API Client -->
     <script src="../js/api-client.js"></script>
-
     <script>
-        // Protect admin page
+        // Protect page
         HikariAPI.protectAdminPage();
 
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
         const mobileToggle = document.getElementById('mobileToggle');
-        const logoutBtn = document.getElementById('logoutBtn');
 
-        // Toggle sidebar
-        sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
-        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
+        // Mobile toggle
+        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
 
         // Logout
-        logoutBtn.addEventListener('click', () => HikariAPI.logout());
+        document.getElementById('logoutBtn').addEventListener('click', () => HikariAPI.logout());
 
-        // Show toast
+        // Toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            toast.querySelector('.toast-icon').className = 'toast-icon fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
-            toast.querySelector('.toast-message').textContent = message;
+            toast.querySelector('i').className = 'fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+            document.getElementById('toastMessage').textContent = message;
             toast.className = 'toast show ' + type;
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
@@ -367,142 +643,99 @@
         async function loadSettings() {
             try {
                 const result = await HikariAPI.settings.get();
-                const settings = result.success ? result.data : {};
-                
-                // Populate general form
-                document.getElementById('restaurantName').value = settings.restaurantName || '';
-                document.getElementById('phone').value = settings.phone || '';
-                document.getElementById('email').value = settings.email || '';
-                document.getElementById('address').value = settings.address || '';
-                
-                // Populate social links
-                document.getElementById('facebook').value = settings.facebook || '';
-                document.getElementById('instagram').value = settings.instagram || '';
-                document.getElementById('tripadvisor').value = settings.tripadvisor || '';
-                document.getElementById('google').value = settings.google || '';
-                
-                // Populate Zenchef
-                document.getElementById('zenchefId').value = settings.zenchefId || '';
-                document.getElementById('zenchefWidget').value = settings.zenchefWidget || '';
-                
-                // Populate hours
-                if (settings.openingHours) {
-                    const hours = typeof settings.openingHours === 'string' 
-                        ? JSON.parse(settings.openingHours) 
-                        : settings.openingHours;
-                    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                if (result.success && result.data) {
+                    const settings = result.data;
+                    
+                    // Restaurant Info
+                    if (settings.restaurant_name) document.getElementById('restaurantName').value = settings.restaurant_name;
+                    if (settings.address) document.getElementById('address').value = settings.address;
+                    if (settings.phone) document.getElementById('phone').value = settings.phone;
+                    if (settings.email) document.getElementById('email').value = settings.email;
+                    
+                    // Opening Hours
+                    const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
                     days.forEach(day => {
-                        if (hours[day]) {
-                            const lunchInput = document.querySelector(`[name="${day}_lunch"]`);
-                            const dinnerInput = document.querySelector(`[name="${day}_dinner"]`);
-                            if (lunchInput) lunchInput.value = hours[day].lunch || '';
-                            if (dinnerInput) dinnerInput.value = hours[day].dinner || '';
-                        }
+                        if (settings[`${day}_open`]) document.getElementById(`${day}_open`).value = settings[`${day}_open`];
+                        if (settings[`${day}_close`]) document.getElementById(`${day}_close`).value = settings[`${day}_close`];
                     });
+                    
+                    // Reservation Settings
+                    if (settings.max_capacity) document.getElementById('maxCapacity').value = settings.max_capacity;
+                    if (settings.max_guests) document.getElementById('maxGuests').value = settings.max_guests;
+                    if (settings.min_advance) document.getElementById('minAdvance').value = settings.min_advance;
+                    if (settings.max_advance) document.getElementById('maxAdvance').value = settings.max_advance;
+                    
+                    // Social Links
+                    if (settings.facebook) document.getElementById('facebook').value = settings.facebook;
+                    if (settings.instagram) document.getElementById('instagram').value = settings.instagram;
+                    if (settings.tiktok) document.getElementById('tiktok').value = settings.tiktok;
                 }
             } catch (error) {
                 console.error('Error loading settings:', error);
             }
         }
 
-        // Save general settings
-        document.getElementById('generalForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const data = {
-                restaurantName: document.getElementById('restaurantName').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                address: document.getElementById('address').value
-            };
-            
-            const result = await HikariAPI.settings.update(data);
-            
-            if (result.success) {
-                showToast('Paramètres enregistrés');
-            } else {
-                showToast('Erreur: ' + result.error, 'error');
+        // Save settings helper
+        async function saveSettings(data, form) {
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+
+            try {
+                const result = await HikariAPI.settings.update(data);
+                if (result.success) {
+                    showToast('Paramètres enregistrés!');
+                } else {
+                    showToast('Erreur: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showToast('Erreur: ' + error.message, 'error');
             }
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+
+        // Form handlers
+        document.getElementById('infoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveSettings({
+                restaurant_name: document.getElementById('restaurantName').value,
+                address: document.getElementById('address').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value
+            }, e.target);
         });
 
-        // Save hours
         document.getElementById('hoursForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const openingHours = {
-                monday: {
-                    lunch: document.querySelector('[name="monday_lunch"]').value,
-                    dinner: document.querySelector('[name="monday_dinner"]').value
-                },
-                tuesday: {
-                    lunch: document.querySelector('[name="tuesday_lunch"]').value,
-                    dinner: document.querySelector('[name="tuesday_dinner"]').value
-                },
-                wednesday: {
-                    lunch: document.querySelector('[name="wednesday_lunch"]').value,
-                    dinner: document.querySelector('[name="wednesday_dinner"]').value
-                },
-                thursday: {
-                    lunch: document.querySelector('[name="thursday_lunch"]').value,
-                    dinner: document.querySelector('[name="thursday_dinner"]').value
-                },
-                friday: {
-                    lunch: document.querySelector('[name="friday_lunch"]').value,
-                    dinner: document.querySelector('[name="friday_dinner"]').value
-                },
-                saturday: {
-                    lunch: document.querySelector('[name="saturday_lunch"]').value,
-                    dinner: document.querySelector('[name="saturday_dinner"]').value
-                },
-                sunday: {
-                    lunch: document.querySelector('[name="sunday_lunch"]').value,
-                    dinner: document.querySelector('[name="sunday_dinner"]').value
-                }
-            };
-            
-            const result = await HikariAPI.settings.update({ openingHours: JSON.stringify(openingHours) });
-            
-            if (result.success) {
-                showToast('Horaires enregistrés');
-            } else {
-                showToast('Erreur: ' + result.error, 'error');
-            }
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            const data = {};
+            days.forEach(day => {
+                data[`${day}_open`] = document.getElementById(`${day}_open`).value;
+                data[`${day}_close`] = document.getElementById(`${day}_close`).value;
+            });
+            await saveSettings(data, e.target);
         });
 
-        // Save social links
+        document.getElementById('reservationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveSettings({
+                max_capacity: parseInt(document.getElementById('maxCapacity').value),
+                max_guests: parseInt(document.getElementById('maxGuests').value),
+                min_advance: parseInt(document.getElementById('minAdvance').value),
+                max_advance: parseInt(document.getElementById('maxAdvance').value)
+            }, e.target);
+        });
+
         document.getElementById('socialForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const data = {
+            await saveSettings({
                 facebook: document.getElementById('facebook').value,
                 instagram: document.getElementById('instagram').value,
-                tripadvisor: document.getElementById('tripadvisor').value,
-                google: document.getElementById('google').value
-            };
-            
-            const result = await HikariAPI.settings.update(data);
-            
-            if (result.success) {
-                showToast('Réseaux sociaux enregistrés');
-            } else {
-                showToast('Erreur: ' + result.error, 'error');
-            }
-        });
-
-        // Save Zenchef
-        document.getElementById('saveZenchefBtn').addEventListener('click', async () => {
-            const data = {
-                zenchefId: document.getElementById('zenchefId').value,
-                zenchefWidget: document.getElementById('zenchefWidget').value
-            };
-            
-            const result = await HikariAPI.settings.update(data);
-            
-            if (result.success) {
-                showToast('Configuration Zenchef enregistrée');
-            } else {
-                showToast('Erreur: ' + result.error, 'error');
-            }
+                tiktok: document.getElementById('tiktok').value
+            }, e.target);
         });
 
         // Initialize
