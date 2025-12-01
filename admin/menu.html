@@ -250,16 +250,12 @@
         <span class="toast-message"></span>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-    <script src="../js/firebase-config.js"></script>
+    <!-- D1 API Client -->
+    <script src="../js/api-client.js"></script>
 
     <script>
         // Protect admin page
-        HikariFirebase.protectAdminPage();
+        HikariAPI.protectAdminPage();
 
         // State
         let menuItems = [];
@@ -291,7 +287,7 @@
         mobileToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
 
         // Logout
-        logoutBtn.addEventListener('click', () => HikariFirebase.logoutAdmin());
+        logoutBtn.addEventListener('click', () => HikariAPI.logout());
 
         // Show toast
         function showToast(message, type = 'success') {
@@ -307,8 +303,8 @@
             menuGrid.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>';
             
             try {
-                const result = await HikariFirebase.getAllMenuItems();
-                menuItems = result.success ? result.items : [];
+                const result = await HikariAPI.menu.getAll();
+                menuItems = result.success ? result.data : [];
                 renderMenuItems();
             } catch (error) {
                 console.error('Error loading menu:', error);
@@ -457,7 +453,7 @@
 
             fileUpload.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Upload en cours...</span>';
 
-            const result = await HikariFirebase.uploadImage(file, 'menu');
+            const result = await HikariAPI.uploadImage(file, 'menu');
 
             if (result.success) {
                 imageInput.value = result.url;
@@ -485,14 +481,15 @@
                 badge: document.getElementById('itemBadge').value,
                 description: document.getElementById('itemDescription').value,
                 image: document.getElementById('itemImage').value,
-                order: parseInt(document.getElementById('itemOrder').value) || 1
+                display_order: parseInt(document.getElementById('itemOrder').value) || 1,
+                available: 1
             };
 
             let result;
             if (editingId) {
-                result = await HikariFirebase.updateMenuItem(editingId, data);
+                result = await HikariAPI.menu.update(editingId, data);
             } else {
-                result = await HikariFirebase.addMenuItem(data);
+                result = await HikariAPI.menu.create(data);
             }
 
             submitBtn.classList.remove('loading');
@@ -522,7 +519,7 @@
         document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
             if (!deleteId) return;
 
-            const result = await HikariFirebase.deleteMenuItem(deleteId);
+            const result = await HikariAPI.menu.delete(deleteId);
 
             if (result.success) {
                 showToast('Plat supprimé avec succès');

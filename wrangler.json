@@ -1,5 +1,12 @@
 {
-  "name": "hikari-sushi",
-  "compatibility_date": "2025-12-01",
-  "pages_build_output_dir": "./"
+	"name": "hikari-sushi-api",
+	"main": "worker/index.js",
+	"compatibility_date": "2025-12-01",
+	"d1_databases": [
+		{
+			"binding": "hikari_db",
+			"database_name": "hikari-db",
+			"database_id": "20f0d544-0277-4383-9c9b-dd84bcfcd892"
+		}
+	]
 }

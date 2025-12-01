@@ -190,16 +190,12 @@
         <span class="toast-message"></span>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-    <script src="../js/firebase-config.js"></script>
+    <!-- D1 API Client -->
+    <script src="../js/api-client.js"></script>
 
     <script>
         // Protect admin page
-        HikariFirebase.protectAdminPage();
+        HikariAPI.protectAdminPage();
 
         // State
         let reservations = [];
@@ -226,7 +222,7 @@
         mobileToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
 
         // Logout
-        logoutBtn.addEventListener('click', () => HikariFirebase.logoutAdmin());
+        logoutBtn.addEventListener('click', () => HikariAPI.logout());
 
         // Show toast
         function showToast(message, type = 'success') {
@@ -242,13 +238,15 @@
             reservationsBody.innerHTML = '<tr><td colspan="7" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Chargement...</td></tr>';
             
             try {
-                let result;
+                const result = await HikariAPI.reservations.getAll();
+                let allReservations = result.success ? result.data : [];
+                
+                // Filter by date if selected
                 if (currentDate) {
-                    result = await HikariFirebase.getReservationsByDate(currentDate);
-                } else {
-                    result = await HikariFirebase.getAllReservations();
+                    allReservations = allReservations.filter(r => r.date === currentDate);
                 }
-                reservations = result.success ? result.items : [];
+                
+                reservations = allReservations;
                 updateStats();
                 renderReservations();
             } catch (error) {
@@ -434,7 +432,7 @@
                     </div>
                     <div class="detail-item">
                         <label>Créée le</label>
-                        <span>${res.createdAt ? HikariFirebase.formatDateTime(res.createdAt) : '-'}</span>
+                        <span>${res.created_at ? new Date(res.created_at).toLocaleString('fr-FR') : '-'}</span>
                     </div>
                 </div>
             `;
@@ -460,7 +458,7 @@
 
         // Update status
         async function updateStatus(id, status) {
-            const result = await HikariFirebase.updateReservationStatus(id, status);
+            const result = await HikariAPI.reservations.update(id, { status });
             
             if (result.success) {
                 showToast('Statut mis à jour');
@@ -484,7 +482,7 @@
         document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
             if (!deleteId) return;
 
-            const result = await HikariFirebase.deleteReservation(deleteId);
+            const result = await HikariAPI.reservations.delete(deleteId);
 
             if (result.success) {
                 showToast('Réservation supprimée');

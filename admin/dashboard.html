@@ -201,16 +201,12 @@
         <span class="toast-message"></span>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-    <script src="../js/firebase-config.js"></script>
+    <!-- D1 API Client -->
+    <script src="../js/api-client.js"></script>
 
     <script>
         // Protect admin page
-        HikariFirebase.protectAdminPage();
+        HikariAPI.protectAdminPage();
 
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
@@ -230,7 +226,7 @@
 
         // Logout
         logoutBtn.addEventListener('click', () => {
-            HikariFirebase.logoutAdmin();
+            HikariAPI.logout();
         });
 
         // Show toast notification
@@ -251,17 +247,26 @@
         // Load dashboard data
         async function loadDashboardData() {
             try {
-                const stats = await HikariFirebase.getDashboardStats();
+                // Get menu items count
+                const menuResult = await HikariAPI.menu.getAll();
+                const menuItems = menuResult.success ? menuResult.data : [];
                 
-                document.getElementById('totalMenuItems').textContent = stats.totalMenuItems;
-                document.getElementById('todayReservations').textContent = stats.todayReservations;
-                document.getElementById('pendingReservations').textContent = stats.pendingReservations;
-                document.getElementById('totalReservations').textContent = stats.totalReservations;
-                document.getElementById('pendingBadge').textContent = stats.pendingReservations;
+                // Get reservations
+                const resResult = await HikariAPI.reservations.getAll();
+                const reservations = resResult.success ? resResult.data : [];
+                
+                // Calculate stats
+                const today = new Date().toISOString().split('T')[0];
+                const todayReservations = reservations.filter(r => r.date === today);
+                const pendingReservations = reservations.filter(r => r.status === 'pending');
+                
+                document.getElementById('totalMenuItems').textContent = menuItems.length;
+                document.getElementById('todayReservations').textContent = todayReservations.length;
+                document.getElementById('pendingReservations').textContent = pendingReservations.length;
+                document.getElementById('totalReservations').textContent = reservations.length;
+                document.getElementById('pendingBadge').textContent = pendingReservations.length;
                 
                 // Load recent reservations
-                const result = await HikariFirebase.getAllReservations();
-                const reservations = result.success ? result.items : [];
                 renderRecentReservations(reservations.slice(0, 5));
             } catch (error) {
                 console.error('Error loading dashboard:', error);
@@ -330,7 +335,7 @@
 
         // Update reservation status
         async function updateStatus(id, status) {
-            const result = await HikariFirebase.updateReservationStatus(id, status);
+            const result = await HikariAPI.reservations.update(id, { status });
             if (result.success) {
                 showToast('Statut mis à jour');
                 loadDashboardData();
@@ -345,13 +350,32 @@
                 seedDataBtn.disabled = true;
                 seedDataBtn.innerHTML = '<div class="action-icon"><i class="fas fa-spinner fa-spin"></i></div><span>Chargement...</span>';
                 
-                const result = await HikariFirebase.seedMenuData();
+                // Seed menu data using D1 API
+                const menuItems = [
+                    { name: 'Sashimi Saumon', description: '6 tranches de saumon frais', price: 12.00, category: 'sashimi', image: 'images/menu/sashimi-salmon.jpg', available: 1 },
+                    { name: 'Sashimi Thon', description: '6 tranches de thon rouge', price: 14.00, category: 'sashimi', image: 'images/menu/sashimi-tuna.jpg', available: 1 },
+                    { name: 'Maki Saumon', description: '6 pièces de maki au saumon', price: 6.50, category: 'maki', image: 'images/menu/maki-salmon.jpg', available: 1 },
+                    { name: 'Maki Avocat', description: '6 pièces de maki à l\'avocat', price: 5.50, category: 'maki', image: 'images/menu/maki-avocado.jpg', available: 1 },
+                    { name: 'California Roll', description: 'Saumon, avocat, concombre, cheese', price: 8.00, category: 'california', image: 'images/menu/california.jpg', available: 1 },
+                    { name: 'Nigiri Assortiment', description: '8 pièces de nigiri variés', price: 15.00, category: 'nigiri', image: 'images/menu/nigiri-assorted.jpg', available: 1 },
+                    { name: 'Ramen Tonkotsu', description: 'Bouillon de porc, chashu, oeuf mollet', price: 14.50, category: 'ramen', image: 'images/menu/ramen-tonkotsu.jpg', available: 1 },
+                    { name: 'Gyoza', description: '6 raviolis japonais grillés', price: 7.00, category: 'accompagnements', image: 'images/menu/gyoza.jpg', available: 1 }
+                ];
                 
-                if (result.success) {
+                let success = true;
+                for (const item of menuItems) {
+                    const result = await HikariAPI.menu.create(item);
+                    if (!result.success) {
+                        success = false;
+                        break;
+                    }
+                }
+                
+                if (success) {
                     showToast('Données initialisées avec succès!');
                     loadDashboardData();
                 } else {
-                    showToast('Erreur: ' + result.error, 'error');
+                    showToast('Erreur lors de l\'initialisation', 'error');
                 }
                 
                 seedDataBtn.disabled = false;
@@ -360,12 +384,11 @@
         });
 
         // Set user info
-        HikariFirebase.checkAuthState(user => {
-            if (user) {
-                document.getElementById('userEmail').textContent = user.email;
-                document.getElementById('userName').textContent = user.email.split('@')[0];
-            }
-        });
+        const currentUser = HikariAPI.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userEmail').textContent = currentUser.email;
+            document.getElementById('userName').textContent = currentUser.email.split('@')[0];
+        }
 
         // Initialize
         loadDashboardData();

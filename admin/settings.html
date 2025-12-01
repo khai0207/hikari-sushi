@@ -328,16 +328,12 @@
         <span class="toast-message"></span>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-    <script src="../js/firebase-config.js"></script>
+    <!-- D1 API Client -->
+    <script src="../js/api-client.js"></script>
 
     <script>
         // Protect admin page
-        HikariFirebase.protectAdminPage();
+        HikariAPI.protectAdminPage();
 
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
@@ -350,7 +346,7 @@
         mobileToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
 
         // Logout
-        logoutBtn.addEventListener('click', () => HikariFirebase.logoutAdmin());
+        logoutBtn.addEventListener('click', () => HikariAPI.logout());
 
         // Show toast
         function showToast(message, type = 'success') {
@@ -364,7 +360,8 @@
         // Load settings
         async function loadSettings() {
             try {
-                const settings = await HikariFirebase.getSettings();
+                const result = await HikariAPI.settings.get();
+                const settings = result.success ? result.data : {};
                 
                 // Populate general form
                 document.getElementById('restaurantName').value = settings.restaurantName || '';
@@ -384,13 +381,16 @@
                 
                 // Populate hours
                 if (settings.openingHours) {
+                    const hours = typeof settings.openingHours === 'string' 
+                        ? JSON.parse(settings.openingHours) 
+                        : settings.openingHours;
                     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
                     days.forEach(day => {
-                        if (settings.openingHours[day]) {
+                        if (hours[day]) {
                             const lunchInput = document.querySelector(`[name="${day}_lunch"]`);
                             const dinnerInput = document.querySelector(`[name="${day}_dinner"]`);
-                            if (lunchInput) lunchInput.value = settings.openingHours[day].lunch || '';
-                            if (dinnerInput) dinnerInput.value = settings.openingHours[day].dinner || '';
+                            if (lunchInput) lunchInput.value = hours[day].lunch || '';
+                            if (dinnerInput) dinnerInput.value = hours[day].dinner || '';
                         }
                     });
                 }
@@ -410,7 +410,7 @@
                 address: document.getElementById('address').value
             };
             
-            const result = await HikariFirebase.updateSettings(data);
+            const result = await HikariAPI.settings.update(data);
             
             if (result.success) {
                 showToast('Paramètres enregistrés');
@@ -454,7 +454,7 @@
                 }
             };
             
-            const result = await HikariFirebase.updateSettings({ openingHours });
+            const result = await HikariAPI.settings.update({ openingHours: JSON.stringify(openingHours) });
             
             if (result.success) {
                 showToast('Horaires enregistrés');
@@ -474,7 +474,7 @@
                 google: document.getElementById('google').value
             };
             
-            const result = await HikariFirebase.updateSettings(data);
+            const result = await HikariAPI.settings.update(data);
             
             if (result.success) {
                 showToast('Réseaux sociaux enregistrés');
@@ -490,7 +490,7 @@
                 zenchefWidget: document.getElementById('zenchefWidget').value
             };
             
-            const result = await HikariFirebase.updateSettings(data);
+            const result = await HikariAPI.settings.update(data);
             
             if (result.success) {
                 showToast('Configuration Zenchef enregistrée');

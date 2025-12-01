@@ -1057,11 +1057,8 @@
         <i class="fas fa-chevron-up"></i>
     </a>
 
-    <!-- Firebase SDK (for dynamic menu & reservations) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-    <script src="js/firebase-config.js"></script>
+    <!-- D1 API Client (for dynamic menu & reservations) -->
+    <script src="js/api-client.js"></script>
     
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
@@ -1069,12 +1066,12 @@
     
     <!-- Dynamic Menu Loading -->
     <script>
-        // Load menu items from Firebase
+        // Load menu items from D1 API
         async function loadDynamicMenu() {
             try {
-                const result = await HikariFirebase.getAllMenuItems();
-                if (!result.success || result.items.length === 0) {
-                    console.log('Using static menu - Firebase not configured or no items');
+                const result = await HikariAPI.menu.getAll();
+                if (!result.success || result.data.length === 0) {
+                    console.log('Using static menu - D1 not configured or no items');
                     return;
                 }
                 
@@ -1086,7 +1083,7 @@
                     desserts: []
                 };
                 
-                result.items.forEach(item => {
+                result.data.forEach(item => {
                     if (categories[item.category]) {
                         categories[item.category].push(item);
                     }
@@ -1101,7 +1098,7 @@
                 });
                 
             } catch (error) {
-                console.log('Using static menu - Firebase error:', error.message);
+                console.log('Using static menu - D1 error:', error.message);
             }
         }
         
@@ -1145,9 +1142,52 @@
             }
         }
         
+        // Submit reservation form to D1 API
+        document.getElementById('reservationForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+            submitBtn.disabled = true;
+            
+            const data = {
+                name: form.name.value,
+                phone: form.phone.value,
+                email: form.email?.value || '',
+                guests: parseInt(form.guests.value),
+                date: form.date.value,
+                time: form.time.value,
+                message: form.message?.value || ''
+            };
+            
+            try {
+                const result = await HikariAPI.reservations.create(data);
+                
+                if (result.success) {
+                    // Show success message
+                    form.innerHTML = `
+                        <div class="success-message" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-check-circle" style="font-size: 60px; color: var(--gold); margin-bottom: 20px;"></i>
+                            <h3 style="color: var(--gold); margin-bottom: 10px;">Réservation Envoyée!</h3>
+                            <p>Nous vous confirmerons par téléphone.</p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(result.error || 'Erreur lors de la réservation');
+                }
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+        
         // Load dynamic menu when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Give Firebase time to initialize
+            // Give API time to initialize
             setTimeout(loadDynamicMenu, 500);
         });
     </script>

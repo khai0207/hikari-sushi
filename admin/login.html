@@ -103,12 +103,8 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-    <script src="../js/firebase-config.js"></script>
+    <!-- D1 API Client -->
+    <script src="../js/api-client.js"></script>
     
     <script>
         // DOM Elements
@@ -120,11 +116,9 @@
         const togglePassword = document.getElementById('togglePassword');
 
         // Check if already logged in
-        HikariFirebase.checkAuthState(user => {
-            if (user) {
-                window.location.href = 'dashboard.html';
-            }
-        });
+        if (HikariAPI.isLoggedIn()) {
+            window.location.href = 'dashboard.html';
+        }
 
         // Toggle password visibility
         togglePassword.addEventListener('click', () => {
@@ -163,12 +157,17 @@
 
             setLoading(true);
 
-            const result = await HikariFirebase.loginAdmin(email, password);
+            try {
+                const result = await HikariAPI.login(email, password);
 
-            if (result.success) {
-                window.location.href = 'dashboard.html';
-            } else {
-                showError(result.error);
+                if (result.success) {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    showError(result.error || 'Identifiants incorrects');
+                    setLoading(false);
+                }
+            } catch (error) {
+                showError('Erreur de connexion au serveur');
                 setLoading(false);
             }
         });
