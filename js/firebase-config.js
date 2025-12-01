@@ -13,14 +13,15 @@
  * 7. Vào Storage > Get started > Start in test mode
  */
 
-// ⚠️ THAY THẾ CẤU HÌNH NÀY BẰNG CẤU HÌNH FIREBASE CỦA BẠN
+// ⚠️ CẤU HÌNH FIREBASE HIKARI SUSHI
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCWqrFXUhq3jRafVdMif3X_46r3oXIOfpU",
+    authDomain: "hikari-sushi-35908.firebaseapp.com",
+    projectId: "hikari-sushi-35908",
+    storageBucket: "hikari-sushi-35908.firebasestorage.app",
+    messagingSenderId: "112632125454",
+    appId: "1:112632125454:web:764b229bbdf1f7d95a445f",
+    measurementId: "G-89X3HZ0YWC"
 };
 
 // Initialize Firebase
