@@ -599,18 +599,52 @@
         .toast.error { border-color: var(--danger); }
         .toast.error i { color: var(--danger); }
 
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 99;
+        }
+        .sidebar-overlay.active { display: block; }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-left: 0; }
-            .mobile-toggle { display: block; }
+            .mobile-toggle { 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                width: 44px; 
+                height: 44px; 
+            }
+            .admin-header h1 { font-size: 1.3rem; }
         }
 
         @media (max-width: 768px) {
             .content-area { padding: 1rem; }
             .admin-header { padding: 1rem; }
-            .filter-bar { flex-direction: column; }
+            .filter-bar { flex-direction: column; gap: 12px; }
+            
+            .status-tabs {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .status-tabs::-webkit-scrollbar { display: none; }
+            
+            .status-tabs button {
+                flex-shrink: 0;
+                padding: 10px 16px;
+                font-size: 12px;
+            }
             
             .reservation-card {
                 grid-template-columns: 1fr;
@@ -626,9 +660,19 @@
                 border-top: 1px solid var(--border-color);
             }
         }
+
+        @media (max-width: 480px) {
+            .admin-header h1 { font-size: 1.1rem; }
+            .reservation-info h3 { font-size: 1rem; }
+            .reservation-actions { flex-wrap: wrap; }
+            .reservation-actions .btn { flex: 1; min-width: 100px; }
+        }
     </style>
 </head>
 <body>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -766,9 +810,26 @@
         const searchInput = document.getElementById('searchInput');
         const filterTabs = document.querySelectorAll('.filter-tab');
         const detailModal = document.getElementById('detailModal');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
 
         // Mobile toggle
-        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+        });
+
+        sidebarOverlay.addEventListener('click', closeSidebar);
 
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', () => HikariAPI.logout());

@@ -500,28 +500,59 @@
         .toast.error { border-color: var(--danger); }
         .toast.error i { color: var(--danger); }
 
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 99;
+        }
+        .sidebar-overlay.active { display: block; }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-left: 0; }
-            .mobile-toggle { display: block; }
+            .mobile-toggle { 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                width: 44px; 
+                height: 44px; 
+            }
+            .admin-header h1 { font-size: 1.3rem; }
         }
 
         @media (max-width: 768px) {
             .content-area { padding: 1rem; }
             .admin-header { padding: 1rem; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .data-table th, .data-table td { padding: 0.75rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .stat-card { padding: 1rem; }
+            .stat-value { font-size: 1.5rem; }
+            .data-table th, .data-table td { padding: 0.75rem 0.5rem; font-size: 13px; }
+            .card-header h2 { font-size: 1rem; }
+            .actions-grid { gap: 12px; }
+            .action-card { padding: 1.25rem; }
         }
 
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: 1fr; }
-            .actions-grid { grid-template-columns: 1fr 1fr; }
+            .actions-grid { grid-template-columns: 1fr; }
+            .admin-header h1 { font-size: 1.1rem; }
+            .stat-card { flex-direction: row; align-items: center; gap: 15px; }
+            .stat-icon { width: 50px; height: 50px; font-size: 1.25rem; }
         }
     </style>
 </head>
 <body>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -712,9 +743,26 @@
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.getElementById('mobileToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
 
         // Mobile toggle
-        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+        });
+
+        sidebarOverlay.addEventListener('click', closeSidebar);
 
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', () => HikariAPI.logout());
