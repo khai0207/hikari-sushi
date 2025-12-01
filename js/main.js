@@ -77,20 +77,38 @@ window.addEventListener('scroll', () => {
 // ===== MOBILE NAVIGATION =====
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('navMenu');
+const navOverlay = document.getElementById('navOverlay');
 const navLinks = document.querySelectorAll('.nav-link');
 
+function closeMobileMenu() {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    if (navOverlay) navOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function openMobileMenu() {
+    hamburger.classList.add('active');
+    navMenu.classList.add('active');
+    if (navOverlay) navOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
 hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
-    document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    if (navMenu.classList.contains('active')) {
+        closeMobileMenu();
+    } else {
+        openMobileMenu();
+    }
 });
 
+// Close menu when clicking overlay
+if (navOverlay) {
+    navOverlay.addEventListener('click', closeMobileMenu);
+}
+
 navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        document.body.style.overflow = '';
-    });
+    link.addEventListener('click', closeMobileMenu);
 });
 
 // ===== ACTIVE NAVIGATION LINK =====

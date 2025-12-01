@@ -354,6 +354,11 @@ input, textarea, select {
     box-shadow: var(--shadow-gold);
 }
 
+/* Nav Overlay - Hidden on desktop */
+.nav-overlay {
+    display: none;
+}
+
 .hamburger {
     display: none;
     flex-direction: column;
@@ -2079,28 +2084,83 @@ input, textarea, select {
 }
 
 @media (max-width: 992px) {
+    body {
+        padding-top: 90px;
+    }
+    
+    .top-bar {
+        font-size: 11px;
+        padding: 8px 0;
+    }
+    
+    .top-bar-info {
+        gap: 15px;
+    }
+    
+    .top-bar-info span:nth-child(2) {
+        display: none;
+    }
+    
+    /* Mobile Nav Overlay */
+    .nav-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition-fast);
+        z-index: 997;
+    }
+    
+    .nav-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
     .nav-menu {
         position: fixed;
         top: 0;
         right: -100%;
-        width: 300px;
+        width: 280px;
         height: 100vh;
-        background: var(--dark);
+        background: rgba(18, 18, 18, 0.98);
+        backdrop-filter: blur(20px);
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 30px;
+        justify-content: flex-start;
+        align-items: stretch;
+        padding-top: 100px;
+        gap: 0;
         transition: var(--transition-medium);
         z-index: 998;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
     }
     
     .nav-menu.active {
         right: 0;
     }
     
+    .nav-menu li {
+        border-bottom: 1px solid rgba(201, 169, 98, 0.1);
+    }
+    
+    .nav-link {
+        padding: 18px 30px;
+        font-size: 15px;
+        display: block;
+    }
+    
+    .nav-link:hover,
+    .nav-link.active {
+        background: rgba(201, 169, 98, 0.1);
+    }
+    
     .hamburger {
         display: flex;
-        z-index: 999;
+        z-index: 1001;
     }
     
     .btn-reserve {
@@ -2108,7 +2168,11 @@ input, textarea, select {
     }
     
     .hero-title {
-        font-size: 46px;
+        font-size: 42px;
+    }
+    
+    .hero-subtitle {
+        font-size: 16px;
     }
     
     .about-content,
@@ -2116,6 +2180,7 @@ input, textarea, select {
     .reservation-wrapper,
     .contact-content {
         grid-template-columns: 1fr;
+        gap: 40px;
     }
     
     .about-images {
@@ -2126,6 +2191,7 @@ input, textarea, select {
     .services-grid,
     .menu-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
     }
     
     .specialties-grid {
@@ -2137,37 +2203,124 @@ input, textarea, select {
     }
     
     .specialty-card.large .specialty-image {
-        min-height: 400px;
+        min-height: 350px;
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .testimonial-card {
+        padding: 35px 25px;
     }
 }
 
 @media (max-width: 768px) {
+    body {
+        padding-top: 70px;
+    }
+    
     .top-bar {
         display: none;
     }
     
+    .header {
+        top: 0;
+        padding: 12px 0;
+    }
+    
+    .header.scrolled {
+        padding: 10px 0;
+    }
+    
+    .logo-img {
+        width: 38px;
+        height: 38px;
+    }
+    
+    .logo-name {
+        font-size: 18px;
+        letter-spacing: 2px;
+    }
+    
+    .nav-menu {
+        width: 100%;
+        padding: 80px 30px 30px;
+        gap: 0;
+    }
+    
+    .nav-menu li {
+        width: 100%;
+        border-bottom: 1px solid rgba(201, 169, 98, 0.1);
+    }
+    
+    .nav-link {
+        display: block;
+        padding: 18px 0;
+        font-size: 16px;
+        text-align: center;
+    }
+    
     .hero {
-        padding-top: 80px;
+        padding-top: 60px;
+        min-height: 100vh;
+    }
+    
+    .hero-badge {
+        font-size: 11px;
+        padding: 8px 16px;
     }
     
     .hero-title {
-        font-size: 36px;
+        font-size: 32px;
+        line-height: 1.2;
     }
     
     .hero-subtitle {
-        font-size: 16px;
+        font-size: 15px;
+        padding: 0 10px;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        padding: 0 20px;
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 16px 24px;
+    }
+    
+    .hero-scroll {
+        bottom: 20px;
+    }
+    
+    .floating-elements {
+        display: none;
     }
     
     .section {
-        padding: 60px 0;
+        padding: 50px 0;
+    }
+    
+    .section-header {
+        margin-bottom: 40px;
     }
     
     .section-title {
-        font-size: 32px;
+        font-size: 28px;
+    }
+    
+    .section-subtitle {
+        font-size: 14px;
     }
     
     .about-features {
         grid-template-columns: 1fr;
+        gap: 15px;
     }
     
     .about-img-secondary {
@@ -2175,14 +2328,14 @@ input, textarea, select {
     }
     
     .experience-badge {
-        width: 100px;
-        height: 100px;
-        right: -10px;
-        bottom: -10px;
+        width: 90px;
+        height: 90px;
+        right: 10px;
+        bottom: 10px;
     }
     
     .experience-badge .number {
-        font-size: 28px;
+        font-size: 26px;
     }
     
     .services-grid,
@@ -2190,6 +2343,65 @@ input, textarea, select {
     .contact-info-grid,
     .features-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .menu-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        gap: 8px;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    
+    .menu-tabs::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .tab-btn {
+        flex-shrink: 0;
+        padding: 12px 18px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+    
+    .menu-item {
+        flex-direction: column;
+    }
+    
+    .menu-item-image {
+        width: 100%;
+        height: 180px;
+    }
+    
+    .menu-item-info {
+        padding: 15px;
+    }
+    
+    .menu-item-header h3 {
+        font-size: 16px;
+    }
+    
+    .menu-price {
+        font-size: 16px;
+    }
+    
+    .specialty-card .specialty-image {
+        min-height: 250px;
+    }
+    
+    .specialty-card.large .specialty-image {
+        min-height: 300px;
+    }
+    
+    .specialty-content {
+        padding: 20px;
+    }
+    
+    .specialty-content h3 {
+        font-size: 22px;
     }
     
     .form-row {
@@ -2232,30 +2444,87 @@ input, textarea, select {
 }
 
 @media (max-width: 480px) {
+    body {
+        padding-top: 60px;
+    }
+    
+    .header {
+        padding: 10px 0;
+    }
+    
+    .logo-img {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .logo-name {
+        font-size: 15px;
+        letter-spacing: 1px;
+    }
+    
+    .hamburger span {
+        width: 20px;
+    }
+    
+    .hero {
+        padding-top: 40px;
+    }
+    
+    .hero-badge {
+        font-size: 10px;
+        padding: 6px 14px;
+    }
+    
     .hero-title {
-        font-size: 28px;
+        font-size: 26px;
+    }
+    
+    .hero-subtitle {
+        font-size: 14px;
+        line-height: 1.6;
     }
     
     .hero-buttons {
-        flex-direction: column;
-        width: 100%;
+        padding: 0 15px;
     }
     
     .hero-buttons .btn {
-        width: 100%;
-        justify-content: center;
+        padding: 14px 20px;
+        font-size: 13px;
+    }
+    
+    .section {
+        padding: 40px 0;
+    }
+    
+    .section-header {
+        margin-bottom: 30px;
     }
     
     .section-subtitle {
-        font-size: 18px;
+        font-size: 12px;
     }
     
     .section-subtitle .line {
-        width: 30px;
+        width: 25px;
     }
     
     .section-title {
-        font-size: 28px;
+        font-size: 24px;
+    }
+    
+    .about-feature {
+        padding: 15px;
+    }
+    
+    .about-feature-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    
+    .about-feature h4 {
+        font-size: 15px;
     }
     
     .about-cta {
@@ -2267,15 +2536,130 @@ input, textarea, select {
         justify-content: center;
     }
     
-    .special-price {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
+    .service-card,
+    .menu-item,
+    .feature-card {
+        border-radius: 12px;
+    }
+    
+    .service-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+    
+    .service-card h3,
+    .feature-card h3 {
+        font-size: 18px;
     }
     
     .tab-btn {
-        padding: 10px 20px;
+        padding: 10px 14px;
+        font-size: 11px;
+    }
+    
+    .menu-item-image {
+        height: 160px;
+    }
+    
+    .menu-item-info {
+        padding: 12px;
+    }
+    
+    .menu-item-header h3 {
+        font-size: 15px;
+    }
+    
+    .menu-price {
+        font-size: 15px;
+    }
+    
+    .special-price {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+    
+    .special-title {
+        font-size: 32px;
+    }
+    
+    .reservation-form-wrapper {
+        padding: 25px 15px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+    
+    .btn-submit {
+        padding: 14px;
+        font-size: 14px;
+    }
+    
+    .contact-item {
+        padding: 20px 15px;
+    }
+    
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .contact-item h4 {
+        font-size: 16px;
+    }
+    
+    .testimonial-card {
+        padding: 25px 15px;
+    }
+    
+    .testimonial-text {
+        font-size: 15px;
+    }
+    
+    .testimonial-author-name {
+        font-size: 16px;
+    }
+    
+    .footer {
+        padding: 50px 0 20px;
+    }
+    
+    .footer-logo-name {
+        font-size: 20px;
+    }
+    
+    .footer-title {
+        font-size: 17px;
+    }
+    
+    .footer-links a,
+    .footer-hours li {
+        font-size: 13px;
+        padding: 6px 0;
+    }
+    
+    .footer-bottom {
+        padding: 20px 0;
         font-size: 12px;
+    }
+    
+    .contact-cta {
+        flex-direction: column;
+    }
+    
+    .contact-cta .btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 
