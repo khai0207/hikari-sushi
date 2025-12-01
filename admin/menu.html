@@ -8,19 +8,769 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        :root {
+            --gold: #c9a962;
+            --gold-light: #dbb872;
+            --gold-dark: #a88b4a;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --bg-card-hover: #1a1a1a;
+            --bg-input: #1a1a1a;
+            --text-light: #ffffff;
+            --text-muted: #888888;
+            --border-color: #2a2a2a;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #0d0d0d 0%, #0a0a0a 100%);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .sidebar-logo img {
+            width: 45px;
+            height: 45px;
+        }
+
+        .sidebar-logo span {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.15em;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item a:hover,
+        .nav-item.active a {
+            background: rgba(201, 169, 98, 0.1);
+            color: var(--gold);
+            border-left-color: var(--gold);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-logout {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(201, 169, 98, 0.3);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 2rem;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 14px 14px 48px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 12px 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-tab:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .filter-tab.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: #000;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .menu-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-card-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .menu-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .menu-card:hover .menu-card-image img {
+            transform: scale(1.1);
+        }
+
+        .menu-card-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 14px;
+            background: var(--gold);
+            color: #000;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+        }
+
+        .menu-card-content {
+            padding: 1.5rem;
+        }
+
+        .menu-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .menu-card-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .menu-card-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .menu-card-description {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .menu-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .menu-card-category {
+            font-size: 12px;
+            color: var(--gold);
+            background: rgba(201, 169, 98, 0.15);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        .menu-card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-icon.delete:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gold);
+            opacity: 0.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Image Upload */
+        .image-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--gold);
+            background: rgba(201, 169, 98, 0.05);
+        }
+
+        .image-upload-area.has-image {
+            padding: 0;
+            border-style: solid;
+        }
+
+        .image-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-placeholder i {
+            font-size: 3rem;
+            color: var(--gold);
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .upload-placeholder p {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-placeholder span {
+            font-size: 12px;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 36px;
+            height: 36px;
+            background: var(--danger);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .image-remove:hover {
+            transform: scale(1.1);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-light);
+            color: var(--text-light);
+        }
+
+        .btn-danger {
+            padding: 12px 24px;
+            background: var(--danger);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.success i {
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+        }
+
+        .toast.error i {
+            color: var(--danger);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            color: var(--gold);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-bar {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-header {
+                padding: 1rem;
+            }
+
+            .content-area {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
-<body class="admin-page">
+<body>
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="../index.html" class="sidebar-logo">
-                <img src="../images/logo.png" alt="HIKARI" class="sidebar-logo-img">
-                <span class="logo-text">HIKARI</span>
+                <img src="../images/logo.png" alt="HIKARI">
+                <span>HIKARI</span>
             </a>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="fas fa-bars"></i>
-            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -41,7 +791,7 @@
                     <a href="reservations.html">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Réservations</span>
-                        <span class="badge" id="pendingBadge">0</span>
+                        <span class="nav-badge" id="pendingBadge">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -69,7 +819,6 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
                 <button class="mobile-toggle" id="mobileToggle">
@@ -77,18 +826,15 @@
                 </button>
                 <h1>Gestion du Menu</h1>
             </div>
-            <div class="header-right">
-                <button class="btn-primary" id="addItemBtn">
-                    <i class="fas fa-plus"></i>
-                    Ajouter un Plat
-                </button>
-            </div>
+            <button class="btn-primary" onclick="openModal()">
+                <i class="fas fa-plus"></i>
+                Ajouter un Plat
+            </button>
         </header>
 
-        <!-- Menu Content -->
-        <div class="menu-management">
-            <!-- Filters -->
-            <div class="filters-bar">
+        <div class="content-area">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchInput" placeholder="Rechercher un plat...">
@@ -104,29 +850,13 @@
 
             <!-- Menu Grid -->
             <div class="menu-grid" id="menuGrid">
-                <!-- Skeleton Loading -->
-                <div class="skeleton-card">
-                    <div class="skeleton-image skeleton"></div>
-                    <div class="skeleton-text full skeleton"></div>
-                    <div class="skeleton-text short skeleton"></div>
-                    <div class="skeleton-price skeleton"></div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-image skeleton"></div>
-                    <div class="skeleton-text full skeleton"></div>
-                    <div class="skeleton-text short skeleton"></div>
-                    <div class="skeleton-price skeleton"></div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-image skeleton"></div>
-                    <div class="skeleton-text full skeleton"></div>
-                    <div class="skeleton-text short skeleton"></div>
-                    <div class="skeleton-price skeleton"></div>
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
                 </div>
             </div>
 
             <!-- Empty State -->
-            <div class="empty-state-large" id="emptyState" style="display: none;">
+            <div class="empty-state" id="emptyState" style="display: none;">
                 <i class="fas fa-utensils"></i>
                 <h3>Aucun plat trouvé</h3>
                 <p>Commencez par ajouter des plats à votre menu</p>
@@ -148,99 +878,89 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <form class="modal-form" id="menuForm">
-                <input type="hidden" id="itemId">
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="itemName">Nom du plat *</label>
-                        <input type="text" id="itemName" name="name" required placeholder="Ex: Sushi Saumon">
-                    </div>
-                    <div class="form-group">
-                        <label for="itemPrice">Prix (€) *</label>
-                        <input type="number" id="itemPrice" name="price" step="0.10" min="0" required placeholder="Ex: 12.50">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="itemCategory">Catégorie *</label>
-                        <select id="itemCategory" name="category" required>
-                            <option value="">Sélectionner...</option>
-                            <option value="sushi">Sushis</option>
-                            <option value="maki">Makis & Rolls</option>
-                            <option value="plats">Plats Chauds</option>
-                            <option value="desserts">Desserts</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="itemBadge">Badge</label>
-                        <select id="itemBadge" name="badge">
-                            <option value="">Aucun</option>
-                            <option value="Populaire">Populaire</option>
-                            <option value="Nouveau">Nouveau</option>
-                            <option value="Signature">Signature</option>
-                            <option value="Promo">Promo</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="itemDescription">Description</label>
-                    <textarea id="itemDescription" name="description" rows="3" placeholder="Description du plat..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="itemImage">Image URL</label>
-                    <div class="image-input-group">
-                        <input type="url" id="itemImage" name="image" placeholder="https://example.com/image.jpg">
-                        <div class="image-preview" id="imagePreview">
-                            <i class="fas fa-image"></i>
+            <form id="menuForm">
+                <div class="modal-body">
+                    <input type="hidden" id="itemId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nom du plat *</label>
+                            <input type="text" id="itemName" required placeholder="Ex: Sushi Saumon">
+                        </div>
+                        <div class="form-group">
+                            <label>Prix (€) *</label>
+                            <input type="number" id="itemPrice" step="0.10" min="0" required placeholder="12.50">
                         </div>
                     </div>
-                    <small class="form-hint">Entrez l'URL d'une image ou uploadez une image</small>
-                </div>
 
-                <div class="form-group">
-                    <label>Ou uploader une image</label>
-                    <div class="file-upload" id="fileUpload">
-                        <input type="file" id="imageFile" accept="image/*" style="display: none;">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span>Cliquez pour choisir une image</span>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Catégorie *</label>
+                            <select id="itemCategory" required>
+                                <option value="">Sélectionner...</option>
+                                <option value="sushi">Sushis</option>
+                                <option value="maki">Makis & Rolls</option>
+                                <option value="plats">Plats Chauds</option>
+                                <option value="desserts">Desserts</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Badge</label>
+                            <select id="itemBadge">
+                                <option value="">Aucun</option>
+                                <option value="Populaire">Populaire</option>
+                                <option value="Nouveau">Nouveau</option>
+                                <option value="Signature">Signature</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="itemDescription" rows="3" placeholder="Description du plat..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Image</label>
+                        <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('imageFile').click()">
+                            <input type="file" id="imageFile" accept="image/*">
+                            <div class="upload-placeholder" id="uploadPlaceholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Cliquez pour uploader une image</p>
+                                <span>ou glissez-déposez ici</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="itemImage">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="itemOrder">Ordre d'affichage</label>
-                    <input type="number" id="itemOrder" name="order" min="1" value="1" placeholder="1">
-                </div>
-
-                <div class="modal-actions">
+                <div class="modal-footer">
                     <button type="button" class="btn-secondary" onclick="closeModal()">Annuler</button>
                     <button type="submit" class="btn-primary" id="submitBtn">
-                        <span class="btn-text">Enregistrer</span>
-                        <span class="btn-loader"><i class="fas fa-spinner fa-spin"></i></span>
+                        <i class="fas fa-save"></i>
+                        Enregistrer
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+    <!-- Delete Modal -->
     <div class="modal" id="deleteModal">
         <div class="modal-overlay" onclick="closeDeleteModal()"></div>
-        <div class="modal-content modal-small">
+        <div class="modal-content" style="max-width: 400px;">
             <div class="modal-header">
                 <h2>Confirmer la suppression</h2>
                 <button class="modal-close" onclick="closeDeleteModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="text-align: center;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
                 <p>Êtes-vous sûr de vouloir supprimer <strong id="deleteItemName"></strong> ?</p>
-                <p class="text-muted">Cette action est irréversible.</p>
+                <p style="color: var(--text-muted); font-size: 14px;">Cette action est irréversible.</p>
             </div>
-            <div class="modal-actions">
+            <div class="modal-footer" style="justify-content: center;">
                 <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Annuler</button>
                 <button type="button" class="btn-danger" id="confirmDeleteBtn">
                     <i class="fas fa-trash"></i>
@@ -250,17 +970,15 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div class="toast" id="toast">
-        <i class="toast-icon fas fa-check-circle"></i>
-        <span class="toast-message"></span>
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
     </div>
 
-    <!-- D1 API Client -->
     <script src="../js/api-client.js"></script>
-
     <script>
-        // Protect admin page
+        // Protect page
         HikariAPI.protectAdminPage();
 
         // State
@@ -269,13 +987,11 @@
         let currentSearch = '';
         let editingId = null;
         let deleteId = null;
+        let uploadedImageData = null;
 
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
         const mobileToggle = document.getElementById('mobileToggle');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const addItemBtn = document.getElementById('addItemBtn');
         const menuGrid = document.getElementById('menuGrid');
         const emptyState = document.getElementById('emptyState');
         const searchInput = document.getElementById('searchInput');
@@ -283,38 +999,35 @@
         const menuModal = document.getElementById('menuModal');
         const deleteModal = document.getElementById('deleteModal');
         const menuForm = document.getElementById('menuForm');
-        const imageInput = document.getElementById('itemImage');
-        const imagePreview = document.getElementById('imagePreview');
-        const fileUpload = document.getElementById('fileUpload');
         const imageFile = document.getElementById('imageFile');
+        const imageUploadArea = document.getElementById('imageUploadArea');
 
-        // Toggle sidebar
-        sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
-        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
+        // Mobile toggle
+        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
 
         // Logout
-        logoutBtn.addEventListener('click', () => HikariAPI.logout());
+        document.getElementById('logoutBtn').addEventListener('click', () => HikariAPI.logout());
 
-        // Show toast
+        // Toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            toast.querySelector('.toast-icon').className = 'toast-icon fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
-            toast.querySelector('.toast-message').textContent = message;
+            toast.querySelector('i').className = 'fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+            document.getElementById('toastMessage').textContent = message;
             toast.className = 'toast show ' + type;
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         // Load menu items
         async function loadMenuItems() {
-            menuGrid.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>';
+            menuGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i></div>';
             
             try {
                 const result = await HikariAPI.menu.getAll();
                 menuItems = result.success ? result.data : [];
                 renderMenuItems();
             } catch (error) {
-                console.error('Error loading menu:', error);
-                showToast('Erreur lors du chargement', 'error');
+                console.error('Error:', error);
+                showToast('Erreur de chargement', 'error');
                 menuItems = [];
                 renderMenuItems();
             }
@@ -324,12 +1037,10 @@
         function renderMenuItems() {
             let filtered = menuItems;
 
-            // Apply category filter
             if (currentFilter !== 'all') {
                 filtered = filtered.filter(item => item.category === currentFilter);
             }
 
-            // Apply search filter
             if (currentSearch) {
                 const search = currentSearch.toLowerCase();
                 filtered = filtered.filter(item => 
@@ -340,30 +1051,32 @@
 
             if (filtered.length === 0) {
                 menuGrid.innerHTML = '';
-                emptyState.style.display = 'flex';
+                emptyState.style.display = 'block';
                 return;
             }
 
             emptyState.style.display = 'none';
             menuGrid.innerHTML = filtered.map(item => `
-                <div class="menu-card" data-id="${item.id}">
+                <div class="menu-card">
                     <div class="menu-card-image">
-                        <img src="${item.image || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
-                        ${item.badge ? `<span class="menu-card-badge ${item.badge.toLowerCase()}">${item.badge}</span>` : ''}
+                        <img src="${item.image || 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop'}" 
+                             alt="${item.name}"
+                             onerror="this.src='https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop'">
+                        ${item.badge ? `<span class="menu-card-badge">${item.badge}</span>` : ''}
                     </div>
                     <div class="menu-card-content">
                         <div class="menu-card-header">
                             <h3>${item.name}</h3>
-                            <span class="menu-card-price">${item.price.toFixed(2)}€</span>
+                            <span class="menu-card-price">${parseFloat(item.price).toFixed(2)}€</span>
                         </div>
-                        <p class="menu-card-description">${item.description || 'Pas de description'}</p>
+                        <p class="menu-card-description">${item.description || 'Aucune description'}</p>
                         <div class="menu-card-footer">
                             <span class="menu-card-category">${getCategoryLabel(item.category)}</span>
                             <div class="menu-card-actions">
-                                <button class="btn-icon" onclick="editItem('${item.id}')" title="Modifier">
+                                <button class="btn-icon" onclick="editItem(${item.id})" title="Modifier">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn-icon btn-danger" onclick="confirmDelete('${item.id}', '${item.name}')" title="Supprimer">
+                                <button class="btn-icon delete" onclick="confirmDelete(${item.id}, '${item.name.replace(/'/g, "\\'")}')" title="Supprimer">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -373,14 +1086,8 @@
             `).join('');
         }
 
-        // Get category label
         function getCategoryLabel(category) {
-            const labels = {
-                'sushi': 'Sushis',
-                'maki': 'Makis & Rolls',
-                'plats': 'Plats Chauds',
-                'desserts': 'Desserts'
-            };
+            const labels = { sushi: 'Sushis', maki: 'Makis & Rolls', plats: 'Plats Chauds', desserts: 'Desserts' };
             return labels[category] || category;
         }
 
@@ -400,16 +1107,99 @@
             renderMenuItems();
         });
 
-        // Open modal for adding
+        // Image upload
+        imageFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                uploadedImageData = event.target.result;
+                imageUploadArea.classList.add('has-image');
+                imageUploadArea.innerHTML = `
+                    <img src="${uploadedImageData}" class="image-preview" alt="Preview">
+                    <button type="button" class="image-remove" onclick="removeImage(event)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                document.getElementById('itemImage').value = uploadedImageData;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Drag and drop
+        imageUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadArea.style.borderColor = 'var(--gold)';
+        });
+
+        imageUploadArea.addEventListener('dragleave', () => {
+            imageUploadArea.style.borderColor = '';
+        });
+
+        imageUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadArea.style.borderColor = '';
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                imageFile.files = e.dataTransfer.files;
+                imageFile.dispatchEvent(new Event('change'));
+            }
+        });
+
+        function removeImage(e) {
+            e.stopPropagation();
+            uploadedImageData = null;
+            document.getElementById('itemImage').value = '';
+            imageUploadArea.classList.remove('has-image');
+            imageUploadArea.innerHTML = `
+                <input type="file" id="imageFile" accept="image/*">
+                <div class="upload-placeholder">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Cliquez pour uploader une image</p>
+                    <span>ou glissez-déposez ici</span>
+                </div>
+            `;
+            document.getElementById('imageFile').addEventListener('change', arguments.callee);
+        }
+
+        // Modal functions
         function openModal() {
             editingId = null;
+            uploadedImageData = null;
             document.getElementById('modalTitle').textContent = 'Ajouter un Plat';
             menuForm.reset();
-            imagePreview.innerHTML = '<i class="fas fa-image"></i>';
+            imageUploadArea.classList.remove('has-image');
+            imageUploadArea.innerHTML = `
+                <input type="file" id="imageFile" accept="image/*">
+                <div class="upload-placeholder">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Cliquez pour uploader une image</p>
+                    <span>ou glissez-déposez ici</span>
+                </div>
+            `;
+            // Re-attach event listener
+            document.getElementById('imageFile').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    uploadedImageData = event.target.result;
+                    imageUploadArea.classList.add('has-image');
+                    imageUploadArea.innerHTML = `
+                        <img src="${uploadedImageData}" class="image-preview" alt="Preview">
+                        <button type="button" class="image-remove" onclick="removeImage(event)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    document.getElementById('itemImage').value = uploadedImageData;
+                };
+                reader.readAsDataURL(file);
+            });
             menuModal.classList.add('open');
         }
 
-        // Open modal for editing
         function editItem(id) {
             const item = menuItems.find(i => i.id === id);
             if (!item) return;
@@ -423,62 +1213,31 @@
             document.getElementById('itemBadge').value = item.badge || '';
             document.getElementById('itemDescription').value = item.description || '';
             document.getElementById('itemImage').value = item.image || '';
-            document.getElementById('itemOrder').value = item.order || 1;
 
             if (item.image) {
-                imagePreview.innerHTML = `<img src="${item.image}" alt="Preview">`;
-            } else {
-                imagePreview.innerHTML = '<i class="fas fa-image"></i>';
+                imageUploadArea.classList.add('has-image');
+                imageUploadArea.innerHTML = `
+                    <img src="${item.image}" class="image-preview" alt="Preview">
+                    <button type="button" class="image-remove" onclick="removeImage(event)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
             }
 
             menuModal.classList.add('open');
         }
 
-        // Close modal
         function closeModal() {
             menuModal.classList.remove('open');
-            editingId = null;
         }
 
-        // Image preview
-        imageInput.addEventListener('input', () => {
-            const url = imageInput.value;
-            if (url) {
-                imagePreview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-exclamation-triangle\\'></i>'">`;
-            } else {
-                imagePreview.innerHTML = '<i class="fas fa-image"></i>';
-            }
-        });
-
-        // File upload
-        fileUpload.addEventListener('click', () => imageFile.click());
-        
-        imageFile.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            fileUpload.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Upload en cours...</span>';
-
-            const result = await HikariAPI.uploadImage(file, 'menu');
-
-            if (result.success) {
-                imageInput.value = result.url;
-                imagePreview.innerHTML = `<img src="${result.url}" alt="Preview">`;
-                showToast('Image uploadée avec succès');
-            } else {
-                showToast('Erreur lors de l\'upload', 'error');
-            }
-
-            fileUpload.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Cliquez pour choisir une image</span>';
-        });
-
-        // Form submission
+        // Form submit
         menuForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.classList.add('loading');
             submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
 
             const data = {
                 name: document.getElementById('itemName').value,
@@ -486,31 +1245,35 @@
                 category: document.getElementById('itemCategory').value,
                 badge: document.getElementById('itemBadge').value,
                 description: document.getElementById('itemDescription').value,
-                image: document.getElementById('itemImage').value,
-                display_order: parseInt(document.getElementById('itemOrder').value) || 1,
+                image: document.getElementById('itemImage').value || uploadedImageData || '',
+                display_order: 1,
                 available: 1
             };
 
-            let result;
-            if (editingId) {
-                result = await HikariAPI.menu.update(editingId, data);
-            } else {
-                result = await HikariAPI.menu.create(data);
+            try {
+                let result;
+                if (editingId) {
+                    result = await HikariAPI.menu.update(editingId, data);
+                } else {
+                    result = await HikariAPI.menu.create(data);
+                }
+
+                if (result.success) {
+                    showToast(editingId ? 'Plat modifié!' : 'Plat ajouté!');
+                    closeModal();
+                    loadMenuItems();
+                } else {
+                    showToast('Erreur: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showToast('Erreur: ' + error.message, 'error');
             }
 
-            submitBtn.classList.remove('loading');
             submitBtn.disabled = false;
-
-            if (result.success) {
-                showToast(editingId ? 'Plat modifié avec succès' : 'Plat ajouté avec succès');
-                closeModal();
-                loadMenuItems();
-            } else {
-                showToast('Erreur: ' + result.error, 'error');
-            }
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
         });
 
-        // Delete confirmation
+        // Delete
         function confirmDelete(id, name) {
             deleteId = id;
             document.getElementById('deleteItemName').textContent = name;
@@ -525,35 +1288,30 @@
         document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
             if (!deleteId) return;
 
-            const result = await HikariAPI.menu.delete(deleteId);
-
-            if (result.success) {
-                showToast('Plat supprimé avec succès');
-                closeDeleteModal();
-                loadMenuItems();
-            } else {
-                showToast('Erreur: ' + result.error, 'error');
+            try {
+                const result = await HikariAPI.menu.delete(deleteId);
+                if (result.success) {
+                    showToast('Plat supprimé!');
+                    closeDeleteModal();
+                    loadMenuItems();
+                } else {
+                    showToast('Erreur: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showToast('Erreur: ' + error.message, 'error');
             }
         });
 
-        // Add item button
-        addItemBtn.addEventListener('click', openModal);
-
-        // Check URL params for action
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('action') === 'add') {
-            setTimeout(openModal, 500);
-        }
+        // Initialize
+        loadMenuItems();
 
         // Make functions global
         window.openModal = openModal;
-        window.closeModal = closeModal;
         window.editItem = editItem;
+        window.closeModal = closeModal;
         window.confirmDelete = confirmDelete;
         window.closeDeleteModal = closeDeleteModal;
-
-        // Initialize
-        loadMenuItems();
+        window.removeImage = removeImage;
     </script>
 </body>
 </html>
