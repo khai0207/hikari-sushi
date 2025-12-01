@@ -2093,6 +2093,11 @@ input, textarea, select {
         padding-top: 90px;
     }
     
+    .hero {
+        margin-top: -90px;
+        padding-top: 90px;
+    }
+    
     .top-bar {
         font-size: 11px;
         padding: 8px 0;
@@ -2330,6 +2335,8 @@ input, textarea, select {
     .hero {
         padding-top: 60px;
         min-height: 100vh;
+        margin-top: -70px;
+        padding-top: 70px;
     }
     
     .hero-badge {
