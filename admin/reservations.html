@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservations - HIKARI Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-page">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="../index.html" class="sidebar-logo">
+                <img src="../images/logo.png" alt="HIKARI" class="sidebar-logo-img">
+                <span class="logo-text">HIKARI</span>
+            </a>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item">
+                    <a href="dashboard.html">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="menu.html">
+                        <i class="fas fa-utensils"></i>
+                        <span>Menu</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="reservations.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Réservations</span>
+                        <span class="badge" id="pendingBadge">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Réservations</h1>
+            </div>
+            <div class="header-right">
+                <div class="date-picker">
+                    <label for="filterDate">Date:</label>
+                    <input type="date" id="filterDate">
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Summary -->
+        <div class="reservation-stats">
+            <div class="stat-mini">
+                <span class="stat-mini-value" id="statTotal">0</span>
+                <span class="stat-mini-label">Total</span>
+            </div>
+            <div class="stat-mini stat-pending">
+                <span class="stat-mini-value" id="statPending">0</span>
+                <span class="stat-mini-label">En attente</span>
+            </div>
+            <div class="stat-mini stat-confirmed">
+                <span class="stat-mini-value" id="statConfirmed">0</span>
+                <span class="stat-mini-label">Confirmées</span>
+            </div>
+            <div class="stat-mini stat-cancelled">
+                <span class="stat-mini-value" id="statCancelled">0</span>
+                <span class="stat-mini-label">Annulées</span>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Rechercher par nom ou téléphone...">
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-status="all">Toutes</button>
+                <button class="filter-tab" data-status="pending">En attente</button>
+                <button class="filter-tab" data-status="confirmed">Confirmées</button>
+                <button class="filter-tab" data-status="cancelled">Annulées</button>
+            </div>
+        </div>
+
+        <!-- Reservations Table -->
+        <div class="table-container">
+            <table class="data-table" id="reservationsTable">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Contact</th>
+                        <th>Date & Heure</th>
+                        <th>Personnes</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="reservationsBody">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state-large" id="emptyState" style="display: none;">
+            <i class="fas fa-calendar-times"></i>
+            <h3>Aucune réservation</h3>
+            <p>Les réservations apparaîtront ici</p>
+        </div>
+    </main>
+
+    <!-- Reservation Detail Modal -->
+    <div class="modal" id="detailModal">
+        <div class="modal-overlay" onclick="closeDetailModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Détails de la Réservation</h2>
+                <button class="modal-close" onclick="closeDetailModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="reservationDetail">
+                <!-- Detail content -->
+            </div>
+            <div class="modal-actions" id="modalActions">
+                <!-- Actions -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-overlay" onclick="closeDeleteModal()"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirmer la suppression</h2>
+                <button class="modal-close" onclick="closeDeleteModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer cette réservation ?</p>
+                <p class="text-muted">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Annuler</button>
+                <button type="button" class="btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash"></i>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="toast-icon fas fa-check-circle"></i>
+        <span class="toast-message"></span>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+
+    <script>
+        // Protect admin page
+        HikariFirebase.protectAdminPage();
+
+        // State
+        let reservations = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let currentDate = '';
+        let deleteId = null;
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const searchInput = document.getElementById('searchInput');
+        const filterDate = document.getElementById('filterDate');
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const reservationsBody = document.getElementById('reservationsBody');
+        const emptyState = document.getElementById('emptyState');
+        const detailModal = document.getElementById('detailModal');
+        const deleteModal = document.getElementById('deleteModal');
+
+        // Toggle sidebar
+        sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
+        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
+
+        // Logout
+        logoutBtn.addEventListener('click', () => HikariFirebase.logoutAdmin());
+
+        // Show toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.querySelector('.toast-icon').className = 'toast-icon fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+            toast.querySelector('.toast-message').textContent = message;
+            toast.className = 'toast show ' + type;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Load reservations
+        async function loadReservations() {
+            reservationsBody.innerHTML = '<tr><td colspan="7" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Chargement...</td></tr>';
+            
+            try {
+                let result;
+                if (currentDate) {
+                    result = await HikariFirebase.getReservationsByDate(currentDate);
+                } else {
+                    result = await HikariFirebase.getAllReservations();
+                }
+                reservations = result.success ? result.items : [];
+                updateStats();
+                renderReservations();
+            } catch (error) {
+                console.error('Error loading reservations:', error);
+                showToast('Erreur lors du chargement', 'error');
+                reservations = [];
+                updateStats();
+                renderReservations();
+            }
+        }
+
+        // Update stats
+        function updateStats() {
+            const total = reservations.length;
+            const pending = reservations.filter(r => r.status === 'pending').length;
+            const confirmed = reservations.filter(r => r.status === 'confirmed').length;
+            const cancelled = reservations.filter(r => r.status === 'cancelled').length;
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statConfirmed').textContent = confirmed;
+            document.getElementById('statCancelled').textContent = cancelled;
+            document.getElementById('pendingBadge').textContent = pending;
+        }
+
+        // Render reservations
+        function renderReservations() {
+            let filtered = reservations;
+
+            // Apply status filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(r => r.status === currentFilter);
+            }
+
+            // Apply search filter
+            if (currentSearch) {
+                const search = currentSearch.toLowerCase();
+                filtered = filtered.filter(r => 
+                    r.name.toLowerCase().includes(search) ||
+                    r.phone.includes(search) ||
+                    r.email?.toLowerCase().includes(search)
+                );
+            }
+
+            if (filtered.length === 0) {
+                reservationsBody.innerHTML = '';
+                emptyState.style.display = 'flex';
+                document.getElementById('reservationsTable').style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            document.getElementById('reservationsTable').style.display = 'table';
+
+            reservationsBody.innerHTML = filtered.map(res => `
+                <tr data-id="${res.id}">
+                    <td>
+                        <div class="customer-info">
+                            <span class="customer-name">${res.name}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="contact-info">
+                            <a href="tel:${res.phone}" class="contact-link">
+                                <i class="fas fa-phone"></i> ${res.phone}
+                            </a>
+                            ${res.email ? `<a href="mailto:${res.email}" class="contact-link"><i class="fas fa-envelope"></i> ${res.email}</a>` : ''}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime-info">
+                            <span class="date"><i class="fas fa-calendar"></i> ${res.date}</span>
+                            <span class="time"><i class="fas fa-clock"></i> ${res.time}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="guests-badge">
+                            <i class="fas fa-users"></i> ${res.guests}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="message-preview" title="${res.message || 'Pas de message'}">
+                            ${res.message ? (res.message.length > 30 ? res.message.substring(0, 30) + '...' : res.message) : '-'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${res.status}">
+                            ${getStatusLabel(res.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="viewDetail('${res.id}')" title="Voir détails">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            ${res.status === 'pending' ? `
+                                <button class="btn-icon btn-success" onclick="updateStatus('${res.id}', 'confirmed')" title="Confirmer">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn-icon btn-warning" onclick="updateStatus('${res.id}', 'cancelled')" title="Annuler">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : ''}
+                            <button class="btn-icon btn-danger" onclick="confirmDelete('${res.id}')" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Get status label
+        function getStatusLabel(status) {
+            const labels = {
+                'pending': 'En attente',
+                'confirmed': 'Confirmée',
+                'cancelled': 'Annulée'
+            };
+            return labels[status] || status;
+        }
+
+        // Filter tabs
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                filterTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.status;
+                renderReservations();
+            });
+        });
+
+        // Search
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value;
+            renderReservations();
+        });
+
+        // Date filter
+        filterDate.addEventListener('change', (e) => {
+            currentDate = e.target.value;
+            loadReservations();
+        });
+
+        // View detail
+        function viewDetail(id) {
+            const res = reservations.find(r => r.id === id);
+            if (!res) return;
+
+            document.getElementById('reservationDetail').innerHTML = `
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <label>Nom</label>
+                        <span>${res.name}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Téléphone</label>
+                        <a href="tel:${res.phone}">${res.phone}</a>
+                    </div>
+                    <div class="detail-item">
+                        <label>Email</label>
+                        <span>${res.email || '-'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Personnes</label>
+                        <span>${res.guests}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Date</label>
+                        <span>${res.date}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Heure</label>
+                        <span>${res.time}</span>
+                    </div>
+                    <div class="detail-item full">
+                        <label>Message</label>
+                        <span>${res.message || 'Pas de message'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Status</label>
+                        <span class="status-badge status-${res.status}">${getStatusLabel(res.status)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Créée le</label>
+                        <span>${res.createdAt ? HikariFirebase.formatDateTime(res.createdAt) : '-'}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalActions').innerHTML = `
+                <button type="button" class="btn-secondary" onclick="closeDetailModal()">Fermer</button>
+                ${res.status === 'pending' ? `
+                    <button type="button" class="btn-success" onclick="updateStatus('${res.id}', 'confirmed'); closeDetailModal();">
+                        <i class="fas fa-check"></i> Confirmer
+                    </button>
+                    <button type="button" class="btn-warning" onclick="updateStatus('${res.id}', 'cancelled'); closeDetailModal();">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                ` : ''}
+            `;
+
+            detailModal.classList.add('open');
+        }
+
+        function closeDetailModal() {
+            detailModal.classList.remove('open');
+        }
+
+        // Update status
+        async function updateStatus(id, status) {
+            const result = await HikariFirebase.updateReservationStatus(id, status);
+            
+            if (result.success) {
+                showToast('Statut mis à jour');
+                loadReservations();
+            } else {
+                showToast('Erreur: ' + result.error, 'error');
+            }
+        }
+
+        // Delete confirmation
+        function confirmDelete(id) {
+            deleteId = id;
+            deleteModal.classList.add('open');
+        }
+
+        function closeDeleteModal() {
+            deleteModal.classList.remove('open');
+            deleteId = null;
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if (!deleteId) return;
+
+            const result = await HikariFirebase.deleteReservation(deleteId);
+
+            if (result.success) {
+                showToast('Réservation supprimée');
+                closeDeleteModal();
+                loadReservations();
+            } else {
+                showToast('Erreur: ' + result.error, 'error');
+            }
+        });
+
+        // Make functions global
+        window.viewDetail = viewDetail;
+        window.closeDetailModal = closeDetailModal;
+        window.updateStatus = updateStatus;
+        window.confirmDelete = confirmDelete;
+        window.closeDeleteModal = closeDeleteModal;
+
+        // Initialize
+        loadReservations();
+    </script>
+</body>
+</html>

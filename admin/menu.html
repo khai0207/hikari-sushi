@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion du Menu - HIKARI Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-page">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="../index.html" class="sidebar-logo">
+                <img src="../images/logo.png" alt="HIKARI" class="sidebar-logo-img">
+                <span class="logo-text">HIKARI</span>
+            </a>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item">
+                    <a href="dashboard.html">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="menu.html">
+                        <i class="fas fa-utensils"></i>
+                        <span>Menu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reservations.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Réservations</span>
+                        <span class="badge" id="pendingBadge">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Gestion du Menu</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" id="addItemBtn">
+                    <i class="fas fa-plus"></i>
+                    Ajouter un Plat
+                </button>
+            </div>
+        </header>
+
+        <!-- Menu Content -->
+        <div class="menu-management">
+            <!-- Filters -->
+            <div class="filters-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Rechercher un plat...">
+                </div>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-category="all">Tous</button>
+                    <button class="filter-tab" data-category="sushi">Sushis</button>
+                    <button class="filter-tab" data-category="maki">Makis & Rolls</button>
+                    <button class="filter-tab" data-category="plats">Plats Chauds</button>
+                    <button class="filter-tab" data-category="desserts">Desserts</button>
+                </div>
+            </div>
+
+            <!-- Menu Grid -->
+            <div class="menu-grid" id="menuGrid">
+                <!-- Skeleton Loading -->
+                <div class="skeleton-card">
+                    <div class="skeleton-image skeleton"></div>
+                    <div class="skeleton-text full skeleton"></div>
+                    <div class="skeleton-text short skeleton"></div>
+                    <div class="skeleton-price skeleton"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-image skeleton"></div>
+                    <div class="skeleton-text full skeleton"></div>
+                    <div class="skeleton-text short skeleton"></div>
+                    <div class="skeleton-price skeleton"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-image skeleton"></div>
+                    <div class="skeleton-text full skeleton"></div>
+                    <div class="skeleton-text short skeleton"></div>
+                    <div class="skeleton-price skeleton"></div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state-large" id="emptyState" style="display: none;">
+                <i class="fas fa-utensils"></i>
+                <h3>Aucun plat trouvé</h3>
+                <p>Commencez par ajouter des plats à votre menu</p>
+                <button class="btn-primary" onclick="openModal()">
+                    <i class="fas fa-plus"></i>
+                    Ajouter un Plat
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="menuModal">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Ajouter un Plat</h2>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="modal-form" id="menuForm">
+                <input type="hidden" id="itemId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="itemName">Nom du plat *</label>
+                        <input type="text" id="itemName" name="name" required placeholder="Ex: Sushi Saumon">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemPrice">Prix (€) *</label>
+                        <input type="number" id="itemPrice" name="price" step="0.10" min="0" required placeholder="Ex: 12.50">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="itemCategory">Catégorie *</label>
+                        <select id="itemCategory" name="category" required>
+                            <option value="">Sélectionner...</option>
+                            <option value="sushi">Sushis</option>
+                            <option value="maki">Makis & Rolls</option>
+                            <option value="plats">Plats Chauds</option>
+                            <option value="desserts">Desserts</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemBadge">Badge</label>
+                        <select id="itemBadge" name="badge">
+                            <option value="">Aucun</option>
+                            <option value="Populaire">Populaire</option>
+                            <option value="Nouveau">Nouveau</option>
+                            <option value="Signature">Signature</option>
+                            <option value="Promo">Promo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemDescription">Description</label>
+                    <textarea id="itemDescription" name="description" rows="3" placeholder="Description du plat..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemImage">Image URL</label>
+                    <div class="image-input-group">
+                        <input type="url" id="itemImage" name="image" placeholder="https://example.com/image.jpg">
+                        <div class="image-preview" id="imagePreview">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    </div>
+                    <small class="form-hint">Entrez l'URL d'une image ou uploadez une image</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Ou uploader une image</label>
+                    <div class="file-upload" id="fileUpload">
+                        <input type="file" id="imageFile" accept="image/*" style="display: none;">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Cliquez pour choisir une image</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemOrder">Ordre d'affichage</label>
+                    <input type="number" id="itemOrder" name="order" min="1" value="1" placeholder="1">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <span class="btn-text">Enregistrer</span>
+                        <span class="btn-loader"><i class="fas fa-spinner fa-spin"></i></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-overlay" onclick="closeDeleteModal()"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirmer la suppression</h2>
+                <button class="modal-close" onclick="closeDeleteModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer <strong id="deleteItemName"></strong> ?</p>
+                <p class="text-muted">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Annuler</button>
+                <button type="button" class="btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash"></i>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="toast-icon fas fa-check-circle"></i>
+        <span class="toast-message"></span>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+
+    <script>
+        // Protect admin page
+        HikariFirebase.protectAdminPage();
+
+        // State
+        let menuItems = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let editingId = null;
+        let deleteId = null;
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const menuGrid = document.getElementById('menuGrid');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const menuModal = document.getElementById('menuModal');
+        const deleteModal = document.getElementById('deleteModal');
+        const menuForm = document.getElementById('menuForm');
+        const imageInput = document.getElementById('itemImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileUpload = document.getElementById('fileUpload');
+        const imageFile = document.getElementById('imageFile');
+
+        // Toggle sidebar
+        sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
+        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
+
+        // Logout
+        logoutBtn.addEventListener('click', () => HikariFirebase.logoutAdmin());
+
+        // Show toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.querySelector('.toast-icon').className = 'toast-icon fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+            toast.querySelector('.toast-message').textContent = message;
+            toast.className = 'toast show ' + type;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Load menu items
+        async function loadMenuItems() {
+            menuGrid.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>';
+            
+            try {
+                const result = await HikariFirebase.getAllMenuItems();
+                menuItems = result.success ? result.items : [];
+                renderMenuItems();
+            } catch (error) {
+                console.error('Error loading menu:', error);
+                showToast('Erreur lors du chargement', 'error');
+                menuItems = [];
+                renderMenuItems();
+            }
+        }
+
+        // Render menu items
+        function renderMenuItems() {
+            let filtered = menuItems;
+
+            // Apply category filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(item => item.category === currentFilter);
+            }
+
+            // Apply search filter
+            if (currentSearch) {
+                const search = currentSearch.toLowerCase();
+                filtered = filtered.filter(item => 
+                    item.name.toLowerCase().includes(search) ||
+                    item.description?.toLowerCase().includes(search)
+                );
+            }
+
+            if (filtered.length === 0) {
+                menuGrid.innerHTML = '';
+                emptyState.style.display = 'flex';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            menuGrid.innerHTML = filtered.map(item => `
+                <div class="menu-card" data-id="${item.id}">
+                    <div class="menu-card-image">
+                        <img src="${item.image || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                        ${item.badge ? `<span class="menu-card-badge ${item.badge.toLowerCase()}">${item.badge}</span>` : ''}
+                    </div>
+                    <div class="menu-card-content">
+                        <div class="menu-card-header">
+                            <h3>${item.name}</h3>
+                            <span class="menu-card-price">${item.price.toFixed(2)}€</span>
+                        </div>
+                        <p class="menu-card-description">${item.description || 'Pas de description'}</p>
+                        <div class="menu-card-footer">
+                            <span class="menu-card-category">${getCategoryLabel(item.category)}</span>
+                            <div class="menu-card-actions">
+                                <button class="btn-icon" onclick="editItem('${item.id}')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-icon btn-danger" onclick="confirmDelete('${item.id}', '${item.name}')" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Get category label
+        function getCategoryLabel(category) {
+            const labels = {
+                'sushi': 'Sushis',
+                'maki': 'Makis & Rolls',
+                'plats': 'Plats Chauds',
+                'desserts': 'Desserts'
+            };
+            return labels[category] || category;
+        }
+
+        // Filter tabs
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                filterTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.category;
+                renderMenuItems();
+            });
+        });
+
+        // Search
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value;
+            renderMenuItems();
+        });
+
+        // Open modal for adding
+        function openModal() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = 'Ajouter un Plat';
+            menuForm.reset();
+            imagePreview.innerHTML = '<i class="fas fa-image"></i>';
+            menuModal.classList.add('open');
+        }
+
+        // Open modal for editing
+        function editItem(id) {
+            const item = menuItems.find(i => i.id === id);
+            if (!item) return;
+
+            editingId = id;
+            document.getElementById('modalTitle').textContent = 'Modifier le Plat';
+            document.getElementById('itemId').value = id;
+            document.getElementById('itemName').value = item.name;
+            document.getElementById('itemPrice').value = item.price;
+            document.getElementById('itemCategory').value = item.category;
+            document.getElementById('itemBadge').value = item.badge || '';
+            document.getElementById('itemDescription').value = item.description || '';
+            document.getElementById('itemImage').value = item.image || '';
+            document.getElementById('itemOrder').value = item.order || 1;
+
+            if (item.image) {
+                imagePreview.innerHTML = `<img src="${item.image}" alt="Preview">`;
+            } else {
+                imagePreview.innerHTML = '<i class="fas fa-image"></i>';
+            }
+
+            menuModal.classList.add('open');
+        }
+
+        // Close modal
+        function closeModal() {
+            menuModal.classList.remove('open');
+            editingId = null;
+        }
+
+        // Image preview
+        imageInput.addEventListener('input', () => {
+            const url = imageInput.value;
+            if (url) {
+                imagePreview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-exclamation-triangle\\'></i>'">`;
+            } else {
+                imagePreview.innerHTML = '<i class="fas fa-image"></i>';
+            }
+        });
+
+        // File upload
+        fileUpload.addEventListener('click', () => imageFile.click());
+        
+        imageFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            fileUpload.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Upload en cours...</span>';
+
+            const result = await HikariFirebase.uploadImage(file, 'menu');
+
+            if (result.success) {
+                imageInput.value = result.url;
+                imagePreview.innerHTML = `<img src="${result.url}" alt="Preview">`;
+                showToast('Image uploadée avec succès');
+            } else {
+                showToast('Erreur lors de l\'upload', 'error');
+            }
+
+            fileUpload.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Cliquez pour choisir une image</span>';
+        });
+
+        // Form submission
+        menuForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            const data = {
+                name: document.getElementById('itemName').value,
+                price: parseFloat(document.getElementById('itemPrice').value),
+                category: document.getElementById('itemCategory').value,
+                badge: document.getElementById('itemBadge').value,
+                description: document.getElementById('itemDescription').value,
+                image: document.getElementById('itemImage').value,
+                order: parseInt(document.getElementById('itemOrder').value) || 1
+            };
+
+            let result;
+            if (editingId) {
+                result = await HikariFirebase.updateMenuItem(editingId, data);
+            } else {
+                result = await HikariFirebase.addMenuItem(data);
+            }
+
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+
+            if (result.success) {
+                showToast(editingId ? 'Plat modifié avec succès' : 'Plat ajouté avec succès');
+                closeModal();
+                loadMenuItems();
+            } else {
+                showToast('Erreur: ' + result.error, 'error');
+            }
+        });
+
+        // Delete confirmation
+        function confirmDelete(id, name) {
+            deleteId = id;
+            document.getElementById('deleteItemName').textContent = name;
+            deleteModal.classList.add('open');
+        }
+
+        function closeDeleteModal() {
+            deleteModal.classList.remove('open');
+            deleteId = null;
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if (!deleteId) return;
+
+            const result = await HikariFirebase.deleteMenuItem(deleteId);
+
+            if (result.success) {
+                showToast('Plat supprimé avec succès');
+                closeDeleteModal();
+                loadMenuItems();
+            } else {
+                showToast('Erreur: ' + result.error, 'error');
+            }
+        });
+
+        // Add item button
+        addItemBtn.addEventListener('click', openModal);
+
+        // Check URL params for action
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'add') {
+            setTimeout(openModal, 500);
+        }
+
+        // Make functions global
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.editItem = editItem;
+        window.confirmDelete = confirmDelete;
+        window.closeDeleteModal = closeDeleteModal;
+
+        // Initialize
+        loadMenuItems();
+    </script>
+</body>
+</html>

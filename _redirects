@@ -1,0 +1,6 @@
+# Cloudflare Pages Redirects
+# Redirect 404 to custom 404 page
+/*    /404.html   404
+
+# SPA fallback (if needed in future)
+# /*    /index.html   200

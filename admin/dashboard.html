@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - HIKARI Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-page">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="../index.html" class="sidebar-logo">
+                <img src="../images/logo.png" alt="HIKARI" class="sidebar-logo-img">
+                <span class="logo-text">HIKARI</span>
+            </a>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item active">
+                    <a href="dashboard.html">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="menu.html">
+                        <i class="fas fa-utensils"></i>
+                        <span>Menu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reservations.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Réservations</span>
+                        <span class="badge" id="pendingBadge">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Admin</span>
+                    <span class="user-email" id="userEmail">admin@hikari.fr</span>
+                </div>
+            </div>
+            <button class="btn-logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <a href="../index.html" target="_blank" class="btn-view-site">
+                    <i class="fas fa-external-link-alt"></i>
+                    Voir le site
+                </a>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon bg-primary">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="totalMenuItems">0</span>
+                        <span class="stat-label">Plats au Menu</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon bg-success">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="todayReservations">0</span>
+                        <span class="stat-label">Réservations Aujourd'hui</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon bg-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="pendingReservations">0</span>
+                        <span class="stat-label">En Attente</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon bg-info">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="totalReservations">0</span>
+                        <span class="stat-label">Total Réservations</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h2>Actions Rapides</h2>
+                <div class="actions-grid">
+                    <a href="menu.html?action=add" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <span>Ajouter un Plat</span>
+                    </a>
+                    <a href="reservations.html" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <span>Voir Réservations</span>
+                    </a>
+                    <a href="settings.html" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <span>Paramètres</span>
+                    </a>
+                    <button class="action-card" id="seedDataBtn">
+                        <div class="action-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <span>Initialiser Données</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Reservations -->
+            <div class="recent-section">
+                <div class="section-header">
+                    <h2>Réservations Récentes</h2>
+                    <a href="reservations.html" class="btn-link">Voir tout</a>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Date</th>
+                                <th>Heure</th>
+                                <th>Personnes</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentReservations">
+                            <tr class="empty-row">
+                                <td colspan="6">
+                                    <div class="empty-state">
+                                        <i class="fas fa-calendar-times"></i>
+                                        <p>Aucune réservation</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="toast-icon fas fa-check-circle"></i>
+        <span class="toast-message"></span>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+
+    <script>
+        // Protect admin page
+        HikariFirebase.protectAdminPage();
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const seedDataBtn = document.getElementById('seedDataBtn');
+
+        // Toggle sidebar
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            HikariFirebase.logoutAdmin();
+        });
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = toast.querySelector('.toast-icon');
+            const msg = toast.querySelector('.toast-message');
+            
+            icon.className = 'toast-icon fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+            msg.textContent = message;
+            toast.className = 'toast show ' + type;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                const stats = await HikariFirebase.getDashboardStats();
+                
+                document.getElementById('totalMenuItems').textContent = stats.totalMenuItems;
+                document.getElementById('todayReservations').textContent = stats.todayReservations;
+                document.getElementById('pendingReservations').textContent = stats.pendingReservations;
+                document.getElementById('totalReservations').textContent = stats.totalReservations;
+                document.getElementById('pendingBadge').textContent = stats.pendingReservations;
+                
+                // Load recent reservations
+                const result = await HikariFirebase.getAllReservations();
+                const reservations = result.success ? result.items : [];
+                renderRecentReservations(reservations.slice(0, 5));
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Render recent reservations
+        function renderRecentReservations(reservations) {
+            const tbody = document.getElementById('recentReservations');
+            
+            if (reservations.length === 0) {
+                tbody.innerHTML = `
+                    <tr class="empty-row">
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-times"></i>
+                                <p>Aucune réservation</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = reservations.map(res => `
+                <tr>
+                    <td>
+                        <div class="customer-info">
+                            <span class="customer-name">${res.name}</span>
+                            <span class="customer-phone">${res.phone}</span>
+                        </div>
+                    </td>
+                    <td>${res.date}</td>
+                    <td>${res.time}</td>
+                    <td>${res.guests} pers.</td>
+                    <td>
+                        <span class="status-badge status-${res.status}">
+                            ${getStatusLabel(res.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            ${res.status === 'pending' ? `
+                                <button class="btn-icon btn-success" onclick="updateStatus('${res.id}', 'confirmed')" title="Confirmer">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn-icon btn-danger" onclick="updateStatus('${res.id}', 'cancelled')" title="Annuler">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Get status label
+        function getStatusLabel(status) {
+            const labels = {
+                'pending': 'En attente',
+                'confirmed': 'Confirmé',
+                'cancelled': 'Annulé'
+            };
+            return labels[status] || status;
+        }
+
+        // Update reservation status
+        async function updateStatus(id, status) {
+            const result = await HikariFirebase.updateReservationStatus(id, status);
+            if (result.success) {
+                showToast('Statut mis à jour');
+                loadDashboardData();
+            } else {
+                showToast('Erreur: ' + result.error, 'error');
+            }
+        }
+
+        // Seed data
+        seedDataBtn.addEventListener('click', async () => {
+            if (confirm('Voulez-vous initialiser les données du menu? Cela ajoutera des plats de démonstration.')) {
+                seedDataBtn.disabled = true;
+                seedDataBtn.innerHTML = '<div class="action-icon"><i class="fas fa-spinner fa-spin"></i></div><span>Chargement...</span>';
+                
+                const result = await HikariFirebase.seedMenuData();
+                
+                if (result.success) {
+                    showToast('Données initialisées avec succès!');
+                    loadDashboardData();
+                } else {
+                    showToast('Erreur: ' + result.error, 'error');
+                }
+                
+                seedDataBtn.disabled = false;
+                seedDataBtn.innerHTML = '<div class="action-icon"><i class="fas fa-database"></i></div><span>Initialiser Données</span>';
+            }
+        });
+
+        // Set user info
+        HikariFirebase.checkAuthState(user => {
+            if (user) {
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userName').textContent = user.email.split('@')[0];
+            }
+        });
+
+        // Initialize
+        loadDashboardData();
+
+        // Make updateStatus available globally
+        window.updateStatus = updateStatus;
+    </script>
+</body>
+</html>
