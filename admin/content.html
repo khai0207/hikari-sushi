@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Contenu - HIKARI Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .content-section {
+            background: var(--dark-light);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .content-section h3 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .content-section h3 i {
+            font-size: 0.9em;
+        }
+        .content-item {
+            margin-bottom: 20px;
+        }
+        .content-item label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 14px;
+        }
+        .content-item input,
+        .content-item textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .content-item input:focus,
+        .content-item textarea:focus {
+            border-color: var(--gold);
+            outline: none;
+        }
+        .content-item textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .content-item .hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        .save-section-btn {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .save-section-btn:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+        }
+        .save-section-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .content-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .tab-btn.active {
+            background: var(--gold);
+            color: #000;
+        }
+        .content-tab {
+            display: none;
+        }
+        .content-tab.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="admin-page">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="sidebar-logo">
+                <img src="../images/logo.png" alt="HIKARI" class="sidebar-logo-img">
+                <span>HIKARI</span>
+            </a>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="menu.html" class="nav-item">
+                <i class="fas fa-utensils"></i>
+                <span>Menu</span>
+            </a>
+            <a href="reservations.html" class="nav-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Réservations</span>
+                <span class="badge" id="pendingBadge">0</span>
+            </a>
+            <a href="content.html" class="nav-item active">
+                <i class="fas fa-edit"></i>
+                <span>Contenu</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Paramètres</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="userEmail">admin</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="content-header">
+            <button class="mobile-toggle" id="mobileToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-title">
+                <h1>Gestion du Contenu</h1>
+                <p>Modifiez les textes et images du site</p>
+            </div>
+        </header>
+
+        <div class="content-body">
+            <!-- Tab Navigation -->
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="hero">
+                    <i class="fas fa-home"></i> Accueil
+                </button>
+                <button class="tab-btn" data-tab="about">
+                    <i class="fas fa-info-circle"></i> À Propos
+                </button>
+                <button class="tab-btn" data-tab="contact">
+                    <i class="fas fa-phone"></i> Contact
+                </button>
+                <button class="tab-btn" data-tab="footer">
+                    <i class="fas fa-copyright"></i> Footer
+                </button>
+            </div>
+
+            <!-- Hero Section -->
+            <div class="content-tab active" id="tab-hero">
+                <div class="content-section">
+                    <h3><i class="fas fa-home"></i> Section Accueil (Hero)</h3>
+                    
+                    <div class="content-item">
+                        <label>Titre Principal</label>
+                        <input type="text" id="hero_title" data-section="hero" data-key="title" placeholder="Ex: L'Art du Sushi Authentique">
+                        <p class="hint">Le titre principal qui s'affiche en grand</p>
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Sous-titre</label>
+                        <input type="text" id="hero_subtitle" data-section="hero" data-key="subtitle" placeholder="Ex: 光 HIKARI">
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Description</label>
+                        <textarea id="hero_description" data-section="hero" data-key="description" placeholder="Description sous le titre..."></textarea>
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Texte du Bouton</label>
+                        <input type="text" id="hero_button" data-section="hero" data-key="button_text" placeholder="Ex: Découvrir">
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Image de Fond (URL)</label>
+                        <input type="url" id="hero_bg" data-section="hero" data-key="background_image" placeholder="https://...">
+                        <p class="hint">URL de l'image de fond de la section accueil</p>
+                    </div>
+                    
+                    <div class="content-actions">
+                        <button class="save-section-btn" onclick="saveSection('hero')">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="content-tab" id="tab-about">
+                <div class="content-section">
+                    <h3><i class="fas fa-info-circle"></i> Section À Propos</h3>
+                    
+                    <div class="content-item">
+                        <label>Titre</label>
+                        <input type="text" id="about_title" data-section="about" data-key="title" placeholder="Ex: Notre Histoire">
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Sous-titre</label>
+                        <input type="text" id="about_subtitle" data-section="about" data-key="subtitle" placeholder="Ex: NOTRE HISTOIRE">
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Paragraphe 1</label>
+                        <textarea id="about_paragraph1" data-section="about" data-key="paragraph1" placeholder="Premier paragraphe..."></textarea>
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Paragraphe 2</label>
+                        <textarea id="about_paragraph2" data-section="about" data-key="paragraph2" placeholder="Deuxième paragraphe..."></textarea>
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Image (URL)</label>
+                        <input type="url" id="about_image" data-section="about" data-key="image" placeholder="https://...">
+                    </div>
+                    
+                    <div class="content-actions">
+                        <button class="save-section-btn" onclick="saveSection('about')">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="content-tab" id="tab-contact">
+                <div class="content-section">
+                    <h3><i class="fas fa-phone"></i> Informations de Contact</h3>
+                    
+                    <div class="content-item">
+                        <label>Téléphone</label>
+                        <input type="text" id="contact_phone" data-section="contact" data-key="phone" placeholder="Ex: 05 61 55 50 77">
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Email</label>
+                        <input type="email" id="contact_email" data-section="contact" data-key="email" placeholder="Ex: hikari.sushi31@gmail.com">
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Adresse</label>
+                        <textarea id="contact_address" data-section="contact" data-key="address" placeholder="17 allée des Soupirs, 31000 Toulouse"></textarea>
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Lien Google Maps</label>
+                        <input type="url" id="contact_maps" data-section="contact" data-key="maps_url" placeholder="https://maps.google.com/...">
+                    </div>
+                    
+                    <div class="content-actions">
+                        <button class="save-section-btn" onclick="saveSection('contact')">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3><i class="fas fa-share-alt"></i> Réseaux Sociaux</h3>
+                    
+                    <div class="content-item">
+                        <label>Facebook</label>
+                        <input type="url" id="social_facebook" data-section="social" data-key="facebook" placeholder="https://facebook.com/...">
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Instagram</label>
+                        <input type="url" id="social_instagram" data-section="social" data-key="instagram" placeholder="https://instagram.com/...">
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>TripAdvisor</label>
+                        <input type="url" id="social_tripadvisor" data-section="social" data-key="tripadvisor" placeholder="https://tripadvisor.com/...">
+                    </div>
+                    
+                    <div class="content-actions">
+                        <button class="save-section-btn" onclick="saveSection('social')">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Section -->
+            <div class="content-tab" id="tab-footer">
+                <div class="content-section">
+                    <h3><i class="fas fa-copyright"></i> Pied de Page</h3>
+                    
+                    <div class="content-item">
+                        <label>Description du Restaurant</label>
+                        <textarea id="footer_description" data-section="footer" data-key="description" placeholder="Description courte du restaurant..."></textarea>
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Texte Copyright</label>
+                        <input type="text" id="footer_copyright" data-section="footer" data-key="copyright" placeholder="Ex: © 2024 HIKARI Sushi & Roll. Tous droits réservés">
+                    </div>
+                    
+                    <div class="content-actions">
+                        <button class="save-section-btn" onclick="saveSection('footer')">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3><i class="fas fa-clock"></i> Horaires d'Ouverture</h3>
+                    
+                    <div class="content-item">
+                        <label>Lundi</label>
+                        <input type="text" id="hours_monday" data-section="hours" data-key="monday" placeholder="Ex: 19h - 22h">
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Mardi - Dimanche (Midi)</label>
+                        <input type="text" id="hours_lunch" data-section="hours" data-key="lunch" placeholder="Ex: 12h - 14h30">
+                    </div>
+                    
+                    <div class="content-item">
+                        <label>Mardi - Dimanche (Soir)</label>
+                        <input type="text" id="hours_dinner" data-section="hours" data-key="dinner" placeholder="Ex: 19h - 22h">
+                    </div>
+                    
+                    <div class="content-actions">
+                        <button class="save-section-btn" onclick="saveSection('hours')">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="toast-icon fas fa-check-circle"></i>
+        <span class="toast-message"></span>
+    </div>
+
+    <!-- D1 API Client -->
+    <script src="../js/api-client.js"></script>
+
+    <script>
+        // Protect admin page
+        HikariAPI.protectAdminPage();
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+
+        // Toggle sidebar
+        sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
+        mobileToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
+
+        // Logout
+        logoutBtn.addEventListener('click', () => HikariAPI.logout());
+
+        // Tab switching
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                document.querySelectorAll('.content-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Show toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.querySelector('.toast-icon').className = 'toast-icon fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+            toast.querySelector('.toast-message').textContent = message;
+            toast.className = 'toast show ' + type;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Load content
+        async function loadContent() {
+            try {
+                const result = await HikariAPI.content.getAll();
+                if (result.success && result.content) {
+                    // Populate all fields
+                    document.querySelectorAll('[data-section][data-key]').forEach(input => {
+                        const section = input.dataset.section;
+                        const key = input.dataset.key;
+                        if (result.content[section] && result.content[section][key]) {
+                            input.value = result.content[section][key];
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading content:', error);
+            }
+        }
+
+        // Save section
+        async function saveSection(section) {
+            const inputs = document.querySelectorAll(`[data-section="${section}"]`);
+            const btn = event.target.closest('.save-section-btn');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...';
+            
+            let success = true;
+            
+            for (const input of inputs) {
+                const key = input.dataset.key;
+                const value = input.value;
+                
+                try {
+                    const result = await HikariAPI.content.update(section, key, value);
+                    if (!result.success) {
+                        success = false;
+                    }
+                } catch (error) {
+                    success = false;
+                }
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+            
+            if (success) {
+                showToast('Contenu enregistré avec succès');
+            } else {
+                showToast('Erreur lors de la sauvegarde', 'error');
+            }
+        }
+
+        // Set user info
+        const currentUser = HikariAPI.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userEmail').textContent = currentUser.email;
+        }
+
+        // Make saveSection global
+        window.saveSection = saveSection;
+
+        // Initialize
+        loadContent();
+    </script>
+</body>
+</html>
