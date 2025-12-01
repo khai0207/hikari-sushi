@@ -403,20 +403,31 @@ input, textarea, select {
     padding-top: 110px;
 }
 
-.hero-bg {
+.hero-slideshow {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1920&h=1080&fit=crop') center/cover no-repeat;
-    transform: scale(1.1);
-    animation: heroZoom 20s ease-in-out infinite alternate;
+    overflow: hidden;
 }
 
-@keyframes heroZoom {
-    0% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+.hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transform: scale(1.1);
+    transition: opacity 1s ease-in-out, transform 8s ease-out;
+}
+
+.hero-slide.active {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .hero-overlay {
@@ -427,10 +438,11 @@ input, textarea, select {
     height: 100%;
     background: linear-gradient(
         135deg,
-        rgba(15, 15, 15, 0.95) 0%,
-        rgba(15, 15, 15, 0.8) 50%,
-        rgba(15, 15, 15, 0.7) 100%
+        rgba(15, 15, 15, 0.92) 0%,
+        rgba(15, 15, 15, 0.75) 50%,
+        rgba(15, 15, 15, 0.65) 100%
     );
+    z-index: 1;
 }
 
 .floating-elements {
