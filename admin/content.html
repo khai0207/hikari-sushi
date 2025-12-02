@@ -586,21 +586,25 @@
                         <i class="fas fa-share-alt"></i>
                         <div>
                             <h2>Réseaux Sociaux</h2>
-                            <p>Liens vers vos réseaux</p>
+                            <p>Liens vers vos réseaux (laisser vide pour masquer)</p>
                         </div>
                     </div>
                     <div class="content-card-body">
                         <div class="form-group">
-                            <label>Facebook</label>
+                            <label><i class="fab fa-facebook-f"></i> Facebook</label>
                             <input type="url" id="social_facebook" placeholder="https://facebook.com/...">
                         </div>
                         <div class="form-group">
-                            <label>Instagram</label>
+                            <label><i class="fab fa-instagram"></i> Instagram</label>
                             <input type="url" id="social_instagram" placeholder="https://instagram.com/...">
                         </div>
                         <div class="form-group">
-                            <label>TripAdvisor</label>
+                            <label><i class="fab fa-tripadvisor"></i> TripAdvisor</label>
                             <input type="url" id="social_tripadvisor" placeholder="https://tripadvisor.com/...">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fab fa-google"></i> Google Business</label>
+                            <input type="url" id="social_google" placeholder="https://g.page/...">
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -744,7 +748,7 @@
 
         document.getElementById('socialForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['social_facebook', 'social_instagram', 'social_tripadvisor']);
+            await saveContent(e.target, ['social_facebook', 'social_instagram', 'social_tripadvisor', 'social_google']);
         });
 
         // Initialize

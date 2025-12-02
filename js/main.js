@@ -564,7 +564,7 @@ async function loadDynamicContent() {
         if (result.success && result.content) {
             const content = result.content;
             
-            // Hero Section
+            // ===== HERO SECTION =====
             if (content.hero) {
                 // Badge
                 const badge = document.querySelector('.hero-badge span:last-child');
@@ -580,7 +580,7 @@ async function loadDynamicContent() {
                 
                 // Typed words - update the words array
                 if (content.hero.typed_words && Array.isArray(content.hero.typed_words)) {
-                    words.length = 0; // Clear existing
+                    words.length = 0;
                     content.hero.typed_words.forEach(word => words.push(word));
                 }
                 
@@ -591,51 +591,55 @@ async function loadDynamicContent() {
                 }
             }
             
-            // About Section
+            // ===== ABOUT SECTION =====
             if (content.about) {
-                // Subtitle
                 const aboutSubtitle = document.querySelector('#about .section-subtitle');
                 if (aboutSubtitle && content.about.subtitle) {
-                    // Keep the line spans but update text
-                    const lines = aboutSubtitle.querySelectorAll('.line');
-                    if (lines.length >= 2) {
-                        aboutSubtitle.innerHTML = `<span class="line"></span>${content.about.subtitle}<span class="line"></span>`;
-                    }
+                    aboutSubtitle.innerHTML = `<span class="line"></span>${content.about.subtitle}<span class="line"></span>`;
                 }
                 
-                // Title
                 const aboutTitle = document.querySelector('#about .section-title');
                 if (aboutTitle && content.about.title) {
                     aboutTitle.innerHTML = content.about.title.replace(/\n/g, '<br>');
                 }
                 
-                // Description - update lead paragraph
                 const aboutLead = document.querySelector('#about .about-text .lead');
                 if (aboutLead && content.about.description) {
                     aboutLead.textContent = content.about.description;
                 }
+                
+                // About image
+                const aboutMainImg = document.querySelector('.about-img-main img');
+                if (aboutMainImg && content.about.image) {
+                    aboutMainImg.src = content.about.image;
+                }
             }
             
-            // Contact Section
+            // ===== CONTACT INFO =====
             if (content.contact) {
-                // Phone links
-                const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+                // Phone - update all phone links and displays
                 if (content.contact.phone) {
-                    const phoneNumber = content.contact.phone.replace(/\s/g, '');
-                    phoneLinks.forEach(link => {
-                        link.href = `tel:${phoneNumber}`;
-                        // Update text if it contains a phone format
-                        const textNode = link.querySelector('strong') || link;
-                        if (textNode.textContent.match(/\d/)) {
-                            textNode.textContent = content.contact.phone;
-                        }
+                    const phoneClean = content.contact.phone.replace(/\s/g, '');
+                    
+                    // All phone links
+                    document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+                        link.href = `tel:${phoneClean}`;
+                    });
+                    
+                    // Phone text displays
+                    document.querySelectorAll('.footer-contact a[href^="tel:"]').forEach(el => {
+                        el.textContent = content.contact.phone;
+                    });
+                    
+                    // btn-call strong
+                    document.querySelectorAll('.btn-call strong').forEach(el => {
+                        el.textContent = content.contact.phone;
                     });
                 }
                 
-                // Email links  
-                const emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+                // Email
                 if (content.contact.email) {
-                    emailLinks.forEach(link => {
+                    document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
                         link.href = `mailto:${content.contact.email}`;
                         if (link.textContent.includes('@')) {
                             link.textContent = content.contact.email;
@@ -644,29 +648,78 @@ async function loadDynamicContent() {
                 }
                 
                 // Address
-                const addressElements = document.querySelectorAll('.footer-contact li:first-child span, .contact-card p');
                 if (content.contact.address) {
-                    addressElements.forEach(el => {
-                        if (el.textContent.includes('allée') || el.textContent.includes('Toulouse')) {
-                            el.innerHTML = content.contact.address.replace(', ', '<br>');
-                        }
-                    });
+                    const addressSpan = document.querySelector('.footer-contact li:first-child span');
+                    if (addressSpan) {
+                        addressSpan.innerHTML = content.contact.address.replace(', ', '<br>');
+                    }
                 }
             }
             
-            // Social Links
+            // ===== SOCIAL LINKS =====
             if (content.social) {
-                if (content.social.facebook) {
-                    const fbLinks = document.querySelectorAll('a[aria-label="Facebook"]');
-                    fbLinks.forEach(link => link.href = content.social.facebook);
-                }
-                if (content.social.instagram) {
-                    const igLinks = document.querySelectorAll('a[aria-label="Instagram"]');
-                    igLinks.forEach(link => link.href = content.social.instagram);
-                }
-                if (content.social.tripadvisor) {
-                    const taLinks = document.querySelectorAll('a[aria-label="Tripadvisor"]');
-                    taLinks.forEach(link => link.href = content.social.tripadvisor);
+                // Facebook
+                const fbLinks = document.querySelectorAll('a[aria-label="Facebook"]');
+                fbLinks.forEach(link => {
+                    if (content.social.facebook && content.social.facebook.trim()) {
+                        link.href = content.social.facebook;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none'; // Hide if no link
+                    }
+                });
+                
+                // Instagram
+                const igLinks = document.querySelectorAll('a[aria-label="Instagram"]');
+                igLinks.forEach(link => {
+                    if (content.social.instagram && content.social.instagram.trim()) {
+                        link.href = content.social.instagram;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
+                
+                // TripAdvisor
+                const taLinks = document.querySelectorAll('a[aria-label="Tripadvisor"]');
+                taLinks.forEach(link => {
+                    if (content.social.tripadvisor && content.social.tripadvisor.trim()) {
+                        link.href = content.social.tripadvisor;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
+                
+                // Google
+                const googleLinks = document.querySelectorAll('a[aria-label="Google"]');
+                googleLinks.forEach(link => {
+                    if (content.social.google && content.social.google.trim()) {
+                        link.href = content.social.google;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
+            }
+            
+            // ===== HOURS =====
+            if (content.hours) {
+                // Update footer hours display
+                const hoursListItems = document.querySelectorAll('.footer-hours .hours-list li');
+                // This would require more complex logic to map day names
+                // For now, we'll update via settings page
+            }
+            
+            // ===== FOOTER DESCRIPTION =====
+            if (content.footer && content.footer.description) {
+                const footerDesc = document.querySelector('.footer-brand > p');
+                if (footerDesc) {
+                    footerDesc.textContent = content.footer.description;
                 }
             }
             
