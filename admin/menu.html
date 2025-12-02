@@ -971,12 +971,9 @@
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchInput" placeholder="Rechercher un plat...">
                 </div>
-                <div class="filter-tabs">
+                <div class="filter-tabs" id="filterTabs">
                     <button class="filter-tab active" data-category="all">Tous</button>
-                    <button class="filter-tab" data-category="sushi">Sushis</button>
-                    <button class="filter-tab" data-category="maki">Makis & Rolls</button>
-                    <button class="filter-tab" data-category="plats">Plats Chauds</button>
-                    <button class="filter-tab" data-category="desserts">Desserts</button>
+                    <!-- Dynamic categories will be loaded here -->
                 </div>
             </div>
 
@@ -1028,22 +1025,26 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Catégorie *</label>
-                            <select id="itemCategory" required>
-                                <option value="">Sélectionner...</option>
-                                <option value="sushi">Sushis</option>
-                                <option value="maki">Makis & Rolls</option>
-                                <option value="plats">Plats Chauds</option>
-                                <option value="desserts">Desserts</option>
-                            </select>
+                            <input type="text" id="itemCategory" required placeholder="Ex: Sushis, Makis, Plats Chauds..." list="categoryList">
+                            <datalist id="categoryList">
+                                <option value="Sushis">
+                                <option value="Makis & Rolls">
+                                <option value="Plats Chauds">
+                                <option value="Desserts">
+                                <option value="Boissons">
+                                <option value="Entrées">
+                            </datalist>
                         </div>
                         <div class="form-group">
                             <label>Badge</label>
-                            <select id="itemBadge">
-                                <option value="">Aucun</option>
-                                <option value="Populaire">Populaire</option>
-                                <option value="Nouveau">Nouveau</option>
-                                <option value="Signature">Signature</option>
-                            </select>
+                            <input type="text" id="itemBadge" placeholder="Ex: Populaire, Nouveau, Signature..." list="badgeList">
+                            <datalist id="badgeList">
+                                <option value="Populaire">
+                                <option value="Nouveau">
+                                <option value="Signature">
+                                <option value="Promo">
+                                <option value="Chef">
+                            </datalist>
                         </div>
                     </div>
 
@@ -1177,6 +1178,7 @@
             try {
                 const result = await HikariAPI.menu.getAll();
                 menuItems = result.success ? result.data : [];
+                updateCategoryTabs();
                 renderMenuItems();
             } catch (error) {
                 console.error('Error:', error);
@@ -1184,6 +1186,36 @@
                 menuItems = [];
                 renderMenuItems();
             }
+        }
+
+        // Update category tabs dynamically
+        function updateCategoryTabs() {
+            const filterTabsContainer = document.getElementById('filterTabs');
+            const categories = [...new Set(menuItems.map(item => item.category))].filter(Boolean);
+            
+            filterTabsContainer.innerHTML = '<button class="filter-tab active" data-category="all">Tous</button>';
+            
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-tab';
+                btn.dataset.category = cat;
+                btn.textContent = cat;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = cat;
+                    renderMenuItems();
+                });
+                filterTabsContainer.appendChild(btn);
+            });
+            
+            // Re-attach event listener for "All" tab
+            filterTabsContainer.querySelector('[data-category="all"]').addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                filterTabsContainer.querySelector('[data-category="all"]').classList.add('active');
+                currentFilter = 'all';
+                renderMenuItems();
+            });
         }
 
         // Render menu items
@@ -1240,19 +1272,8 @@
         }
 
         function getCategoryLabel(category) {
-            const labels = { sushi: 'Sushis', maki: 'Makis & Rolls', plats: 'Plats Chauds', desserts: 'Desserts' };
-            return labels[category] || category;
+            return category || 'Non classé';
         }
-
-        // Filter tabs
-        filterTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                filterTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                currentFilter = tab.dataset.category;
-                renderMenuItems();
-            });
-        });
 
         // Search
         searchInput.addEventListener('input', (e) => {

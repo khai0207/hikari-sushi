@@ -354,6 +354,114 @@
         .toast.error { border-color: var(--danger); }
         .toast.error i { color: var(--danger); }
 
+        /* Image Upload */
+        .image-upload-container {
+            position: relative;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 180px;
+            background: var(--bg-input);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .image-preview:hover {
+            border-color: var(--gold);
+            background: rgba(201, 169, 98, 0.05);
+        }
+
+        .image-preview i {
+            font-size: 2.5rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .image-preview span {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview.has-image i,
+        .image-preview.has-image span {
+            display: none;
+        }
+
+        /* Hours Grid */
+        .hours-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .hours-row {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .hours-row label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .hours-row input {
+            padding: 10px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .hours-row input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .hours-row input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .hours-header {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hours-header span {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .hours-header span:first-child {
+            color: var(--text-muted);
+        }
+
         /* Sidebar Overlay */
         .sidebar-overlay {
             display: none;
@@ -533,8 +641,15 @@
                             <textarea id="about_description" rows="4" placeholder="Depuis notre ouverture, HIKARI Sushi & Roll..."></textarea>
                         </div>
                         <div class="form-group">
-                            <label>URL Image</label>
-                            <input type="text" id="about_image" placeholder="https://...">
+                            <label>Image</label>
+                            <div class="image-upload-container">
+                                <input type="file" id="about_image_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="about_image_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Cliquez pour télécharger</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="about_image">
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -605,6 +720,67 @@
                         <div class="form-group">
                             <label><i class="fab fa-google"></i> Google Business</label>
                             <input type="url" id="social_google" placeholder="https://g.page/...">
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Horaires Section -->
+                <form id="hoursForm" class="content-card">
+                    <div class="content-card-header">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h2>Horaires d'Ouverture</h2>
+                            <p>Définissez vos horaires (laisser vide si fermé)</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="hours-grid">
+                            <div class="hours-header">
+                                <span>Jour</span>
+                                <span>Midi</span>
+                                <span>Soir</span>
+                            </div>
+                            <div class="hours-row">
+                                <label>Lundi</label>
+                                <input type="text" id="hours_monday_lunch" placeholder="Fermé">
+                                <input type="text" id="hours_monday_dinner" placeholder="19h - 22h">
+                            </div>
+                            <div class="hours-row">
+                                <label>Mardi</label>
+                                <input type="text" id="hours_tuesday_lunch" placeholder="12h - 14h30">
+                                <input type="text" id="hours_tuesday_dinner" placeholder="19h - 22h">
+                            </div>
+                            <div class="hours-row">
+                                <label>Mercredi</label>
+                                <input type="text" id="hours_wednesday_lunch" placeholder="12h - 14h30">
+                                <input type="text" id="hours_wednesday_dinner" placeholder="19h - 22h">
+                            </div>
+                            <div class="hours-row">
+                                <label>Jeudi</label>
+                                <input type="text" id="hours_thursday_lunch" placeholder="12h - 14h30">
+                                <input type="text" id="hours_thursday_dinner" placeholder="19h - 22h">
+                            </div>
+                            <div class="hours-row">
+                                <label>Vendredi</label>
+                                <input type="text" id="hours_friday_lunch" placeholder="12h - 14h30">
+                                <input type="text" id="hours_friday_dinner" placeholder="19h - 22h">
+                            </div>
+                            <div class="hours-row">
+                                <label>Samedi</label>
+                                <input type="text" id="hours_saturday_lunch" placeholder="12h - 14h30">
+                                <input type="text" id="hours_saturday_dinner" placeholder="19h - 22h">
+                            </div>
+                            <div class="hours-row">
+                                <label>Dimanche</label>
+                                <input type="text" id="hours_sunday_lunch" placeholder="12h - 14h30">
+                                <input type="text" id="hours_sunday_dinner" placeholder="19h - 22h">
+                            </div>
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -687,6 +863,11 @@
                                 element.value = item.value;
                             }
                             console.log('Set', item.key, '=', element.value);
+                            
+                            // Handle about_image preview
+                            if (item.key === 'about_image' && item.value) {
+                                updateAboutImagePreview(item.value);
+                            }
                         }
                     });
                 }
@@ -751,8 +932,87 @@
             await saveContent(e.target, ['social_facebook', 'social_instagram', 'social_tripadvisor', 'social_google']);
         });
 
+        // Hours form handler
+        document.getElementById('hoursForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            const fields = [];
+            days.forEach(day => {
+                fields.push(`hours_${day}_lunch`, `hours_${day}_dinner`);
+            });
+            await saveContent(e.target, fields);
+        });
+
+        // About Image Upload
+        const aboutImagePreview = document.getElementById('about_image_preview');
+        const aboutImageFile = document.getElementById('about_image_file');
+        const aboutImageHidden = document.getElementById('about_image');
+
+        aboutImagePreview.addEventListener('click', () => aboutImageFile.click());
+
+        aboutImageFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image trop grande (max 5MB)', 'error');
+                return;
+            }
+
+            try {
+                const base64 = await compressImage(file, 800, 0.7);
+                aboutImageHidden.value = base64;
+                aboutImagePreview.innerHTML = `<img src="${base64}" alt="Preview">`;
+                aboutImagePreview.classList.add('has-image');
+            } catch (error) {
+                console.error('Error processing image:', error);
+                showToast('Erreur lors du traitement de l\'image', 'error');
+            }
+        });
+
+        // Image compression function
+        function compressImage(file, maxWidth, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxWidth) {
+                            height = (height * maxWidth) / width;
+                            width = maxWidth;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Update loadContent to handle about_image
+        function updateAboutImagePreview(value) {
+            if (value && value.startsWith('data:')) {
+                aboutImagePreview.innerHTML = `<img src="${value}" alt="Preview">`;
+                aboutImagePreview.classList.add('has-image');
+            }
+        }
+
         // Initialize
         loadContent();
+    </script>
     </script>
 </body>
 </html>

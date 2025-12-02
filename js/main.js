@@ -217,77 +217,31 @@ testimonialSlider.addEventListener('mouseleave', () => {
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         const href = this.getAttribute('href');
-        // Skip if href is just "#" or empty
+        // Skip if href is just "#" or empty, or if it's an external link
         if (!href || href === '#' || href.length <= 1) return;
+        // Skip if href contains "http" (external links)
+        if (href.includes('http') || href.includes('://')) return;
+        // Skip if href doesn't start with #
+        if (!href.startsWith('#')) return;
         
         e.preventDefault();
-        const target = document.querySelector(href);
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-            // Close mobile menu if open
-            if (typeof closeMobileMenu === 'function') {
-                closeMobileMenu();
+        try {
+            const target = document.querySelector(href);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                // Close mobile menu if open
+                if (typeof closeMobileMenu === 'function') {
+                    closeMobileMenu();
+                }
             }
+        } catch (err) {
+            // Invalid selector, ignore
+            console.log('Invalid scroll target:', href);
         }
     });
-});
-
-// ===== FORM SUBMISSION =====
-const reservationForm = document.getElementById('reservationForm');
-
-reservationForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
-    
-    // Simple validation
-    if (!data.name || !data.phone || !data.email || !data.guests || !data.date || !data.time) {
-        alert('Veuillez remplir tous les champs obligatoires.');
-        return;
-    }
-    
-    const btn = this.querySelector('.btn-submit');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
-    btn.disabled = true;
-    
-    // Try to save to Firebase if available
-    let savedToFirebase = false;
-    if (typeof HikariFirebase !== 'undefined') {
-        try {
-            const result = await HikariFirebase.addReservation({
-                name: data.name,
-                phone: data.phone,
-                email: data.email,
-                guests: data.guests,
-                date: data.date,
-                time: data.time,
-                message: data.message || ''
-            });
-            savedToFirebase = result.success;
-        } catch (error) {
-            console.log('Firebase not configured, showing demo success');
-        }
-    }
-    
-    // Show success message
-    btn.innerHTML = '<i class="fas fa-check"></i> Demande envoyée !';
-    btn.style.background = '#27ae60';
-    btn.disabled = false;
-    
-    setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.style.background = '';
-        this.reset();
-    }, 3000);
-    
-    // Log data
-    console.log('Reservation Data:', data, savedToFirebase ? '(saved to Firebase)' : '(demo mode)');
 });
 
 // ===== PARALLAX EFFECT =====
@@ -708,11 +662,78 @@ async function loadDynamicContent() {
             }
             
             // ===== HOURS =====
-            if (content.hours) {
-                // Update footer hours display
-                const hoursListItems = document.querySelectorAll('.footer-hours .hours-list li');
-                // This would require more complex logic to map day names
-                // For now, we'll update via settings page
+            // Build hours object from individual content items
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            const dayNames = {
+                monday: 'Lundi',
+                tuesday: 'Mardi',
+                wednesday: 'Mercredi',
+                thursday: 'Jeudi',
+                friday: 'Vendredi',
+                saturday: 'Samedi',
+                sunday: 'Dimanche'
+            };
+            
+            let hoursData = {};
+            let hasHours = false;
+            
+            days.forEach(day => {
+                const lunch = content.hours?.[`${day}_lunch`];
+                const dinner = content.hours?.[`${day}_dinner`];
+                if (lunch || dinner) {
+                    hasHours = true;
+                    hoursData[day] = { lunch, dinner };
+                }
+            });
+            
+            if (hasHours) {
+                // Update contact section hours
+                const hoursCard = document.getElementById('contact-hours-card');
+                if (hoursCard) {
+                    const hoursContent = hoursCard.querySelector('.hours-content');
+                    if (hoursContent) {
+                        let html = '';
+                        days.forEach(day => {
+                            const lunch = hoursData[day]?.lunch || '';
+                            const dinner = hoursData[day]?.dinner || '';
+                            
+                            if (lunch || dinner) {
+                                if (lunch && dinner) {
+                                    html += `<p><strong>${dayNames[day]}</strong>: ${lunch} / ${dinner}</p>`;
+                                } else if (lunch) {
+                                    html += `<p><strong>${dayNames[day]}</strong>: ${lunch}</p>`;
+                                } else if (dinner) {
+                                    html += `<p><strong>${dayNames[day]}</strong>: ${dinner}</p>`;
+                                }
+                            } else {
+                                html += `<p><strong>${dayNames[day]}</strong>: Fermé</p>`;
+                            }
+                        });
+                        hoursContent.innerHTML = html;
+                    }
+                }
+                
+                // Update footer hours
+                const footerHoursList = document.querySelector('.footer-hours .hours-list');
+                if (footerHoursList) {
+                    let html = '';
+                    days.forEach(day => {
+                        const lunch = hoursData[day]?.lunch || '';
+                        const dinner = hoursData[day]?.dinner || '';
+                        
+                        let timeText = 'Fermé';
+                        if (lunch && dinner) {
+                            timeText = `${lunch} / ${dinner}`;
+                        } else if (lunch) {
+                            timeText = lunch;
+                        } else if (dinner) {
+                            timeText = dinner;
+                        }
+                        
+                        html += `<li><span>${dayNames[day]}</span><span>${timeText}</span></li>`;
+                    });
+                    footerHoursList.innerHTML = html;
+                }
             }
             
             // ===== FOOTER DESCRIPTION =====

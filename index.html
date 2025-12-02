@@ -90,11 +90,10 @@
                     <li><a href="#menu" class="nav-link">Menu</a></li>
                     <li><a href="#specialites" class="nav-link">Spécialités</a></li>
                     <li><a href="#gallery" class="nav-link">Galerie</a></li>
-                    <li><a href="#reservation" class="nav-link">Réservation</a></li>
                     <li><a href="#contact" class="nav-link">Contact</a></li>
                 </ul>
-                <a href="#reservation" class="btn-reserve">
-                    <i class="fas fa-calendar-alt"></i> Réserver
+                <a href="tel:0561555077" class="btn-reserve">
+                    <i class="fas fa-phone-alt"></i> Appeler
                 </a>
                 <div class="hamburger" id="hamburger">
                     <span></span>
@@ -142,9 +141,9 @@
                         <span>Découvrir le Menu</span>
                         <i class="fas fa-arrow-right"></i>
                     </a>
-                    <a href="#reservation" class="btn btn-outline">
-                        <i class="fas fa-utensils"></i>
-                        <span>Réserver une Table</span>
+                    <a href="tel:0561555077" class="btn btn-outline">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>Appeler pour Réserver</span>
                     </a>
                 </div>
             </div>
@@ -751,119 +750,6 @@
         </div>
     </div>
 
-    <!-- Reservation Section -->
-    <section class="reservation section" id="reservation">
-        <div class="reservation-bg">
-            <div class="reservation-overlay"></div>
-        </div>
-        <div class="container">
-            <div class="reservation-wrapper">
-                <div class="reservation-info" data-aos="fade-right">
-                    <span class="section-subtitle light">
-                        <span class="line"></span>
-                        RÉSERVATION
-                        <span class="line"></span>
-                    </span>
-                    <h2 class="reservation-title">Réservez Votre Table</h2>
-                    <p>Demande de réservation au <a href="tel:0561555077">05 61 55 50 77</a> ou remplissez le formulaire</p>
-                    <div class="reservation-contact">
-                        <div class="contact-item">
-                            <i class="fas fa-phone-alt"></i>
-                            <div>
-                                <span>Téléphone</span>
-                                <a href="tel:0561555077">05 61 55 50 77</a>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <div>
-                                <span>Adresse</span>
-                                <p>17 allée des Soupirs, 31000 Toulouse</p>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-clock"></i>
-                            <div>
-                                <span>Horaires</span>
-                                <p>Mar-Dim: 12h-14h30 / 19h-22h<br>Lun: 19h-22h (fermé midi)</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="reservation-form-wrapper" data-aos="fade-left">
-                    <form class="reservation-form" id="reservationForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <input type="text" id="name" name="name" required placeholder=" ">
-                                <label for="name">Votre Nom</label>
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="form-group">
-                                <input type="tel" id="phone" name="phone" required placeholder=" ">
-                                <label for="phone">Téléphone</label>
-                                <i class="fas fa-phone"></i>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <input type="email" id="email" name="email" required placeholder=" ">
-                                <label for="email">Email</label>
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="form-group">
-                                <select id="guests" name="guests" required>
-                                    <option value="" disabled selected></option>
-                                    <option value="1">1 Personne</option>
-                                    <option value="2">2 Personnes</option>
-                                    <option value="3">3 Personnes</option>
-                                    <option value="4">4 Personnes</option>
-                                    <option value="5">5 Personnes</option>
-                                    <option value="6+">6+ Personnes</option>
-                                </select>
-                                <label for="guests">Nombre de Personnes</label>
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <input type="date" id="date" name="date" required placeholder=" ">
-                                <label for="date">Date</label>
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <div class="form-group">
-                                <select id="time" name="time" required>
-                                    <option value="" disabled selected></option>
-                                    <option value="12:00">12:00</option>
-                                    <option value="12:30">12:30</option>
-                                    <option value="13:00">13:00</option>
-                                    <option value="13:30">13:30</option>
-                                    <option value="14:00">14:00</option>
-                                    <option value="19:00">19:00</option>
-                                    <option value="19:30">19:30</option>
-                                    <option value="20:00">20:00</option>
-                                    <option value="20:30">20:30</option>
-                                    <option value="21:00">21:00</option>
-                                    <option value="21:30">21:30</option>
-                                </select>
-                                <label for="time">Heure</label>
-                                <i class="fas fa-clock"></i>
-                            </div>
-                        </div>
-                        <div class="form-group full">
-                            <textarea id="message" name="message" rows="3" placeholder=" "></textarea>
-                            <label for="message">Message (optionnel)</label>
-                            <i class="fas fa-comment"></i>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-submit">
-                            <span>Réserver Maintenant</span>
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Features Section -->
     <section class="features section">
         <div class="container">
@@ -929,15 +815,17 @@
             </div>
             <div class="contact-content">
                 <div class="contact-info-grid" data-aos="fade-right">
-                    <div class="contact-card">
+                    <div class="contact-card" id="contact-hours-card">
                         <div class="contact-card-icon">
                             <i class="fas fa-clock"></i>
                         </div>
                         <h4>Horaires</h4>
-                        <p>Lundi : fermé le midi, ouvert de 19h à 22h</p>
-                        <p>Mardi au dimanche :</p>
-                        <p>• Midi : 12h à 14h30</p>
-                        <p>• Soir : 19h à 22h</p>
+                        <div class="hours-content">
+                            <p>Lundi : fermé le midi, ouvert de 19h à 22h</p>
+                            <p>Mardi au dimanche :</p>
+                            <p>• Midi : 12h à 14h30</p>
+                            <p>• Soir : 19h à 22h</p>
+                        </div>
                     </div>
                     <div class="contact-card">
                         <div class="contact-card-icon">
@@ -1009,7 +897,7 @@
                             <li><a href="#about">Notre Histoire</a></li>
                             <li><a href="#menu">Menu</a></li>
                             <li><a href="#specialites">Spécialités</a></li>
-                            <li><a href="#reservation">Réservation</a></li>
+                            <li><a href="#gallery">Galerie</a></li>
                             <li><a href="#contact">Contact</a></li>
                         </ul>
                     </div>
