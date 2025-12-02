@@ -34,7 +34,7 @@ AOS.init({
 
 // ===== TYPING EFFECT =====
 const typedTextElement = document.querySelector('.typed-text');
-const words = ['cuisine japonaise', 'sushis frais', 'saveurs uniques', 'traditions'];
+let words = ['cuisine japonaise', 'sushis frais', 'saveurs uniques', 'traditions'];
 let wordIndex = 0;
 let charIndex = 0;
 let isDeleting = false;
@@ -552,6 +552,133 @@ document.getElementById('lightbox')?.addEventListener('click', (e) => {
         closeLightbox();
     }
 });
+
+// ===== LOAD CONTENT FROM API =====
+const API_URL = 'https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev';
+
+async function loadDynamicContent() {
+    try {
+        const response = await fetch(`${API_URL}/api/content`);
+        const result = await response.json();
+        
+        if (result.success && result.content) {
+            const content = result.content;
+            
+            // Hero Section
+            if (content.hero) {
+                // Badge
+                const badge = document.querySelector('.hero-badge span:last-child');
+                if (badge && content.hero.badge) {
+                    badge.textContent = content.hero.badge;
+                }
+                
+                // Title (before typed text)
+                const heroTitleLine = document.querySelector('.hero-title .line:first-child');
+                if (heroTitleLine && content.hero.title) {
+                    heroTitleLine.textContent = content.hero.title;
+                }
+                
+                // Typed words - update the words array
+                if (content.hero.typed_words && Array.isArray(content.hero.typed_words)) {
+                    words.length = 0; // Clear existing
+                    content.hero.typed_words.forEach(word => words.push(word));
+                }
+                
+                // Subtitle
+                const heroSubtitle = document.querySelector('.hero-subtitle');
+                if (heroSubtitle && content.hero.subtitle) {
+                    heroSubtitle.textContent = content.hero.subtitle;
+                }
+            }
+            
+            // About Section
+            if (content.about) {
+                // Subtitle
+                const aboutSubtitle = document.querySelector('#about .section-subtitle');
+                if (aboutSubtitle && content.about.subtitle) {
+                    // Keep the line spans but update text
+                    const lines = aboutSubtitle.querySelectorAll('.line');
+                    if (lines.length >= 2) {
+                        aboutSubtitle.innerHTML = `<span class="line"></span>${content.about.subtitle}<span class="line"></span>`;
+                    }
+                }
+                
+                // Title
+                const aboutTitle = document.querySelector('#about .section-title');
+                if (aboutTitle && content.about.title) {
+                    aboutTitle.innerHTML = content.about.title.replace(/\n/g, '<br>');
+                }
+                
+                // Description - update lead paragraph
+                const aboutLead = document.querySelector('#about .about-text .lead');
+                if (aboutLead && content.about.description) {
+                    aboutLead.textContent = content.about.description;
+                }
+            }
+            
+            // Contact Section
+            if (content.contact) {
+                // Phone links
+                const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+                if (content.contact.phone) {
+                    const phoneNumber = content.contact.phone.replace(/\s/g, '');
+                    phoneLinks.forEach(link => {
+                        link.href = `tel:${phoneNumber}`;
+                        // Update text if it contains a phone format
+                        const textNode = link.querySelector('strong') || link;
+                        if (textNode.textContent.match(/\d/)) {
+                            textNode.textContent = content.contact.phone;
+                        }
+                    });
+                }
+                
+                // Email links  
+                const emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+                if (content.contact.email) {
+                    emailLinks.forEach(link => {
+                        link.href = `mailto:${content.contact.email}`;
+                        if (link.textContent.includes('@')) {
+                            link.textContent = content.contact.email;
+                        }
+                    });
+                }
+                
+                // Address
+                const addressElements = document.querySelectorAll('.footer-contact li:first-child span, .contact-card p');
+                if (content.contact.address) {
+                    addressElements.forEach(el => {
+                        if (el.textContent.includes('allée') || el.textContent.includes('Toulouse')) {
+                            el.innerHTML = content.contact.address.replace(', ', '<br>');
+                        }
+                    });
+                }
+            }
+            
+            // Social Links
+            if (content.social) {
+                if (content.social.facebook) {
+                    const fbLinks = document.querySelectorAll('a[aria-label="Facebook"]');
+                    fbLinks.forEach(link => link.href = content.social.facebook);
+                }
+                if (content.social.instagram) {
+                    const igLinks = document.querySelectorAll('a[aria-label="Instagram"]');
+                    igLinks.forEach(link => link.href = content.social.instagram);
+                }
+                if (content.social.tripadvisor) {
+                    const taLinks = document.querySelectorAll('a[aria-label="Tripadvisor"]');
+                    taLinks.forEach(link => link.href = content.social.tripadvisor);
+                }
+            }
+            
+            console.log('✅ Dynamic content loaded from database');
+        }
+    } catch (error) {
+        console.log('ℹ️ Using static content (API unavailable):', error.message);
+    }
+}
+
+// Load content when DOM is ready
+document.addEventListener('DOMContentLoaded', loadDynamicContent);
 
 // ===== CONSOLE GREETING =====
 console.log('%c🍣 HIKARI Sushi & Roll', 'font-size: 24px; color: #c9a962; font-weight: bold;');
