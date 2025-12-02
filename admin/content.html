@@ -170,46 +170,40 @@
 
         .content-area { padding: 2rem; }
 
-        /* Tabs */
-        .content-tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            padding: 12px 24px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+        /* Info Banner */
+        .info-banner {
+            background: linear-gradient(135deg, rgba(201, 169, 98, 0.1), rgba(201, 169, 98, 0.05));
+            border: 1px solid rgba(201, 169, 98, 0.3);
             border-radius: 12px;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
             display: flex;
-            align-items: center;
-            gap: 8px;
+            align-items: flex-start;
+            gap: 1rem;
         }
 
-        .tab-btn:hover {
-            border-color: var(--gold);
+        .info-banner i {
             color: var(--gold);
+            font-size: 1.25rem;
+            margin-top: 2px;
         }
 
-        .tab-btn.active {
-            background: var(--gold);
-            border-color: var(--gold);
-            color: #000;
+        .info-banner p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
         }
 
-        /* Tab Content */
-        .tab-content {
-            display: none;
+        .info-banner a {
+            color: var(--gold);
+            text-decoration: underline;
         }
 
-        .tab-content.active {
-            display: block;
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.5rem;
         }
 
         /* Content Card */
@@ -218,38 +212,37 @@
             border-radius: 16px;
             border: 1px solid var(--border-color);
             overflow: hidden;
-            margin-bottom: 1.5rem;
         }
 
         .content-card-header {
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 1.5rem;
+            padding: 1.25rem 1.5rem;
             border-bottom: 1px solid var(--border-color);
         }
 
         .content-card-header i {
-            width: 45px;
-            height: 45px;
+            width: 42px;
+            height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            border-radius: 12px;
+            border-radius: 10px;
             color: #000;
-            font-size: 1.25rem;
+            font-size: 1.1rem;
         }
 
         .content-card-header h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 600;
         }
 
         .content-card-header p {
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.8rem;
         }
 
         .content-card-body {
@@ -257,7 +250,7 @@
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .form-group:last-child {
@@ -267,7 +260,7 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: var(--text-muted);
         }
@@ -275,12 +268,12 @@
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 14px 16px;
+            padding: 12px 14px;
             background: var(--bg-input);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 10px;
             color: var(--text-light);
-            font-size: 15px;
+            font-size: 14px;
             font-family: inherit;
             transition: all 0.3s;
         }
@@ -293,80 +286,28 @@
         }
 
         .form-group textarea {
-            min-height: 120px;
+            min-height: 100px;
             resize: vertical;
         }
 
-        /* Image Upload */
-        .image-upload-area {
-            border: 2px dashed var(--border-color);
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .image-upload-area:hover {
-            border-color: var(--gold);
-            background: rgba(201, 169, 98, 0.05);
-        }
-
-        .image-upload-area.has-image {
-            padding: 0;
-            border-style: solid;
-        }
-
-        .image-upload-area input[type="file"] {
-            display: none;
-        }
-
-        .upload-placeholder i {
-            font-size: 3rem;
-            color: var(--gold);
-            opacity: 0.5;
-            margin-bottom: 1rem;
-        }
-
-        .upload-placeholder p {
+        .form-group small {
+            display: block;
+            margin-top: 6px;
             color: var(--text-muted);
-        }
-
-        .image-preview {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 14px;
-        }
-
-        .image-remove {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 36px;
-            height: 36px;
-            background: var(--danger);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 12px;
         }
 
         .btn-primary {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 14px 28px;
+            padding: 12px 24px;
             background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
             color: #000;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
         }
@@ -383,7 +324,7 @@
         }
 
         .content-card-footer {
-            padding: 1.5rem;
+            padding: 1rem 1.5rem;
             border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: flex-end;
@@ -439,23 +380,18 @@
                 height: 44px; 
             }
             .admin-header h1 { font-size: 1.3rem; }
+            .content-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
             .content-area { padding: 1rem; }
             .admin-header { padding: 1rem; }
-            .content-tabs { 
-                overflow-x: auto; 
-                -webkit-overflow-scrolling: touch; 
-            }
-            .content-tabs::-webkit-scrollbar { display: none; }
-            .tab-btn { flex-shrink: 0; padding: 12px 16px; font-size: 13px; }
-            .content-card { padding: 1.25rem; }
+            .info-banner { flex-direction: column; }
         }
 
         @media (max-width: 480px) {
             .admin-header h1 { font-size: 1.1rem; }
-            .btn-save { width: 100%; }
+            .btn-primary { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -528,27 +464,17 @@
         </header>
 
         <div class="content-area">
-            <!-- Tabs -->
-            <div class="content-tabs">
-                <button class="tab-btn active" data-tab="hero">
-                    <i class="fas fa-home"></i> Accueil
-                </button>
-                <button class="tab-btn" data-tab="about">
-                    <i class="fas fa-info-circle"></i> À Propos
-                </button>
-                <button class="tab-btn" data-tab="concept">
-                    <i class="fas fa-star"></i> Concept
-                </button>
-                <button class="tab-btn" data-tab="reservation">
-                    <i class="fas fa-calendar"></i> Réservation
-                </button>
-                <button class="tab-btn" data-tab="contact">
-                    <i class="fas fa-envelope"></i> Contact
-                </button>
+            <!-- Info Banner -->
+            <div class="info-banner">
+                <i class="fas fa-info-circle"></i>
+                <p>
+                    Modifiez ici les textes du site. Pour les <strong>horaires</strong>, <strong>téléphone</strong>, <strong>email</strong> et <strong>réseaux sociaux</strong>, rendez-vous dans <a href="settings.html">Paramètres</a>.
+                </p>
             </div>
 
-            <!-- Hero Section -->
-            <div class="tab-content active" id="tab-hero">
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Hero Section -->
                 <form id="heroForm" class="content-card">
                     <div class="content-card-header">
                         <i class="fas fa-home"></i>
@@ -559,16 +485,24 @@
                     </div>
                     <div class="content-card-body">
                         <div class="form-group">
-                            <label>Titre Principal</label>
-                            <input type="text" id="hero_title" value="L'art de la cuisine japonaise">
+                            <label>Badge (au-dessus du titre)</label>
+                            <input type="text" id="hero_badge" placeholder="L'ART DE LA CUISINE JAPONAISE">
+                        </div>
+                        <div class="form-group">
+                            <label>Titre (avant le texte animé)</label>
+                            <input type="text" id="hero_title" placeholder="Pour l'amour de la">
                         </div>
                         <div class="form-group">
                             <label>Sous-titre</label>
-                            <textarea id="hero_subtitle">Découvrez une expérience culinaire unique où tradition et modernité se rencontrent</textarea>
+                            <textarea id="hero_subtitle" rows="2" placeholder="Venez en famille et savourez l'authenticité..."></textarea>
                         </div>
                         <div class="form-group">
-                            <label>Texte du Bouton</label>
-                            <input type="text" id="hero_button" value="Réserver une table">
+                            <label>Texte bouton 1</label>
+                            <input type="text" id="hero_button1" placeholder="Découvrir le Menu">
+                        </div>
+                        <div class="form-group">
+                            <label>Texte bouton 2</label>
+                            <input type="text" id="hero_button2" placeholder="Réserver une Table">
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -578,26 +512,36 @@
                         </button>
                     </div>
                 </form>
-            </div>
 
-            <!-- About Section -->
-            <div class="tab-content" id="tab-about">
+                <!-- About Section -->
                 <form id="aboutForm" class="content-card">
                     <div class="content-card-header">
                         <i class="fas fa-info-circle"></i>
                         <div>
-                            <h2>Section À Propos</h2>
+                            <h2>Section Notre Histoire</h2>
                             <p>Présentez votre restaurant</p>
                         </div>
                     </div>
                     <div class="content-card-body">
                         <div class="form-group">
-                            <label>Titre</label>
-                            <input type="text" id="about_title" value="Notre Histoire">
+                            <label>Sous-titre section</label>
+                            <input type="text" id="about_subtitle" placeholder="NOTRE HISTOIRE">
                         </div>
                         <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="about_description" rows="6">HIKARI incarne la quintessence de la gastronomie japonaise à Paris. Notre équipe de chefs expérimentés, formés au Japon, vous propose une cuisine authentique et raffinée.</textarea>
+                            <label>Titre principal</label>
+                            <input type="text" id="about_title" placeholder="Chaque Saveur Raconte une Histoire">
+                        </div>
+                        <div class="form-group">
+                            <label>Texte d'introduction</label>
+                            <textarea id="about_lead" rows="2" placeholder="Chez HIKARI, nous vous transportons au cœur du Japon..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Paragraphe 1</label>
+                            <textarea id="about_paragraph1" rows="3" placeholder="Le restaurant se spécialise dans une sélection raffinée de sushis..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Paragraphe 2</label>
+                            <textarea id="about_paragraph2" rows="3" placeholder="Chez HIKARI, la fraîcheur des produits..."></textarea>
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -607,38 +551,32 @@
                         </button>
                     </div>
                 </form>
-            </div>
 
-            <!-- Concept Section -->
-            <div class="tab-content" id="tab-concept">
-                <form id="conceptForm" class="content-card">
+                <!-- Features Section -->
+                <form id="featuresForm" class="content-card">
                     <div class="content-card-header">
                         <i class="fas fa-star"></i>
                         <div>
-                            <h2>Section Concept</h2>
-                            <p>Présentez votre concept unique</p>
+                            <h2>Points Forts</h2>
+                            <p>Les caractéristiques dans "Notre Histoire"</p>
                         </div>
                     </div>
                     <div class="content-card-body">
                         <div class="form-group">
-                            <label>Titre</label>
-                            <input type="text" id="concept_title" value="Notre Concept">
+                            <label>Point fort 1 - Titre</label>
+                            <input type="text" id="feature1_title" placeholder="Produits Frais">
                         </div>
                         <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="concept_description" rows="6">Une fusion parfaite entre tradition japonaise et innovation culinaire. Chaque plat est préparé avec les meilleurs ingrédients sélectionnés avec soin.</textarea>
+                            <label>Point fort 1 - Description</label>
+                            <input type="text" id="feature1_desc" placeholder="Poissons frais sélectionnés quotidiennement">
                         </div>
                         <div class="form-group">
-                            <label>Point Fort 1</label>
-                            <input type="text" id="concept_point1" value="Ingrédients frais et de qualité">
+                            <label>Point fort 2 - Titre</label>
+                            <input type="text" id="feature2_title" placeholder="Chef Expert">
                         </div>
                         <div class="form-group">
-                            <label>Point Fort 2</label>
-                            <input type="text" id="concept_point2" value="Chefs expérimentés">
-                        </div>
-                        <div class="form-group">
-                            <label>Point Fort 3</label>
-                            <input type="text" id="concept_point3" value="Ambiance authentique">
+                            <label>Point fort 2 - Description</label>
+                            <input type="text" id="feature2_desc" placeholder="Maître sushi avec expertise japonaise">
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -648,26 +586,28 @@
                         </button>
                     </div>
                 </form>
-            </div>
 
-            <!-- Reservation Section -->
-            <div class="tab-content" id="tab-reservation">
+                <!-- Reservation Section -->
                 <form id="reservationForm" class="content-card">
                     <div class="content-card-header">
-                        <i class="fas fa-calendar"></i>
+                        <i class="fas fa-calendar-check"></i>
                         <div>
                             <h2>Section Réservation</h2>
-                            <p>Texte de la section réservation</p>
+                            <p>Texte de la zone de réservation</p>
                         </div>
                     </div>
                     <div class="content-card-body">
                         <div class="form-group">
+                            <label>Sous-titre</label>
+                            <input type="text" id="reservation_subtitle" placeholder="RÉSERVATION">
+                        </div>
+                        <div class="form-group">
                             <label>Titre</label>
-                            <input type="text" id="reservation_title" value="Réservez Votre Table">
+                            <input type="text" id="reservation_title" placeholder="Réservez Votre Table">
                         </div>
                         <div class="form-group">
                             <label>Description</label>
-                            <textarea id="reservation_description">Pour une expérience gastronomique inoubliable, réservez votre table dès maintenant. Notre équipe sera ravie de vous accueillir.</textarea>
+                            <textarea id="reservation_description" rows="3" placeholder="Demande de réservation au 05 61 55 50 77..."></textarea>
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -677,26 +617,47 @@
                         </button>
                     </div>
                 </form>
-            </div>
 
-            <!-- Contact Section -->
-            <div class="tab-content" id="tab-contact">
-                <form id="contactForm" class="content-card">
+                <!-- Footer Section -->
+                <form id="footerForm" class="content-card">
                     <div class="content-card-header">
-                        <i class="fas fa-envelope"></i>
+                        <i class="fas fa-ellipsis-h"></i>
                         <div>
-                            <h2>Section Contact</h2>
-                            <p>Informations de contact</p>
+                            <h2>Pied de Page</h2>
+                            <p>Description dans le footer</p>
                         </div>
                     </div>
                     <div class="content-card-body">
                         <div class="form-group">
-                            <label>Titre</label>
-                            <input type="text" id="contact_title" value="Nous Contacter">
+                            <label>Description du restaurant</label>
+                            <textarea id="footer_description" rows="3" placeholder="Découvrez l'art de la cuisine japonaise authentique à Toulouse..."></textarea>
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Experience Badge -->
+                <form id="experienceForm" class="content-card">
+                    <div class="content-card-header">
+                        <i class="fas fa-award"></i>
+                        <div>
+                            <h2>Badge Expérience</h2>
+                            <p>Le badge "X+ Années" sur l'image</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="form-group">
+                            <label>Nombre (ex: 10+)</label>
+                            <input type="text" id="experience_number" placeholder="10+">
                         </div>
                         <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="contact_description">Une question ? Besoin d'informations ? N'hésitez pas à nous contacter.</textarea>
+                            <label>Texte (ex: Années d'Expérience)</label>
+                            <input type="text" id="experience_text" placeholder="Années d'Expérience">
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -725,8 +686,6 @@
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.getElementById('mobileToggle');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
 
         // Mobile toggle
         function openSidebar() {
@@ -759,17 +718,6 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // Tab switching
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabBtns.forEach(b => b.classList.remove('active'));
-                tabContents.forEach(c => c.classList.remove('active'));
-                
-                btn.classList.add('active');
-                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-            });
-        });
-
         // Load content
         async function loadContent() {
             try {
@@ -778,11 +726,9 @@
                 
                 if (result.success && result.data) {
                     result.data.forEach(item => {
-                        // item.key is already in format 'section_key' (e.g., 'hero_title')
                         const element = document.getElementById(item.key);
                         if (element) {
                             element.value = item.value;
-                            console.log('Set', item.key, '=', item.value);
                         }
                     });
                 }
@@ -801,10 +747,8 @@
             try {
                 for (const field of fields) {
                     const element = document.getElementById(field);
-                    if (element) {
-                        console.log('Saving', field, '=', element.value);
-                        const result = await HikariAPI.content.update(field, element.value);
-                        console.log('Result:', result);
+                    if (element && element.value.trim()) {
+                        const result = await HikariAPI.content.update(field, element.value.trim());
                         if (!result.success) {
                             throw new Error(result.error || 'Failed to save ' + field);
                         }
@@ -823,27 +767,32 @@
         // Form handlers
         document.getElementById('heroForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['hero_title', 'hero_subtitle', 'hero_button']);
+            await saveContent(e.target, ['hero_badge', 'hero_title', 'hero_subtitle', 'hero_button1', 'hero_button2']);
         });
 
         document.getElementById('aboutForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['about_title', 'about_description']);
+            await saveContent(e.target, ['about_subtitle', 'about_title', 'about_lead', 'about_paragraph1', 'about_paragraph2']);
         });
 
-        document.getElementById('conceptForm').addEventListener('submit', async (e) => {
+        document.getElementById('featuresForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['concept_title', 'concept_description', 'concept_point1', 'concept_point2', 'concept_point3']);
+            await saveContent(e.target, ['feature1_title', 'feature1_desc', 'feature2_title', 'feature2_desc']);
         });
 
         document.getElementById('reservationForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['reservation_title', 'reservation_description']);
+            await saveContent(e.target, ['reservation_subtitle', 'reservation_title', 'reservation_description']);
         });
 
-        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+        document.getElementById('footerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['contact_title', 'contact_description']);
+            await saveContent(e.target, ['footer_description']);
+        });
+
+        document.getElementById('experienceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveContent(e.target, ['experience_number', 'experience_text']);
         });
 
         // Initialize
