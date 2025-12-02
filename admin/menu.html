@@ -1894,18 +1894,35 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
 
-            const data = {
-                name: document.getElementById('itemName').value,
-                price: parseFloat(document.getElementById('itemPrice').value),
-                category: document.getElementById('itemCategory').value,
-                badge: document.getElementById('itemBadge').value,
-                description: document.getElementById('itemDescription').value,
-                image: document.getElementById('itemImage').value || uploadedImageData || '',
-                display_order: 1,
-                available: 1
-            };
-
             try {
+                let imageUrl = document.getElementById('itemImage').value || '';
+                
+                // If we have new uploaded image data (base64), upload to R2
+                if (uploadedImageData && uploadedImageData.startsWith('data:image')) {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Upload image...';
+                    
+                    const uploadResult = await HikariAPI.uploadImage(uploadedImageData, document.getElementById('itemName').value);
+                    
+                    if (uploadResult.success) {
+                        imageUrl = uploadResult.url;
+                        console.log('Image uploaded to R2:', imageUrl);
+                    } else {
+                        console.warn('R2 upload failed, using base64:', uploadResult.error);
+                        imageUrl = uploadedImageData; // Fallback to base64
+                    }
+                }
+
+                const data = {
+                    name: document.getElementById('itemName').value,
+                    price: parseFloat(document.getElementById('itemPrice').value),
+                    category: document.getElementById('itemCategory').value,
+                    badge: document.getElementById('itemBadge').value,
+                    description: document.getElementById('itemDescription').value,
+                    image: imageUrl,
+                    display_order: 1,
+                    available: 1
+                };
+
                 let result;
                 if (editingId) {
                     result = await HikariAPI.menu.update(editingId, data);

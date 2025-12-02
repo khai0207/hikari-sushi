@@ -282,11 +282,55 @@ const HikariStats = {
 };
 
 // ===== UPLOAD API =====
-async function uploadImage(file, folder = 'general') {
-    return { 
-        success: false, 
-        error: 'Image upload requires Cloudflare R2. Please use an image URL instead.' 
-    };
+async function uploadImage(imageData, filename = 'image') {
+    try {
+        const token = getToken();
+        
+        const response = await fetch(`${API_BASE}/api/admin/upload`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            body: JSON.stringify({
+                image: imageData,  // base64 data URL
+                filename: filename
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Upload failed');
+        }
+        
+        return result;
+    } catch (error) {
+        console.error('Upload error:', error);
+        return {
+            success: false,
+            error: error.message || 'Upload failed'
+        };
+    }
+}
+
+// Delete image from R2
+async function deleteImageFromR2(key) {
+    try {
+        const token = getToken();
+        
+        const response = await fetch(`${API_BASE}/api/admin/upload/${encodeURIComponent(key)}`, {
+            method: 'DELETE',
+            headers: {
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            }
+        });
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Delete image error:', error);
+        return { success: false, error: error.message };
+    }
 }
 
 // Export main API object with consistent interface
@@ -315,8 +359,9 @@ window.HikariAPI = {
     settings: HikariSettings,
     stats: HikariStats,
     
-    // Upload function
-    uploadImage: uploadImage
+    // Upload functions
+    uploadImage: uploadImage,
+    deleteImage: deleteImageFromR2
 };
 
 // Also export individual modules

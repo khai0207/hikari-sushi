@@ -8,5 +8,11 @@
 			"database_name": "hikari-db",
 			"database_id": "20f0d544-0277-4383-9c9b-dd84bcfcd892"
 		}
+	],
+	"r2_buckets": [
+		{
+			"bucket_name": "hikari-assets",
+			"binding": "hikari_assets"
+		}
 	]
 }

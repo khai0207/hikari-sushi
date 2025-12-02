@@ -83,6 +83,11 @@ export default {
             if (path === '/api/reservations' && method === 'POST') {
                 return await createReservation(request, env);
             }
+            
+            // Serve images from R2
+            if (path.startsWith('/assets/') && method === 'GET') {
+                return await serveImage(env, path.replace('/assets/', ''));
+            }
 
             // ===== PROTECTED ADMIN ROUTES =====
             const authResult = await checkAuth(request, env);
@@ -144,6 +149,17 @@ export default {
             // Stats
             if (path === '/api/admin/stats' && method === 'GET') {
                 return await getStats(env);
+            }
+
+            // Image Upload to R2
+            if (path === '/api/admin/upload' && method === 'POST') {
+                return await uploadImage(request, env);
+            }
+
+            // Delete image from R2
+            if (path.startsWith('/api/admin/upload/') && method === 'DELETE') {
+                const key = path.replace('/api/admin/upload/', '');
+                return await deleteImage(env, key);
             }
 
             return errorResponse('Not found', 404);
@@ -482,4 +498,107 @@ async function getStats(env) {
             todayReservations: todayRes.count
         }
     });
+}
+
+// ===== R2 IMAGE UPLOAD HANDLER =====
+
+async function uploadImage(request, env) {
+    try {
+        const contentType = request.headers.get('Content-Type') || '';
+        
+        let imageData, mimeType, fileName;
+        
+        if (contentType.includes('application/json')) {
+            // Handle base64 upload
+            const { image, filename } = await request.json();
+            
+            if (!image) {
+                return errorResponse('No image provided');
+            }
+            
+            // Parse base64 data URL
+            const matches = image.match(/^data:(.+);base64,(.+)$/);
+            if (!matches) {
+                return errorResponse('Invalid image format');
+            }
+            
+            mimeType = matches[1];
+            const base64Data = matches[2];
+            imageData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+            fileName = filename || `image-${Date.now()}`;
+        } else if (contentType.includes('multipart/form-data')) {
+            // Handle form data upload
+            const formData = await request.formData();
+            const file = formData.get('image');
+            
+            if (!file) {
+                return errorResponse('No image provided');
+            }
+            
+            imageData = await file.arrayBuffer();
+            mimeType = file.type;
+            fileName = file.name || `image-${Date.now()}`;
+        } else {
+            return errorResponse('Unsupported content type');
+        }
+        
+        // Generate unique key
+        const ext = mimeType.split('/')[1] || 'jpg';
+        const key = `menu/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+        
+        // Upload to R2
+        await env.hikari_assets.put(key, imageData, {
+            httpMetadata: {
+                contentType: mimeType
+            }
+        });
+        
+        // Return the URL through our worker
+        const publicUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${key}`;
+        
+        return jsonResponse({
+            success: true,
+            url: publicUrl,
+            key: key
+        });
+    } catch (error) {
+        console.error('Upload error:', error);
+        return errorResponse('Upload failed: ' + error.message, 500);
+    }
+}
+
+async function deleteImage(env, key) {
+    try {
+        // Decode the key (in case it's URL encoded)
+        const decodedKey = decodeURIComponent(key);
+        
+        await env.hikari_assets.delete(decodedKey);
+        
+        return jsonResponse({ success: true });
+    } catch (error) {
+        console.error('Delete error:', error);
+        return errorResponse('Delete failed: ' + error.message, 500);
+    }
+}
+
+// ===== SERVE IMAGE FROM R2 =====
+
+async function serveImage(env, key) {
+    try {
+        const object = await env.hikari_assets.get(key);
+        
+        if (!object) {
+            return new Response('Image not found', { status: 404 });
+        }
+        
+        const headers = new Headers();
+        headers.set('Content-Type', object.httpMetadata?.contentType || 'image/jpeg');
+        headers.set('Cache-Control', 'public, max-age=31536000'); // Cache 1 year
+        headers.set('Access-Control-Allow-Origin', '*');
+        
+        return new Response(object.body, { headers });
+    } catch (error) {
+        console.error('Serve image error:', error);
+        return new Response('Error serving image', { status: 500 });
+    }
 }
