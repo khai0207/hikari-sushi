@@ -462,21 +462,7 @@ input, textarea, select {
     animation: float 6s ease-in-out infinite;
 }
 
-.floating-1 {
-    top: 15%;
-    right: 10%;
-    width: 120px;
-    height: 120px;
-    animation-delay: 0s;
-}
 
-.floating-2 {
-    bottom: 20%;
-    left: 5%;
-    width: 80px;
-    height: 80px;
-    animation-delay: 2s;
-}
 
 .floating-shape {
     position: absolute;
