@@ -774,11 +774,15 @@
         async function loadContent() {
             try {
                 const result = await HikariAPI.content.getAll();
+                console.log('Content loaded:', result);
+                
                 if (result.success && result.data) {
                     result.data.forEach(item => {
+                        // item.key is already in format 'section_key' (e.g., 'hero_title')
                         const element = document.getElementById(item.key);
                         if (element) {
                             element.value = item.value;
+                            console.log('Set', item.key, '=', item.value);
                         }
                     });
                 }
@@ -798,11 +802,17 @@
                 for (const field of fields) {
                     const element = document.getElementById(field);
                     if (element) {
-                        await HikariAPI.content.update(field, element.value);
+                        console.log('Saving', field, '=', element.value);
+                        const result = await HikariAPI.content.update(field, element.value);
+                        console.log('Result:', result);
+                        if (!result.success) {
+                            throw new Error(result.error || 'Failed to save ' + field);
+                        }
                     }
                 }
                 showToast('Contenu enregistré!');
             } catch (error) {
+                console.error('Save error:', error);
                 showToast('Erreur: ' + error.message, 'error');
             }
 
