@@ -856,7 +856,7 @@ async function loadDynamicContent() {
     }
 }
 
-// Load menu items from API and render
+// Load menu items from API and render (optimized for INP)
 async function loadMenuFromAPI(categories) {
     try {
         const response = await fetch(`${API_URL}/api/menu`);
@@ -874,27 +874,22 @@ async function loadMenuFromAPI(categories) {
         
         if (!menuTabs || !menuContent) return;
         
-        // Clear existing tabs and content
-        menuTabs.innerHTML = '';
-        menuContent.innerHTML = '';
+        // Use DocumentFragment for batch DOM updates (better INP)
+        const tabsFragment = document.createDocumentFragment();
+        const contentFragment = document.createDocumentFragment();
         
-        // Create tabs and content for each category
+        const defaultImage = 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=300&fit=crop';
+        
+        // Build all HTML at once for better performance
         categories.forEach((cat, index) => {
             const tabId = cat.toLowerCase().replace(/[^a-z0-9àáâãäåçèéêëìíîïñòóôõöùúûü]/g, '').replace(/\s+/g, '-');
             
-            // Create tab button
+            // Create tab button (no individual event listeners - use delegation)
             const btn = document.createElement('button');
             btn.className = 'tab-btn' + (index === 0 ? ' active' : '');
             btn.dataset.tab = tabId;
             btn.textContent = cat;
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                document.querySelectorAll('.menu-tab-content').forEach(c => c.classList.remove('active'));
-                const target = document.getElementById(tabId);
-                if (target) target.classList.add('active');
-            });
-            menuTabs.appendChild(btn);
+            tabsFragment.appendChild(btn);
             
             // Create tab content
             const tabContent = document.createElement('div');
@@ -906,12 +901,11 @@ async function loadMenuFromAPI(categories) {
                 item.category && item.category.toLowerCase() === cat.toLowerCase()
             );
             
-            // Create menu grid
-            const menuGrid = document.createElement('div');
-            menuGrid.className = 'menu-grid';
+            // Build menu grid HTML string (faster than createElement for many items)
+            let gridHTML = '<div class="menu-grid">';
             
             if (categoryItems.length === 0) {
-                menuGrid.innerHTML = `
+                gridHTML += `
                     <div class="empty-category" style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #888;">
                         <i class="fas fa-utensils" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
                         <p>Aucun plat dans cette catégorie</p>
@@ -919,39 +913,58 @@ async function loadMenuFromAPI(categories) {
                 `;
             } else {
                 categoryItems.forEach((item, i) => {
-                    const menuItem = document.createElement('div');
-                    menuItem.className = 'menu-item';
-                    menuItem.setAttribute('data-aos', 'fade-up');
-                    menuItem.setAttribute('data-aos-delay', String((i + 1) * 100));
-                    
-                    const defaultImage = 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=300&fit=crop';
                     const imageUrl = item.image || defaultImage;
+                    const delay = Math.min((i + 1) * 50, 300); // Cap delay for faster perceived load
                     
-                    menuItem.innerHTML = `
-                        <div class="menu-item-image">
-                            <img src="${imageUrl}" alt="${item.name}" loading="lazy" onerror="this.src='${defaultImage}'">
-                            ${item.badge ? `<span class="menu-badge">${item.badge}</span>` : ''}
-                        </div>
-                        <div class="menu-item-info">
-                            <div class="menu-item-header">
-                                <h3>${item.name}</h3>
-                                <span class="menu-price">${parseFloat(item.price).toFixed(2)}€</span>
+                    gridHTML += `
+                        <div class="menu-item" data-aos="fade-up" data-aos-delay="${delay}">
+                            <div class="menu-item-image">
+                                <img src="${imageUrl}" alt="${item.name}" loading="lazy" decoding="async" onerror="this.src='${defaultImage}'">
+                                ${item.badge ? `<span class="menu-badge">${item.badge}</span>` : ''}
                             </div>
-                            <p>${item.description || ''}</p>
+                            <div class="menu-item-info">
+                                <div class="menu-item-header">
+                                    <h3>${item.name}</h3>
+                                    <span class="menu-price">${parseFloat(item.price).toFixed(2)}€</span>
+                                </div>
+                                <p>${item.description || ''}</p>
+                            </div>
                         </div>
                     `;
-                    menuGrid.appendChild(menuItem);
                 });
             }
-            
-            tabContent.appendChild(menuGrid);
-            menuContent.appendChild(tabContent);
+            gridHTML += '</div>';
+            tabContent.innerHTML = gridHTML;
+            contentFragment.appendChild(tabContent);
         });
         
-        // Refresh AOS for new elements
-        if (typeof AOS !== 'undefined') {
-            AOS.refresh();
-        }
+        // Single DOM update (much better for INP)
+        menuTabs.innerHTML = '';
+        menuContent.innerHTML = '';
+        menuTabs.appendChild(tabsFragment);
+        menuContent.appendChild(contentFragment);
+        
+        // Use event delegation for tabs (1 listener instead of N)
+        menuTabs.addEventListener('click', function(e) {
+            const btn = e.target.closest('.tab-btn');
+            if (!btn) return;
+            
+            // Use requestAnimationFrame for smooth UI update
+            requestAnimationFrame(() => {
+                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.menu-tab-content').forEach(c => c.classList.remove('active'));
+                const target = document.getElementById(btn.dataset.tab);
+                if (target) target.classList.add('active');
+            });
+        });
+        
+        // Defer AOS refresh to not block main thread
+        requestIdleCallback ? requestIdleCallback(() => {
+            if (typeof AOS !== 'undefined') AOS.refresh();
+        }) : setTimeout(() => {
+            if (typeof AOS !== 'undefined') AOS.refresh();
+        }, 100);
         
         console.log('✅ Menu items loaded from database:', menuItems.length, 'items');
         
