@@ -773,12 +773,13 @@ async function loadMenuFromAPI(categories) {
         const response = await fetch(`${API_URL}/api/menu`);
         const result = await response.json();
         
-        if (!result.success || !result.data || result.data.length === 0) {
+        // API returns {success: true, items: [...]}
+        if (!result.success || !result.items || result.items.length === 0) {
             console.log('ℹ️ No menu items from API, keeping static content');
             return;
         }
         
-        const menuItems = result.data;
+        const menuItems = result.items;
         const menuTabs = document.querySelector('.menu-tabs');
         const menuContent = document.querySelector('.menu-content');
         
