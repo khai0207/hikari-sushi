@@ -10,18 +10,107 @@ window.addEventListener('load', () => {
 });
 
 // ===== HERO SLIDESHOW =====
-const heroSlides = document.querySelectorAll('.hero-slide');
+let heroSlides = document.querySelectorAll('.hero-slide');
 let heroCurrentSlide = 0;
 const heroSlideInterval = 5000; // Change slide every 5 seconds
+let heroIntervalId = null;
 
 function nextHeroSlide() {
-    heroSlides[heroCurrentSlide].classList.remove('active');
-    heroCurrentSlide = (heroCurrentSlide + 1) % heroSlides.length;
-    heroSlides[heroCurrentSlide].classList.add('active');
+    const slides = document.querySelectorAll('.hero-slide');
+    if (slides.length <= 1) return;
+    
+    slides[heroCurrentSlide].classList.remove('active');
+    heroCurrentSlide = (heroCurrentSlide + 1) % slides.length;
+    slides[heroCurrentSlide].classList.add('active');
 }
 
+function startHeroSlideshow() {
+    const slides = document.querySelectorAll('.hero-slide');
+    if (slides.length > 1 && !heroIntervalId) {
+        heroIntervalId = setInterval(nextHeroSlide, heroSlideInterval);
+    }
+}
+
+// Load hero images from menu items
+async function loadHeroFromMenu() {
+    try {
+        const response = await fetch('https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/api/menu');
+        const result = await response.json();
+        
+        if (!result.success || !result.items || result.items.length === 0) {
+            console.log('No menu items for hero, keeping default');
+            startHeroSlideshow();
+            return;
+        }
+        
+        // Get items with valid images (not base64 for better performance)
+        const itemsWithImages = result.items.filter(item => 
+            item.image && 
+            (item.image.startsWith('http') || item.image.startsWith('/assets/'))
+        );
+        
+        if (itemsWithImages.length === 0) {
+            console.log('No valid images in menu items');
+            startHeroSlideshow();
+            return;
+        }
+        
+        // Shuffle and take up to 5 images
+        const shuffled = itemsWithImages.sort(() => Math.random() - 0.5);
+        const heroImages = shuffled.slice(0, 5).map(item => item.image);
+        
+        // Update hero slideshow
+        const slideshow = document.getElementById('heroSlideshow');
+        if (slideshow) {
+            // Keep overlay
+            const overlay = slideshow.querySelector('.hero-overlay');
+            
+            // Clear existing slides
+            slideshow.innerHTML = '';
+            
+            // Add new slides from menu
+            heroImages.forEach((imageUrl, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'hero-slide' + (index === 0 ? ' active' : '');
+                slide.style.backgroundImage = `url('${imageUrl}')`;
+                slideshow.appendChild(slide);
+            });
+            
+            // Re-add overlay
+            if (overlay) {
+                slideshow.appendChild(overlay);
+            } else {
+                const newOverlay = document.createElement('div');
+                newOverlay.className = 'hero-overlay';
+                slideshow.appendChild(newOverlay);
+            }
+            
+            // Update floating images too
+            const floatingElements = document.getElementById('floatingElements');
+            if (floatingElements && heroImages.length >= 2) {
+                const floating1 = floatingElements.querySelector('.floating-1');
+                const floating2 = floatingElements.querySelector('.floating-2');
+                if (floating1) floating1.src = heroImages[0];
+                if (floating2) floating2.src = heroImages[1];
+            }
+            
+            // Reset and start slideshow
+            heroCurrentSlide = 0;
+            startHeroSlideshow();
+            
+            console.log(`✅ Hero loaded with ${heroImages.length} images from menu`);
+        }
+    } catch (error) {
+        console.error('Error loading hero images:', error);
+        startHeroSlideshow();
+    }
+}
+
+// Initialize hero on load
+loadHeroFromMenu();
+
 if (heroSlides.length > 1) {
-    setInterval(nextHeroSlide, heroSlideInterval);
+    startHeroSlideshow();
 }
 
 // ===== INITIALIZE AOS =====
