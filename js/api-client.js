@@ -122,12 +122,20 @@ const HikariContent = {
         if (result.success && result.content) {
             const data = [];
             for (const section in result.content) {
-                for (const key in result.content[section]) {
-                    data.push({
-                        section,
-                        key: `${section}_${key}`,
-                        value: result.content[section][key]
-                    });
+                const sectionData = result.content[section];
+                if (typeof sectionData === 'object' && sectionData !== null) {
+                    for (const key in sectionData) {
+                        const value = sectionData[key];
+                        // Convert value to string if it's array or object
+                        const stringValue = (typeof value === 'object') 
+                            ? JSON.stringify(value) 
+                            : String(value);
+                        data.push({
+                            section,
+                            key: `${section}_${key}`,
+                            value: stringValue
+                        });
+                    }
                 }
             }
             result.data = data;

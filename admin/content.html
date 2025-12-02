@@ -490,19 +490,16 @@
                         </div>
                         <div class="form-group">
                             <label>Titre (avant le texte animé)</label>
-                            <input type="text" id="hero_title" placeholder="Pour l'amour de la">
+                            <input type="text" id="hero_title" placeholder="Découvrez l'art de la">
+                        </div>
+                        <div class="form-group">
+                            <label>Mots animés (séparés par des virgules)</label>
+                            <input type="text" id="hero_typed_words" placeholder="cuisine japonaise, sushis frais, saveurs uniques">
+                            <small>Ex: cuisine japonaise, sushis frais, saveurs uniques</small>
                         </div>
                         <div class="form-group">
                             <label>Sous-titre</label>
-                            <textarea id="hero_subtitle" rows="2" placeholder="Venez en famille et savourez l'authenticité..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Texte bouton 1</label>
-                            <input type="text" id="hero_button1" placeholder="Découvrir le Menu">
-                        </div>
-                        <div class="form-group">
-                            <label>Texte bouton 2</label>
-                            <input type="text" id="hero_button2" placeholder="Réserver une Table">
+                            <textarea id="hero_subtitle" rows="2" placeholder="Une expérience culinaire authentique..."></textarea>
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -525,89 +522,19 @@
                     <div class="content-card-body">
                         <div class="form-group">
                             <label>Sous-titre section</label>
-                            <input type="text" id="about_subtitle" placeholder="NOTRE HISTOIRE">
+                            <input type="text" id="about_subtitle" placeholder="Une passion pour la cuisine japonaise">
                         </div>
                         <div class="form-group">
                             <label>Titre principal</label>
-                            <input type="text" id="about_title" placeholder="Chaque Saveur Raconte une Histoire">
-                        </div>
-                        <div class="form-group">
-                            <label>Texte d'introduction</label>
-                            <textarea id="about_lead" rows="2" placeholder="Chez HIKARI, nous vous transportons au cœur du Japon..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Paragraphe 1</label>
-                            <textarea id="about_paragraph1" rows="3" placeholder="Le restaurant se spécialise dans une sélection raffinée de sushis..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Paragraphe 2</label>
-                            <textarea id="about_paragraph2" rows="3" placeholder="Chez HIKARI, la fraîcheur des produits..."></textarea>
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Features Section -->
-                <form id="featuresForm" class="content-card">
-                    <div class="content-card-header">
-                        <i class="fas fa-star"></i>
-                        <div>
-                            <h2>Points Forts</h2>
-                            <p>Les caractéristiques dans "Notre Histoire"</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="form-group">
-                            <label>Point fort 1 - Titre</label>
-                            <input type="text" id="feature1_title" placeholder="Produits Frais">
-                        </div>
-                        <div class="form-group">
-                            <label>Point fort 1 - Description</label>
-                            <input type="text" id="feature1_desc" placeholder="Poissons frais sélectionnés quotidiennement">
-                        </div>
-                        <div class="form-group">
-                            <label>Point fort 2 - Titre</label>
-                            <input type="text" id="feature2_title" placeholder="Chef Expert">
-                        </div>
-                        <div class="form-group">
-                            <label>Point fort 2 - Description</label>
-                            <input type="text" id="feature2_desc" placeholder="Maître sushi avec expertise japonaise">
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Reservation Section -->
-                <form id="reservationForm" class="content-card">
-                    <div class="content-card-header">
-                        <i class="fas fa-calendar-check"></i>
-                        <div>
-                            <h2>Section Réservation</h2>
-                            <p>Texte de la zone de réservation</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="form-group">
-                            <label>Sous-titre</label>
-                            <input type="text" id="reservation_subtitle" placeholder="RÉSERVATION">
-                        </div>
-                        <div class="form-group">
-                            <label>Titre</label>
-                            <input type="text" id="reservation_title" placeholder="Réservez Votre Table">
+                            <input type="text" id="about_title" placeholder="Notre Histoire">
                         </div>
                         <div class="form-group">
                             <label>Description</label>
-                            <textarea id="reservation_description" rows="3" placeholder="Demande de réservation au 05 61 55 50 77..."></textarea>
+                            <textarea id="about_description" rows="4" placeholder="Depuis notre ouverture, HIKARI Sushi & Roll..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>URL Image</label>
+                            <input type="text" id="about_image" placeholder="https://...">
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -618,19 +545,31 @@
                     </div>
                 </form>
 
-                <!-- Footer Section -->
-                <form id="footerForm" class="content-card">
+                <!-- Contact Section -->
+                <form id="contactForm" class="content-card">
                     <div class="content-card-header">
-                        <i class="fas fa-ellipsis-h"></i>
+                        <i class="fas fa-phone"></i>
                         <div>
-                            <h2>Pied de Page</h2>
-                            <p>Description dans le footer</p>
+                            <h2>Informations Contact</h2>
+                            <p>Téléphone, email, adresse</p>
                         </div>
                     </div>
                     <div class="content-card-body">
                         <div class="form-group">
-                            <label>Description du restaurant</label>
-                            <textarea id="footer_description" rows="3" placeholder="Découvrez l'art de la cuisine japonaise authentique à Toulouse..."></textarea>
+                            <label>Téléphone</label>
+                            <input type="text" id="contact_phone" placeholder="05 61 55 50 77">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="contact_email" placeholder="hikari.sushi31@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse</label>
+                            <input type="text" id="contact_address" placeholder="17 allée des Soupirs, 31000 Toulouse">
+                        </div>
+                        <div class="form-group">
+                            <label>URL Google Maps Embed</label>
+                            <input type="text" id="contact_map_embed" placeholder="https://www.google.com/maps/embed?...">
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -641,23 +580,27 @@
                     </div>
                 </form>
 
-                <!-- Experience Badge -->
-                <form id="experienceForm" class="content-card">
+                <!-- Social Section -->
+                <form id="socialForm" class="content-card">
                     <div class="content-card-header">
-                        <i class="fas fa-award"></i>
+                        <i class="fas fa-share-alt"></i>
                         <div>
-                            <h2>Badge Expérience</h2>
-                            <p>Le badge "X+ Années" sur l'image</p>
+                            <h2>Réseaux Sociaux</h2>
+                            <p>Liens vers vos réseaux</p>
                         </div>
                     </div>
                     <div class="content-card-body">
                         <div class="form-group">
-                            <label>Nombre (ex: 10+)</label>
-                            <input type="text" id="experience_number" placeholder="10+">
+                            <label>Facebook</label>
+                            <input type="url" id="social_facebook" placeholder="https://facebook.com/...">
                         </div>
                         <div class="form-group">
-                            <label>Texte (ex: Années d'Expérience)</label>
-                            <input type="text" id="experience_text" placeholder="Années d'Expérience">
+                            <label>Instagram</label>
+                            <input type="url" id="social_instagram" placeholder="https://instagram.com/...">
+                        </div>
+                        <div class="form-group">
+                            <label>TripAdvisor</label>
+                            <input type="url" id="social_tripadvisor" placeholder="https://tripadvisor.com/...">
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -718,7 +661,7 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // Load content
+        // Load content from API
         async function loadContent() {
             try {
                 const result = await HikariAPI.content.getAll();
@@ -728,7 +671,18 @@
                     result.data.forEach(item => {
                         const element = document.getElementById(item.key);
                         if (element) {
-                            element.value = item.value;
+                            // Handle typed_words - convert JSON array to comma-separated string
+                            if (item.key === 'hero_typed_words') {
+                                try {
+                                    const words = JSON.parse(item.value);
+                                    element.value = Array.isArray(words) ? words.join(', ') : item.value;
+                                } catch {
+                                    element.value = item.value;
+                                }
+                            } else {
+                                element.value = item.value;
+                            }
+                            console.log('Set', item.key, '=', element.value);
                         }
                     });
                 }
@@ -748,7 +702,15 @@
                 for (const field of fields) {
                     const element = document.getElementById(field);
                     if (element && element.value.trim()) {
-                        const result = await HikariAPI.content.update(field, element.value.trim());
+                        let value = element.value.trim();
+                        
+                        // Convert typed_words from comma-separated to JSON array
+                        if (field === 'hero_typed_words') {
+                            const words = value.split(',').map(w => w.trim()).filter(w => w);
+                            value = JSON.stringify(words);
+                        }
+                        
+                        const result = await HikariAPI.content.update(field, value);
                         if (!result.success) {
                             throw new Error(result.error || 'Failed to save ' + field);
                         }
@@ -767,32 +729,22 @@
         // Form handlers
         document.getElementById('heroForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['hero_badge', 'hero_title', 'hero_subtitle', 'hero_button1', 'hero_button2']);
+            await saveContent(e.target, ['hero_badge', 'hero_title', 'hero_typed_words', 'hero_subtitle']);
         });
 
         document.getElementById('aboutForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['about_subtitle', 'about_title', 'about_lead', 'about_paragraph1', 'about_paragraph2']);
+            await saveContent(e.target, ['about_subtitle', 'about_title', 'about_description', 'about_image']);
         });
 
-        document.getElementById('featuresForm').addEventListener('submit', async (e) => {
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['feature1_title', 'feature1_desc', 'feature2_title', 'feature2_desc']);
+            await saveContent(e.target, ['contact_phone', 'contact_email', 'contact_address', 'contact_map_embed']);
         });
 
-        document.getElementById('reservationForm').addEventListener('submit', async (e) => {
+        document.getElementById('socialForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['reservation_subtitle', 'reservation_title', 'reservation_description']);
-        });
-
-        document.getElementById('footerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await saveContent(e.target, ['footer_description']);
-        });
-
-        document.getElementById('experienceForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await saveContent(e.target, ['experience_number', 'experience_text']);
+            await saveContent(e.target, ['social_facebook', 'social_instagram', 'social_tripadvisor']);
         });
 
         // Initialize
