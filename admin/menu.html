@@ -1896,6 +1896,15 @@
 
             try {
                 let imageUrl = document.getElementById('itemImage').value || '';
+                let oldImageUrl = null;
+                
+                // Get old image URL if editing
+                if (editingId) {
+                    const oldItem = menuItems.find(i => i.id === editingId);
+                    if (oldItem && oldItem.image) {
+                        oldImageUrl = oldItem.image;
+                    }
+                }
                 
                 // If we have new uploaded image data (base64), upload to R2
                 if (uploadedImageData && uploadedImageData.startsWith('data:image')) {
@@ -1906,6 +1915,15 @@
                     if (uploadResult.success) {
                         imageUrl = uploadResult.url;
                         console.log('Image uploaded to R2:', imageUrl);
+                        
+                        // Delete old image from R2 if it exists and is different
+                        if (oldImageUrl && oldImageUrl !== imageUrl && oldImageUrl.includes('/assets/')) {
+                            const oldKey = oldImageUrl.split('/assets/')[1];
+                            if (oldKey) {
+                                console.log('Deleting old image:', oldKey);
+                                await HikariAPI.deleteImage(oldKey);
+                            }
+                        }
                     } else {
                         console.warn('R2 upload failed, using base64:', uploadResult.error);
                         imageUrl = uploadedImageData; // Fallback to base64
@@ -1961,8 +1979,20 @@
             if (!deleteId) return;
 
             try {
+                // Get the item to delete its image from R2
+                const itemToDelete = menuItems.find(i => i.id === deleteId);
+                
                 const result = await HikariAPI.menu.delete(deleteId);
                 if (result.success) {
+                    // Delete image from R2 if it exists
+                    if (itemToDelete && itemToDelete.image && itemToDelete.image.includes('/assets/')) {
+                        const imageKey = itemToDelete.image.split('/assets/')[1];
+                        if (imageKey) {
+                            console.log('Deleting image from R2:', imageKey);
+                            await HikariAPI.deleteImage(imageKey);
+                        }
+                    }
+                    
                     showToast('Plat supprimé!');
                     closeDeleteModal();
                     loadMenuItems();
