@@ -744,6 +744,59 @@ async function loadDynamicContent() {
                 }
             }
             
+            // ===== MENU CATEGORIES =====
+            if (content.menu && content.menu.categories) {
+                try {
+                    const categories = typeof content.menu.categories === 'string' 
+                        ? JSON.parse(content.menu.categories) 
+                        : content.menu.categories;
+                    
+                    if (Array.isArray(categories) && categories.length > 0) {
+                        const menuTabs = document.querySelector('.menu-tabs');
+                        if (menuTabs) {
+                            // Create mapping for tab IDs
+                            const tabIdMap = {
+                                'sushis': 'sushi',
+                                'sushi': 'sushi',
+                                'makis & rolls': 'maki',
+                                'makis': 'maki',
+                                'maki': 'maki',
+                                'plats chauds': 'plats',
+                                'plats': 'plats',
+                                'desserts': 'desserts',
+                                'dessert': 'desserts',
+                                'boissons': 'boissons',
+                                'entrées': 'entrees'
+                            };
+                            
+                            // Clear existing tabs
+                            menuTabs.innerHTML = '';
+                            
+                            // Create tabs from categories
+                            categories.forEach((cat, index) => {
+                                const tabId = tabIdMap[cat.toLowerCase()] || cat.toLowerCase().replace(/[^a-z0-9]/g, '');
+                                const btn = document.createElement('button');
+                                btn.className = 'tab-btn' + (index === 0 ? ' active' : '');
+                                btn.dataset.tab = tabId;
+                                btn.textContent = cat;
+                                btn.addEventListener('click', function() {
+                                    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                                    this.classList.add('active');
+                                    document.querySelectorAll('.menu-tab-content').forEach(c => c.classList.remove('active'));
+                                    const target = document.getElementById(tabId);
+                                    if (target) target.classList.add('active');
+                                });
+                                menuTabs.appendChild(btn);
+                            });
+                            
+                            console.log('✅ Menu categories updated from database');
+                        }
+                    }
+                } catch (e) {
+                    console.log('ℹ️ Using default menu categories');
+                }
+            }
+            
             console.log('✅ Dynamic content loaded from database');
         }
     } catch (error) {

@@ -699,6 +699,174 @@
             color: var(--danger);
         }
 
+        /* Category Select with Add/Delete buttons */
+        .category-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .category-input-group select {
+            flex: 1;
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-input-group select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+        }
+
+        .category-input-group select option {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .btn-icon-sm {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .btn-icon-sm:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-icon-sm.add:hover {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .btn-icon-sm.delete:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Category Management Section */
+        .category-manager {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-manager-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .category-manager-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-manager-header h3 i {
+            color: var(--gold);
+        }
+
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .category-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: rgba(201, 169, 98, 0.1);
+            border: 1px solid rgba(201, 169, 98, 0.3);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--gold);
+        }
+
+        .category-tag .delete-cat {
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .category-tag .delete-cat:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .add-category-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px dashed var(--border-color);
+            border-radius: 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .add-category-inline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* Add Category Modal Small */
+        .modal-small .modal-content {
+            max-width: 400px;
+        }
+
+        .modal-small .modal-body {
+            padding: 1.5rem 2rem;
+        }
+
+        /* Toast Success */
+        .toast.success {
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+        }
+
+        .toast.error i {
+            color: var(--danger);
+        }
+
         /* Loading */
         .loading {
             display: flex;
@@ -965,6 +1133,20 @@
         </header>
 
         <div class="content-area">
+            <!-- Category Manager -->
+            <div class="category-manager">
+                <div class="category-manager-header">
+                    <h3><i class="fas fa-tags"></i> Catégories du Menu</h3>
+                </div>
+                <div class="category-list" id="categoryList">
+                    <!-- Categories will be loaded dynamically -->
+                    <button class="add-category-inline" onclick="openCategoryModal()">
+                        <i class="fas fa-plus"></i>
+                        Ajouter
+                    </button>
+                </div>
+            </div>
+
             <!-- Filter Bar -->
             <div class="filter-bar">
                 <div class="search-box">
@@ -1025,26 +1207,26 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Catégorie *</label>
-                            <input type="text" id="itemCategory" required placeholder="Ex: Sushis, Makis, Plats Chauds..." list="categoryList">
-                            <datalist id="categoryList">
-                                <option value="Sushis">
-                                <option value="Makis & Rolls">
-                                <option value="Plats Chauds">
-                                <option value="Desserts">
-                                <option value="Boissons">
-                                <option value="Entrées">
-                            </datalist>
+                            <div class="category-input-group">
+                                <select id="itemCategory" required>
+                                    <option value="">-- Sélectionnez --</option>
+                                    <!-- Categories will be loaded dynamically -->
+                                </select>
+                                <button type="button" class="btn-icon-sm add" onclick="openCategoryModal()" title="Ajouter catégorie">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Badge</label>
-                            <input type="text" id="itemBadge" placeholder="Ex: Populaire, Nouveau, Signature..." list="badgeList">
-                            <datalist id="badgeList">
-                                <option value="Populaire">
-                                <option value="Nouveau">
-                                <option value="Signature">
-                                <option value="Promo">
-                                <option value="Chef">
-                            </datalist>
+                            <select id="itemBadge">
+                                <option value="">-- Aucun --</option>
+                                <option value="Populaire">Populaire</option>
+                                <option value="Nouveau">Nouveau</option>
+                                <option value="Signature">Signature</option>
+                                <option value="Promo">Promo</option>
+                                <option value="Chef">Chef</option>
+                            </select>
                         </div>
                     </div>
 
@@ -1109,6 +1291,59 @@
         <span id="toastMessage"></span>
     </div>
 
+    <!-- Add Category Modal -->
+    <div class="modal modal-small" id="categoryModal">
+        <div class="modal-overlay" onclick="closeCategoryModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Ajouter une Catégorie</h2>
+                <button class="modal-close" onclick="closeCategoryModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="categoryForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nom de la catégorie *</label>
+                        <input type="text" id="newCategoryName" required placeholder="Ex: Sushis, Makis & Rolls...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeCategoryModal()">Annuler</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Category Modal -->
+    <div class="modal modal-small" id="deleteCategoryModal">
+        <div class="modal-overlay" onclick="closeDeleteCategoryModal()"></div>
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Supprimer la catégorie</h2>
+                <button class="modal-close" onclick="closeDeleteCategoryModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
+                <p>Supprimer la catégorie <strong id="deleteCategoryName"></strong> ?</p>
+                <p style="color: var(--text-muted); font-size: 14px;">Les plats de cette catégorie ne seront pas supprimés.</p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button type="button" class="btn-secondary" onclick="closeDeleteCategoryModal()">Annuler</button>
+                <button type="button" class="btn-danger" id="confirmDeleteCategoryBtn">
+                    <i class="fas fa-trash"></i>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="../js/api-client.js"></script>
     <script>
         // Protect page
@@ -1116,10 +1351,12 @@
 
         // State
         let menuItems = [];
+        let categories = []; // Categories from database
         let currentFilter = 'all';
         let currentSearch = '';
         let editingId = null;
         let deleteId = null;
+        let deleteCategoryName = null;
         let uploadedImageData = null;
 
         // DOM Elements
@@ -1171,13 +1408,167 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
+        // ===== CATEGORY MANAGEMENT =====
+        
+        // Load categories from database
+        async function loadCategories() {
+            try {
+                const result = await HikariAPI.content.getAll();
+                if (result.success && result.data) {
+                    const catItem = result.data.find(item => item.key === 'menu_categories');
+                    if (catItem && catItem.value) {
+                        try {
+                            categories = JSON.parse(catItem.value);
+                        } catch {
+                            categories = [];
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('Using default categories');
+            }
+            
+            // If no categories in DB, use defaults
+            if (!categories.length) {
+                categories = ['Sushis', 'Makis & Rolls', 'Plats Chauds', 'Desserts'];
+            }
+            
+            renderCategoryManager();
+            updateCategorySelect();
+        }
+        
+        // Save categories to database
+        async function saveCategories() {
+            try {
+                await HikariAPI.content.update('menu_categories', JSON.stringify(categories));
+            } catch (error) {
+                console.error('Error saving categories:', error);
+            }
+        }
+        
+        // Render category manager (tags with delete)
+        function renderCategoryManager() {
+            const container = document.getElementById('categoryList');
+            const addBtn = container.querySelector('.add-category-inline');
+            
+            // Clear existing tags (keep add button)
+            container.querySelectorAll('.category-tag').forEach(t => t.remove());
+            
+            // Add category tags
+            categories.forEach(cat => {
+                const tag = document.createElement('div');
+                tag.className = 'category-tag';
+                tag.innerHTML = `
+                    <span>${cat}</span>
+                    <button class="delete-cat" onclick="confirmDeleteCategory('${cat.replace(/'/g, "\\'")}')" title="Supprimer">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.insertBefore(tag, addBtn);
+            });
+        }
+        
+        // Update category select dropdown
+        function updateCategorySelect() {
+            const select = document.getElementById('itemCategory');
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="">-- Sélectionnez --</option>';
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+            
+            // Restore selected value if it exists
+            if (currentValue && categories.includes(currentValue)) {
+                select.value = currentValue;
+            }
+        }
+        
+        // Category Modal functions
+        function openCategoryModal() {
+            document.getElementById('newCategoryName').value = '';
+            document.getElementById('categoryModal').classList.add('open');
+            document.getElementById('newCategoryName').focus();
+        }
+        
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('open');
+        }
+        
+        // Add category form submit
+        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('newCategoryName').value.trim();
+            if (!name) return;
+            
+            // Check duplicate
+            if (categories.some(c => c.toLowerCase() === name.toLowerCase())) {
+                showToast('Cette catégorie existe déjà', 'error');
+                return;
+            }
+            
+            categories.push(name);
+            await saveCategories();
+            
+            renderCategoryManager();
+            updateCategorySelect();
+            updateCategoryTabs();
+            
+            closeCategoryModal();
+            showToast('Catégorie ajoutée!');
+        });
+        
+        // Delete category
+        function confirmDeleteCategory(name) {
+            deleteCategoryName = name;
+            document.getElementById('deleteCategoryName').textContent = name;
+            document.getElementById('deleteCategoryModal').classList.add('open');
+        }
+        
+        function closeDeleteCategoryModal() {
+            document.getElementById('deleteCategoryModal').classList.remove('open');
+            deleteCategoryName = null;
+        }
+        
+        document.getElementById('confirmDeleteCategoryBtn').addEventListener('click', async () => {
+            if (!deleteCategoryName) return;
+            
+            categories = categories.filter(c => c !== deleteCategoryName);
+            await saveCategories();
+            
+            renderCategoryManager();
+            updateCategorySelect();
+            updateCategoryTabs();
+            
+            closeDeleteCategoryModal();
+            showToast('Catégorie supprimée!');
+        });
+
         // Load menu items
         async function loadMenuItems() {
             menuGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i></div>';
             
             try {
+                // Load categories first
+                await loadCategories();
+                
                 const result = await HikariAPI.menu.getAll();
                 menuItems = result.success ? result.data : [];
+                
+                // Sort menu items by category order
+                menuItems.sort((a, b) => {
+                    const indexA = categories.indexOf(a.category);
+                    const indexB = categories.indexOf(b.category);
+                    if (indexA === -1 && indexB === -1) return 0;
+                    if (indexA === -1) return 1;
+                    if (indexB === -1) return -1;
+                    return indexA - indexB;
+                });
+                
                 updateCategoryTabs();
                 renderMenuItems();
             } catch (error) {
@@ -1188,13 +1579,13 @@
             }
         }
 
-        // Update category tabs dynamically
+        // Update category tabs dynamically (using saved categories)
         function updateCategoryTabs() {
             const filterTabsContainer = document.getElementById('filterTabs');
-            const categories = [...new Set(menuItems.map(item => item.category))].filter(Boolean);
             
             filterTabsContainer.innerHTML = '<button class="filter-tab active" data-category="all">Tous</button>';
             
+            // Use saved categories instead of extracting from menu items
             categories.forEach(cat => {
                 const btn = document.createElement('button');
                 btn.className = 'filter-tab';
@@ -1576,6 +1967,10 @@
         window.confirmDelete = confirmDelete;
         window.closeDeleteModal = closeDeleteModal;
         window.removeImage = removeImage;
+        window.openCategoryModal = openCategoryModal;
+        window.closeCategoryModal = closeCategoryModal;
+        window.confirmDeleteCategory = confirmDeleteCategory;
+        window.closeDeleteCategoryModal = closeDeleteCategoryModal;
     </script>
 </body>
 </html>
