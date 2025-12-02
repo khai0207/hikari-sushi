@@ -117,14 +117,41 @@ const HikariAuth = {
 // ===== CONTENT API =====
 const HikariContent = {
     async getAll() {
-        return apiRequest('/api/content');
+        const result = await apiRequest('/api/content');
+        // Normalize: convert content object to array with section_key format
+        if (result.success && result.content) {
+            const data = [];
+            for (const section in result.content) {
+                for (const key in result.content[section]) {
+                    data.push({
+                        section,
+                        key: `${section}_${key}`,
+                        value: result.content[section][key]
+                    });
+                }
+            }
+            result.data = data;
+        }
+        return result;
     },
 
     async getBySection(section) {
         return apiRequest(`/api/content?section=${section}`);
     },
 
-    async update(section, key, value, type = 'text') {
+    async update(key, value, type = 'text') {
+        // Extract section from key (e.g., 'hero_title' -> section='hero', key='title')
+        const parts = key.split('_');
+        const section = parts[0];
+        const actualKey = parts.slice(1).join('_') || key;
+        
+        return apiRequest('/api/admin/content', {
+            method: 'PUT',
+            body: JSON.stringify({ section, key: actualKey, value, type })
+        });
+    },
+
+    async updateDirect(section, key, value, type = 'text') {
         return apiRequest('/api/admin/content', {
             method: 'PUT',
             body: JSON.stringify({ section, key, value, type })
@@ -218,7 +245,12 @@ const HikariGallery = {
 // ===== SETTINGS API =====
 const HikariSettings = {
     async get() {
-        return apiRequest('/api/settings');
+        const result = await apiRequest('/api/settings');
+        // Normalize: settings -> data
+        if (result.success && result.settings) {
+            result.data = result.settings;
+        }
+        return result;
     },
 
     async update(settings) {
@@ -232,7 +264,12 @@ const HikariSettings = {
 // ===== STATS API =====
 const HikariStats = {
     async get() {
-        return apiRequest('/api/admin/stats');
+        const result = await apiRequest('/api/admin/stats');
+        // Normalize: stats -> data
+        if (result.success && result.stats) {
+            result.data = result.stats;
+        }
+        return result;
     }
 };
 
