@@ -752,45 +752,8 @@ async function loadDynamicContent() {
                         : content.menu.categories;
                     
                     if (Array.isArray(categories) && categories.length > 0) {
-                        const menuTabs = document.querySelector('.menu-tabs');
-                        if (menuTabs) {
-                            // Create mapping for tab IDs
-                            const tabIdMap = {
-                                'sushis': 'sushi',
-                                'sushi': 'sushi',
-                                'makis & rolls': 'maki',
-                                'makis': 'maki',
-                                'maki': 'maki',
-                                'plats chauds': 'plats',
-                                'plats': 'plats',
-                                'desserts': 'desserts',
-                                'dessert': 'desserts',
-                                'boissons': 'boissons',
-                                'entrées': 'entrees'
-                            };
-                            
-                            // Clear existing tabs
-                            menuTabs.innerHTML = '';
-                            
-                            // Create tabs from categories
-                            categories.forEach((cat, index) => {
-                                const tabId = tabIdMap[cat.toLowerCase()] || cat.toLowerCase().replace(/[^a-z0-9]/g, '');
-                                const btn = document.createElement('button');
-                                btn.className = 'tab-btn' + (index === 0 ? ' active' : '');
-                                btn.dataset.tab = tabId;
-                                btn.textContent = cat;
-                                btn.addEventListener('click', function() {
-                                    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-                                    this.classList.add('active');
-                                    document.querySelectorAll('.menu-tab-content').forEach(c => c.classList.remove('active'));
-                                    const target = document.getElementById(tabId);
-                                    if (target) target.classList.add('active');
-                                });
-                                menuTabs.appendChild(btn);
-                            });
-                            
-                            console.log('✅ Menu categories updated from database');
-                        }
+                        // Load menu items from API
+                        await loadMenuFromAPI(categories);
                     }
                 } catch (e) {
                     console.log('ℹ️ Using default menu categories');
@@ -801,6 +764,109 @@ async function loadDynamicContent() {
         }
     } catch (error) {
         console.log('ℹ️ Using static content (API unavailable):', error.message);
+    }
+}
+
+// Load menu items from API and render
+async function loadMenuFromAPI(categories) {
+    try {
+        const response = await fetch(`${API_URL}/api/menu`);
+        const result = await response.json();
+        
+        if (!result.success || !result.data || result.data.length === 0) {
+            console.log('ℹ️ No menu items from API, keeping static content');
+            return;
+        }
+        
+        const menuItems = result.data;
+        const menuTabs = document.querySelector('.menu-tabs');
+        const menuContent = document.querySelector('.menu-content');
+        
+        if (!menuTabs || !menuContent) return;
+        
+        // Clear existing tabs and content
+        menuTabs.innerHTML = '';
+        menuContent.innerHTML = '';
+        
+        // Create tabs and content for each category
+        categories.forEach((cat, index) => {
+            const tabId = cat.toLowerCase().replace(/[^a-z0-9àáâãäåçèéêëìíîïñòóôõöùúûü]/g, '').replace(/\s+/g, '-');
+            
+            // Create tab button
+            const btn = document.createElement('button');
+            btn.className = 'tab-btn' + (index === 0 ? ' active' : '');
+            btn.dataset.tab = tabId;
+            btn.textContent = cat;
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.menu-tab-content').forEach(c => c.classList.remove('active'));
+                const target = document.getElementById(tabId);
+                if (target) target.classList.add('active');
+            });
+            menuTabs.appendChild(btn);
+            
+            // Create tab content
+            const tabContent = document.createElement('div');
+            tabContent.className = 'menu-tab-content' + (index === 0 ? ' active' : '');
+            tabContent.id = tabId;
+            
+            // Filter items for this category
+            const categoryItems = menuItems.filter(item => 
+                item.category && item.category.toLowerCase() === cat.toLowerCase()
+            );
+            
+            // Create menu grid
+            const menuGrid = document.createElement('div');
+            menuGrid.className = 'menu-grid';
+            
+            if (categoryItems.length === 0) {
+                menuGrid.innerHTML = `
+                    <div class="empty-category" style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #888;">
+                        <i class="fas fa-utensils" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>Aucun plat dans cette catégorie</p>
+                    </div>
+                `;
+            } else {
+                categoryItems.forEach((item, i) => {
+                    const menuItem = document.createElement('div');
+                    menuItem.className = 'menu-item';
+                    menuItem.setAttribute('data-aos', 'fade-up');
+                    menuItem.setAttribute('data-aos-delay', String((i + 1) * 100));
+                    
+                    const defaultImage = 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=300&fit=crop';
+                    const imageUrl = item.image || defaultImage;
+                    
+                    menuItem.innerHTML = `
+                        <div class="menu-item-image">
+                            <img src="${imageUrl}" alt="${item.name}" loading="lazy" onerror="this.src='${defaultImage}'">
+                            ${item.badge ? `<span class="menu-badge">${item.badge}</span>` : ''}
+                        </div>
+                        <div class="menu-item-info">
+                            <div class="menu-item-header">
+                                <h3>${item.name}</h3>
+                                <span class="menu-price">${parseFloat(item.price).toFixed(2)}€</span>
+                            </div>
+                            <p>${item.description || ''}</p>
+                        </div>
+                    `;
+                    menuGrid.appendChild(menuItem);
+                });
+            }
+            
+            tabContent.appendChild(menuGrid);
+            menuContent.appendChild(tabContent);
+        });
+        
+        // Refresh AOS for new elements
+        if (typeof AOS !== 'undefined') {
+            AOS.refresh();
+        }
+        
+        console.log('✅ Menu items loaded from database:', menuItems.length, 'items');
+        
+    } catch (error) {
+        console.log('ℹ️ Error loading menu from API:', error.message);
     }
 }
 
