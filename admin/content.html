@@ -1255,6 +1255,91 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- Features / Points Forts Section -->
+                <form id="featuresForm" class="content-card full-width">
+                    <div class="content-card-header">
+                        <i class="fas fa-star"></i>
+                        <div>
+                            <h2>Nos Points Forts</h2>
+                            <p>4 atouts mis en avant (section "Pourquoi nous choisir")</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="services-edit-grid" style="grid-template-columns: repeat(2, 1fr);">
+                            <!-- Feature 1 -->
+                            <div class="service-edit-item">
+                                <h4 style="color: var(--gold); margin-bottom: 1rem;">💎 Point Fort 1</h4>
+                                <div class="form-group">
+                                    <label>Icône FontAwesome (ex: fas fa-fish)</label>
+                                    <input type="text" id="feature1_icon" placeholder="fas fa-fish">
+                                </div>
+                                <div class="form-group">
+                                    <label>Titre</label>
+                                    <input type="text" id="feature1_title" placeholder="Produits Frais">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="feature1_description" rows="2" placeholder="Poissons et fruits de mer sélectionnés quotidiennement..."></textarea>
+                                </div>
+                            </div>
+                            <!-- Feature 2 -->
+                            <div class="service-edit-item">
+                                <h4 style="color: var(--gold); margin-bottom: 1rem;">💎 Point Fort 2</h4>
+                                <div class="form-group">
+                                    <label>Icône FontAwesome</label>
+                                    <input type="text" id="feature2_icon" placeholder="fas fa-leaf">
+                                </div>
+                                <div class="form-group">
+                                    <label>Titre</label>
+                                    <input type="text" id="feature2_title" placeholder="Ingrédients Bio">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="feature2_description" rows="2" placeholder="Légumes et condiments issus de l'agriculture biologique..."></textarea>
+                                </div>
+                            </div>
+                            <!-- Feature 3 -->
+                            <div class="service-edit-item">
+                                <h4 style="color: var(--gold); margin-bottom: 1rem;">💎 Point Fort 3</h4>
+                                <div class="form-group">
+                                    <label>Icône FontAwesome</label>
+                                    <input type="text" id="feature3_icon" placeholder="fas fa-utensils">
+                                </div>
+                                <div class="form-group">
+                                    <label>Titre</label>
+                                    <input type="text" id="feature3_title" placeholder="Chef Expert">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="feature3_description" rows="2" placeholder="Notre maître sushi apporte son expertise..."></textarea>
+                                </div>
+                            </div>
+                            <!-- Feature 4 -->
+                            <div class="service-edit-item">
+                                <h4 style="color: var(--gold); margin-bottom: 1rem;">💎 Point Fort 4</h4>
+                                <div class="form-group">
+                                    <label>Icône FontAwesome</label>
+                                    <input type="text" id="feature4_icon" placeholder="fas fa-glass-cheers">
+                                </div>
+                                <div class="form-group">
+                                    <label>Titre</label>
+                                    <input type="text" id="feature4_title" placeholder="Événements Privés">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="feature4_description" rows="2" placeholder="Organisez vos événements dans un cadre unique..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </main>
@@ -1456,6 +1541,16 @@
             const fields = [];
             for (let i = 1; i <= 3; i++) {
                 fields.push(`testimonial${i}_photo`, `testimonial${i}_name`, `testimonial${i}_text`, `testimonial${i}_rating`);
+            }
+            await saveContent(e.target, fields);
+        });
+
+        // Features Form (Nos Points Forts)
+        document.getElementById('featuresForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fields = [];
+            for (let i = 1; i <= 4; i++) {
+                fields.push(`feature${i}_icon`, `feature${i}_title`, `feature${i}_description`);
             }
             await saveContent(e.target, fields);
         });

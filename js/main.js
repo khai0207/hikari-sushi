@@ -534,7 +534,7 @@ if (dateInput) {
 }
 
 // ===== LIGHTBOX GALLERY =====
-const galleryImages = [
+let galleryImages = [
     'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&h=800&fit=crop',
     'https://images.unsplash.com/photo-1553621042-f6e147245754?w=1200&h=800&fit=crop',
     'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=1200&h=800&fit=crop',
@@ -928,6 +928,16 @@ async function loadDynamicContent() {
                         const img = item.querySelector('img');
                         if (img) img.src = content[key];
                     }
+                    // Also update lightbox galleryImages array
+                    galleryImages[i - 1] = content[key];
+                }
+            }
+            
+            // ===== MAP EMBED =====
+            if (content.contact && content.contact.map_embed) {
+                const mapIframe = document.querySelector('.map-wrapper iframe');
+                if (mapIframe) {
+                    mapIframe.src = content.contact.map_embed;
                 }
             }
             
@@ -984,6 +994,25 @@ async function loadDynamicContent() {
                                 starsContainer.innerHTML = starsHTML;
                             }
                         }
+                    }
+                }
+            }
+            
+            // ===== FEATURES / NOS POINTS FORTS (4 cards) =====
+            const featureCards = document.querySelectorAll('.features-grid .feature-card');
+            for (let i = 1; i <= 4; i++) {
+                const key = `feature${i}`;
+                if (content[key]) {
+                    const card = featureCards[i - 1];
+                    if (card) {
+                        const icon = card.querySelector('.feature-icon i');
+                        if (icon && content[key].icon) icon.className = content[key].icon;
+                        
+                        const title = card.querySelector('h3');
+                        if (title && content[key].title) title.textContent = content[key].title;
+                        
+                        const desc = card.querySelector('p');
+                        if (desc && content[key].description) desc.textContent = content[key].description;
                     }
                 }
             }
