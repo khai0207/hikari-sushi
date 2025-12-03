@@ -849,6 +849,107 @@ async function loadDynamicContent() {
                 }
             }
             
+            // ===== ABOUT EXTENDED (2nd image + experience badge) =====
+            if (content.about) {
+                // Second image
+                const aboutSecondImg = document.querySelector('.about-img-secondary img');
+                if (aboutSecondImg && content.about.image2) {
+                    aboutSecondImg.src = content.about.image2;
+                }
+                
+                // Experience badge
+                if (content.about.experience_number) {
+                    const expNumber = document.querySelector('.experience-badge .number');
+                    if (expNumber) expNumber.textContent = content.about.experience_number;
+                }
+                if (content.about.experience_text) {
+                    const expText = document.querySelector('.experience-badge .text');
+                    if (expText) expText.innerHTML = content.about.experience_text.replace(' ', '<br>');
+                }
+            }
+            
+            // ===== PLAT SIGNATURE =====
+            if (content.signature) {
+                const signatureImg = document.querySelector('.special-image img');
+                if (signatureImg && content.signature.image) {
+                    signatureImg.src = content.signature.image;
+                }
+                
+                const signatureName = document.querySelector('.special-title');
+                if (signatureName && content.signature.name) {
+                    signatureName.textContent = content.signature.name;
+                }
+                
+                const signatureDesc = document.querySelector('.special-desc');
+                if (signatureDesc && content.signature.description) {
+                    signatureDesc.textContent = content.signature.description;
+                }
+                
+                const oldPrice = document.querySelector('.special-price .old-price');
+                if (oldPrice && content.signature.old_price) {
+                    oldPrice.textContent = content.signature.old_price;
+                }
+                
+                const newPrice = document.querySelector('.special-price .new-price');
+                if (newPrice && content.signature.new_price) {
+                    newPrice.textContent = content.signature.new_price;
+                }
+            }
+            
+            // ===== SPECIALTIES (3 cards) =====
+            const specialtyCards = document.querySelectorAll('.specialty-card');
+            for (let i = 1; i <= 3; i++) {
+                const key = `specialty${i}`;
+                if (content[key]) {
+                    const card = specialtyCards[i - 1];
+                    if (card) {
+                        const img = card.querySelector('.specialty-image img');
+                        if (img && content[key].image) img.src = content[key].image;
+                        
+                        const tag = card.querySelector('.specialty-tag');
+                        if (tag && content[key].tag) tag.textContent = content[key].tag;
+                        
+                        const name = card.querySelector('h3');
+                        if (name && content[key].name) name.textContent = content[key].name;
+                        
+                        const desc = card.querySelector('.specialty-overlay p');
+                        if (desc && content[key].description) desc.textContent = content[key].description;
+                    }
+                }
+            }
+            
+            // ===== GALLERY (6 images) =====
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            for (let i = 1; i <= 6; i++) {
+                const key = `gallery${i}`;
+                if (content[key]) {
+                    const item = galleryItems[i - 1];
+                    if (item) {
+                        const img = item.querySelector('img');
+                        if (img) img.src = content[key];
+                    }
+                }
+            }
+            
+            // ===== SERVICES (3 cards) =====
+            const serviceCards = document.querySelectorAll('.service-card');
+            for (let i = 1; i <= 3; i++) {
+                const key = `service${i}`;
+                if (content[key]) {
+                    const card = serviceCards[i - 1];
+                    if (card) {
+                        const iconImg = card.querySelector('.service-icon img');
+                        if (iconImg && content[key].icon) iconImg.src = content[key].icon;
+                        
+                        const title = card.querySelector('h3');
+                        if (title && content[key].title) title.textContent = content[key].title;
+                        
+                        const desc = card.querySelector('p');
+                        if (desc && content[key].description) desc.textContent = content[key].description;
+                    }
+                }
+            }
+            
             console.log('✅ Dynamic content loaded from database');
         }
     } catch (error) {

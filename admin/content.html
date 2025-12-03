@@ -462,6 +462,50 @@
             color: var(--text-muted);
         }
 
+        /* Full Width Card */
+        .content-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Form Row */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Gallery Upload Grid */
+        .gallery-upload-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .gallery-upload-item label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-upload-item .image-preview {
+            height: 120px;
+        }
+
+        /* Services Edit Grid */
+        .services-edit-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .service-edit-item {
+            padding: 1rem;
+            background: var(--bg-input);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
         /* Sidebar Overlay */
         .sidebar-overlay {
             display: none;
@@ -489,17 +533,22 @@
             }
             .admin-header h1 { font-size: 1.3rem; }
             .content-grid { grid-template-columns: 1fr; }
+            .gallery-upload-grid { grid-template-columns: repeat(2, 1fr); }
+            .services-edit-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
             .content-area { padding: 1rem; }
             .admin-header { padding: 1rem; }
             .info-banner { flex-direction: column; }
+            .form-row { grid-template-columns: 1fr; }
+            .gallery-upload-grid { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 480px) {
             .admin-header h1 { font-size: 1.1rem; }
             .btn-primary { width: 100%; justify-content: center; }
+            .gallery-upload-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -790,6 +839,341 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- About Section Extended - 2nd image + badge -->
+                <form id="aboutExtendedForm" class="content-card">
+                    <div class="content-card-header">
+                        <i class="fas fa-image"></i>
+                        <div>
+                            <h2>Notre Histoire - Images & Badge</h2>
+                            <p>Image secondaire et badge expérience</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="form-group">
+                            <label>Image secondaire (petite)</label>
+                            <div class="image-upload-container">
+                                <input type="file" id="about_image2_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="about_image2_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Cliquez pour télécharger</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="about_image2">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombre années expérience</label>
+                                <input type="text" id="about_experience_number" placeholder="10+">
+                            </div>
+                            <div class="form-group">
+                                <label>Texte badge</label>
+                                <input type="text" id="about_experience_text" placeholder="Années d'Expérience">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Plat Signature Section -->
+                <form id="signatureForm" class="content-card">
+                    <div class="content-card-header">
+                        <i class="fas fa-star"></i>
+                        <div>
+                            <h2>Plat Signature</h2>
+                            <p>Le plat vedette mis en avant</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="form-group">
+                            <label>Image du plat</label>
+                            <div class="image-upload-container">
+                                <input type="file" id="signature_image_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="signature_image_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Cliquez pour télécharger</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="signature_image">
+                        </div>
+                        <div class="form-group">
+                            <label>Nom du plat</label>
+                            <input type="text" id="signature_name" placeholder="HIKARI Roll">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="signature_description" rows="3" placeholder="Un rouleau lumineux et savoureux..."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Ancien prix (barré)</label>
+                                <input type="text" id="signature_old_price" placeholder="25.00€">
+                            </div>
+                            <div class="form-group">
+                                <label>Nouveau prix</label>
+                                <input type="text" id="signature_new_price" placeholder="18.50€">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Specialties Section -->
+                <form id="specialtiesForm" class="content-card full-width">
+                    <div class="content-card-header">
+                        <i class="fas fa-utensils"></i>
+                        <div>
+                            <h2>Nos Spécialités</h2>
+                            <p>3 plats spéciaux mis en avant</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <!-- Specialty 1 (Large) -->
+                        <h4 style="color: var(--gold); margin-bottom: 1rem;">🌟 Spécialité 1 (Grande carte)</h4>
+                        <div class="form-group">
+                            <label>Image</label>
+                            <div class="image-upload-container">
+                                <input type="file" id="specialty1_image_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="specialty1_image_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Cliquez pour télécharger</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="specialty1_image">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" id="specialty1_name" placeholder="HIKARI Roll">
+                            </div>
+                            <div class="form-group">
+                                <label>Tag</label>
+                                <input type="text" id="specialty1_tag" placeholder="Signature du Chef">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="specialty1_description" rows="2" placeholder="Description..."></textarea>
+                        </div>
+
+                        <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+
+                        <!-- Specialty 2 -->
+                        <h4 style="color: var(--gold); margin-bottom: 1rem;">🍣 Spécialité 2</h4>
+                        <div class="form-group">
+                            <label>Image</label>
+                            <div class="image-upload-container">
+                                <input type="file" id="specialty2_image_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="specialty2_image_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Cliquez pour télécharger</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="specialty2_image">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" id="specialty2_name" placeholder="Chirashi Saumon Avocat">
+                            </div>
+                            <div class="form-group">
+                                <label>Tag</label>
+                                <input type="text" id="specialty2_tag" placeholder="Populaire">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="specialty2_description" rows="2" placeholder="Description..."></textarea>
+                        </div>
+
+                        <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+
+                        <!-- Specialty 3 -->
+                        <h4 style="color: var(--gold); margin-bottom: 1rem;">🍢 Spécialité 3</h4>
+                        <div class="form-group">
+                            <label>Image</label>
+                            <div class="image-upload-container">
+                                <input type="file" id="specialty3_image_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="specialty3_image_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Cliquez pour télécharger</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="specialty3_image">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" id="specialty3_name" placeholder="Yakitori">
+                            </div>
+                            <div class="form-group">
+                                <label>Tag</label>
+                                <input type="text" id="specialty3_tag" placeholder="Grill">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="specialty3_description" rows="2" placeholder="Description..."></textarea>
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Gallery Section -->
+                <form id="galleryForm" class="content-card full-width">
+                    <div class="content-card-header">
+                        <i class="fas fa-images"></i>
+                        <div>
+                            <h2>Galerie Photos (Notre Univers)</h2>
+                            <p>6 images pour la galerie</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="gallery-upload-grid">
+                            <div class="gallery-upload-item">
+                                <label>Image 1</label>
+                                <input type="file" id="gallery1_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="gallery1_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Photo 1</span>
+                                </div>
+                                <input type="hidden" id="gallery1">
+                            </div>
+                            <div class="gallery-upload-item">
+                                <label>Image 2</label>
+                                <input type="file" id="gallery2_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="gallery2_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Photo 2</span>
+                                </div>
+                                <input type="hidden" id="gallery2">
+                            </div>
+                            <div class="gallery-upload-item">
+                                <label>Image 3</label>
+                                <input type="file" id="gallery3_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="gallery3_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Photo 3</span>
+                                </div>
+                                <input type="hidden" id="gallery3">
+                            </div>
+                            <div class="gallery-upload-item">
+                                <label>Image 4</label>
+                                <input type="file" id="gallery4_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="gallery4_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Photo 4</span>
+                                </div>
+                                <input type="hidden" id="gallery4">
+                            </div>
+                            <div class="gallery-upload-item">
+                                <label>Image 5</label>
+                                <input type="file" id="gallery5_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="gallery5_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Photo 5</span>
+                                </div>
+                                <input type="hidden" id="gallery5">
+                            </div>
+                            <div class="gallery-upload-item">
+                                <label>Image 6</label>
+                                <input type="file" id="gallery6_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="gallery6_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Photo 6</span>
+                                </div>
+                                <input type="hidden" id="gallery6">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Services Section -->
+                <form id="servicesForm" class="content-card full-width">
+                    <div class="content-card-header">
+                        <i class="fas fa-concierge-bell"></i>
+                        <div>
+                            <h2>Nos Services</h2>
+                            <p>3 services mis en avant</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="services-edit-grid">
+                            <div class="service-edit-item">
+                                <h4 style="color: var(--gold); margin-bottom: 1rem;">Service 1</h4>
+                                <div class="form-group">
+                                    <label>URL Icône (ou laisser par défaut)</label>
+                                    <input type="text" id="service1_icon" placeholder="https://cdn-icons-png.flaticon.com/512/...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Titre</label>
+                                    <input type="text" id="service1_title" placeholder="Sushis & Sashimis">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="service1_description" rows="2" placeholder="Des créations authentiques..."></textarea>
+                                </div>
+                            </div>
+                            <div class="service-edit-item">
+                                <h4 style="color: var(--gold); margin-bottom: 1rem;">Service 2</h4>
+                                <div class="form-group">
+                                    <label>URL Icône</label>
+                                    <input type="text" id="service2_icon" placeholder="https://cdn-icons-png.flaticon.com/512/...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Titre</label>
+                                    <input type="text" id="service2_title" placeholder="California Rolls">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="service2_description" rows="2" placeholder="Nos California rolls revisités..."></textarea>
+                                </div>
+                            </div>
+                            <div class="service-edit-item">
+                                <h4 style="color: var(--gold); margin-bottom: 1rem;">Service 3</h4>
+                                <div class="form-group">
+                                    <label>URL Icône</label>
+                                    <input type="text" id="service3_icon" placeholder="https://cdn-icons-png.flaticon.com/512/...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Titre</label>
+                                    <input type="text" id="service3_title" placeholder="Yakitoris">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="service3_description" rows="2" placeholder="Brochettes grillées à la perfection..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </main>
@@ -943,7 +1327,91 @@
             await saveContent(e.target, fields);
         });
 
-        // About Image Upload
+        // About Extended Form
+        document.getElementById('aboutExtendedForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveContent(e.target, ['about_image2', 'about_experience_number', 'about_experience_text']);
+        });
+
+        // Signature Form
+        document.getElementById('signatureForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveContent(e.target, ['signature_image', 'signature_name', 'signature_description', 'signature_old_price', 'signature_new_price']);
+        });
+
+        // Specialties Form
+        document.getElementById('specialtiesForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fields = [];
+            for (let i = 1; i <= 3; i++) {
+                fields.push(`specialty${i}_image`, `specialty${i}_name`, `specialty${i}_tag`, `specialty${i}_description`);
+            }
+            await saveContent(e.target, fields);
+        });
+
+        // Gallery Form
+        document.getElementById('galleryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fields = [];
+            for (let i = 1; i <= 6; i++) {
+                fields.push(`gallery${i}`);
+            }
+            await saveContent(e.target, fields);
+        });
+
+        // Services Form
+        document.getElementById('servicesForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fields = [];
+            for (let i = 1; i <= 3; i++) {
+                fields.push(`service${i}_icon`, `service${i}_title`, `service${i}_description`);
+            }
+            await saveContent(e.target, fields);
+        });
+
+        // Generic image upload handler
+        function setupImageUpload(previewId, fileId, hiddenId) {
+            const preview = document.getElementById(previewId);
+            const fileInput = document.getElementById(fileId);
+            const hidden = document.getElementById(hiddenId);
+            
+            if (!preview || !fileInput || !hidden) return;
+            
+            preview.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast('Image trop grande (max 10MB)', 'error');
+                    return;
+                }
+                
+                try {
+                    // Read original without compression for quality
+                    const base64 = await readFileAsBase64(file);
+                    hidden.value = base64;
+                    preview.innerHTML = `<img src="${base64}" alt="Preview">`;
+                    preview.classList.add('has-image');
+                } catch (error) {
+                    console.error('Error processing image:', error);
+                    showToast('Erreur image', 'error');
+                }
+            });
+        }
+        
+        // Read file as base64 without compression
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // About Image Upload (original)
         const aboutImagePreview = document.getElementById('about_image_preview');
         const aboutImageFile = document.getElementById('about_image_file');
         const aboutImageHidden = document.getElementById('about_image');
@@ -954,14 +1422,13 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            // Check file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('Image trop grande (max 5MB)', 'error');
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('Image trop grande (max 10MB)', 'error');
                 return;
             }
 
             try {
-                const base64 = await compressImage(file, 800, 0.7);
+                const base64 = await readFileAsBase64(file);
                 aboutImageHidden.value = base64;
                 aboutImagePreview.innerHTML = `<img src="${base64}" alt="Preview">`;
                 aboutImagePreview.classList.add('has-image');
@@ -971,48 +1438,72 @@
             }
         });
 
-        // Image compression function
-        function compressImage(file, maxWidth, quality) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
+        // Setup all image uploads
+        setupImageUpload('about_image2_preview', 'about_image2_file', 'about_image2');
+        setupImageUpload('signature_image_preview', 'signature_image_file', 'signature_image');
+        setupImageUpload('specialty1_image_preview', 'specialty1_image_file', 'specialty1_image');
+        setupImageUpload('specialty2_image_preview', 'specialty2_image_file', 'specialty2_image');
+        setupImageUpload('specialty3_image_preview', 'specialty3_image_file', 'specialty3_image');
+        setupImageUpload('gallery1_preview', 'gallery1_file', 'gallery1');
+        setupImageUpload('gallery2_preview', 'gallery2_file', 'gallery2');
+        setupImageUpload('gallery3_preview', 'gallery3_file', 'gallery3');
+        setupImageUpload('gallery4_preview', 'gallery4_file', 'gallery4');
+        setupImageUpload('gallery5_preview', 'gallery5_file', 'gallery5');
+        setupImageUpload('gallery6_preview', 'gallery6_file', 'gallery6');
 
-                        if (width > maxWidth) {
-                            height = (height * maxWidth) / width;
-                            width = maxWidth;
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', quality));
-                    };
-                    img.onerror = reject;
-                    img.src = e.target.result;
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
+        // Update loadContent to handle all image previews
+        function updateImagePreview(key, value) {
+            const previewId = key + '_preview';
+            const preview = document.getElementById(previewId);
+            if (preview && value) {
+                preview.innerHTML = `<img src="${value}" alt="Preview">`;
+                preview.classList.add('has-image');
+            }
         }
-
-        // Update loadContent to handle about_image
-        function updateAboutImagePreview(value) {
-            if (value && value.startsWith('data:')) {
-                aboutImagePreview.innerHTML = `<img src="${value}" alt="Preview">`;
-                aboutImagePreview.classList.add('has-image');
+        
+        // Override loadContent to handle new fields
+        async function loadContent() {
+            try {
+                const result = await HikariAPI.content.getAll();
+                console.log('Content loaded:', result);
+                
+                if (result.success && result.data) {
+                    result.data.forEach(item => {
+                        const element = document.getElementById(item.key);
+                        if (element) {
+                            // Handle typed_words - convert JSON array to comma-separated string
+                            if (item.key === 'hero_typed_words') {
+                                try {
+                                    const words = JSON.parse(item.value);
+                                    element.value = Array.isArray(words) ? words.join(', ') : item.value;
+                                } catch {
+                                    element.value = item.value;
+                                }
+                            } else {
+                                element.value = item.value;
+                            }
+                            
+                            // Handle image previews
+                            if (item.key.includes('image') || item.key.startsWith('gallery')) {
+                                updateImagePreview(item.key, item.value);
+                            }
+                            if (item.key === 'about_image') {
+                                const preview = document.getElementById('about_image_preview');
+                                if (preview && item.value) {
+                                    preview.innerHTML = `<img src="${item.value}" alt="Preview">`;
+                                    preview.classList.add('has-image');
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading content:', error);
             }
         }
 
         // Initialize
         loadContent();
-    </script>
     </script>
 </body>
 </html>
