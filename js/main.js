@@ -883,7 +883,8 @@ async function loadDynamicContent() {
             // ===== MAP EMBED =====
             if (content.contact && content.contact.map_embed) {
                 const mapIframe = document.querySelector('.map-wrapper iframe');
-                if (mapIframe) {
+                // Only accept valid Google Maps embed URLs
+                if (mapIframe && content.contact.map_embed.includes('google.com/maps/embed')) {
                     mapIframe.src = content.contact.map_embed;
                 }
             }
