@@ -1,24 +1,12 @@
-// ===== PERFORMANCE: Request Idle Callback Polyfill =====
-window.requestIdleCallback = window.requestIdleCallback || function(cb) {
-    const start = Date.now();
-    return setTimeout(() => {
-        cb({
-            didTimeout: false,
-            timeRemaining: () => Math.max(0, 50 - (Date.now() - start))
-        });
-    }, 1);
-};
-
 // ===== PRELOADER =====
 window.addEventListener('load', () => {
     const preloader = document.querySelector('.preloader');
     document.body.classList.add('loading');
     
-    // Reduced delay for faster perceived load
     setTimeout(() => {
         preloader.classList.add('hidden');
         document.body.classList.remove('loading');
-    }, 800);
+    }, 1500);
 });
 
 // ===== HERO SLIDESHOW =====
@@ -125,17 +113,12 @@ if (heroSlides.length > 1) {
     startHeroSlideshow();
 }
 
-// ===== INITIALIZE AOS (Optimized) =====
+// ===== INITIALIZE AOS =====
 AOS.init({
-    duration: 600,
+    duration: 800,
     easing: 'ease-out',
     once: true,
-    offset: 50,
-    throttleDelay: 99,
-    debounceDelay: 50,
-    useClassNames: true,
-    disableMutationObserver: false,
-    animatedClassName: 'aos-animate'
+    offset: 100
 });
 
 // ===== TYPING EFFECT =====
@@ -174,16 +157,15 @@ function type() {
 // Start typing effect
 setTimeout(type, 1500);
 
-// ===== HEADER & TOP BAR SCROLL EFFECT (Throttled for performance) =====
+// ===== HEADER & TOP BAR SCROLL EFFECT =====
 const header = document.querySelector('.header');
 const topBar = document.querySelector('.top-bar');
 const backToTop = document.querySelector('.back-to-top');
 
-let scrollTicking = false;
-let lastScrollY = 0;
-
-function updateScrollClasses() {
-    if (lastScrollY > 100) {
+window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    
+    if (scrollY > 100) {
         header.classList.add('scrolled');
         header.classList.add('top-hidden');
         topBar.classList.add('hidden');
@@ -194,16 +176,7 @@ function updateScrollClasses() {
         topBar.classList.remove('hidden');
         backToTop.classList.remove('visible');
     }
-    scrollTicking = false;
-}
-
-window.addEventListener('scroll', () => {
-    lastScrollY = window.scrollY;
-    if (!scrollTicking) {
-        requestAnimationFrame(updateScrollClasses);
-        scrollTicking = true;
-    }
-}, { passive: true });
+});
 
 // ===== MOBILE NAVIGATION =====
 const hamburger = document.getElementById('hamburger');
@@ -242,11 +215,10 @@ navLinks.forEach(link => {
     link.addEventListener('click', closeMobileMenu);
 });
 
-// ===== ACTIVE NAVIGATION LINK (Throttled) =====
+// ===== ACTIVE NAVIGATION LINK =====
 const sections = document.querySelectorAll('section[id]');
-let navTicking = false;
 
-function updateActiveNav() {
+window.addEventListener('scroll', () => {
     const scrollY = window.pageYOffset;
     
     sections.forEach(section => {
@@ -262,15 +234,7 @@ function updateActiveNav() {
             }
         }
     });
-    navTicking = false;
-}
-
-window.addEventListener('scroll', () => {
-    if (!navTicking) {
-        requestAnimationFrame(updateActiveNav);
-        navTicking = true;
-    }
-}, { passive: true });
+});
 
 // ===== MENU TABS =====
 const tabBtns = document.querySelectorAll('.tab-btn');
@@ -369,26 +333,23 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// ===== PARALLAX EFFECT (Heavily optimized) =====
-let parallaxTicking = false;
-let parallaxScrolled = 0;
-
-function updateParallax() {
+// ===== PARALLAX EFFECT =====
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    
     // Hero parallax
     const heroBg = document.querySelector('.hero-bg');
     if (heroBg) {
-        heroBg.style.transform = `translate3d(0, ${parallaxScrolled * 0.3}px, 0)`;
+        heroBg.style.transform = `translateY(${scrolled * 0.5}px) scale(1.1)`;
     }
-    parallaxTicking = false;
-}
-
-window.addEventListener('scroll', () => {
-    parallaxScrolled = window.pageYOffset;
-    if (!parallaxTicking && parallaxScrolled < window.innerHeight) {
-        requestAnimationFrame(updateParallax);
-        parallaxTicking = true;
-    }
-}, { passive: true });
+    
+    // Floating elements parallax
+    const floatingElements = document.querySelectorAll('.floating-img, .floating-shape');
+    floatingElements.forEach((el, index) => {
+        const speed = (index + 1) * 0.1;
+        el.style.transform = `translateY(${scrolled * speed}px)`;
+    });
+});
 
 // ===== COUNTER ANIMATION =====
 function animateCounter(el, target, duration = 2000) {
@@ -408,61 +369,44 @@ function animateCounter(el, target, duration = 2000) {
     updateCounter();
 }
 
-// ===== INTERSECTION OBSERVER FOR ANIMATIONS (Optimized) =====
+// ===== INTERSECTION OBSERVER FOR ANIMATIONS =====
 const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '50px 0px'
+    threshold: 0.2,
+    rootMargin: '0px'
 };
 
-const animationObserver = new IntersectionObserver((entries) => {
+const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            requestAnimationFrame(() => {
-                entry.target.classList.add('animated');
-                
-                // Animate counters if present
-                const counters = entry.target.querySelectorAll('[data-count]');
-                counters.forEach(counter => {
-                    const target = parseInt(counter.getAttribute('data-count'));
-                    animateCounter(counter, target);
-                });
+            entry.target.classList.add('animated');
+            
+            // Animate counters if present
+            const counters = entry.target.querySelectorAll('[data-count]');
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-count'));
+                animateCounter(counter, target);
             });
-            // Unobserve after animation
-            animationObserver.unobserve(entry.target);
         }
     });
 }, observerOptions);
 
 // Observe sections
 document.querySelectorAll('section').forEach(section => {
-    animationObserver.observe(section);
+    observer.observe(section);
 });
 
-// ===== IMAGE LAZY LOADING (Enhanced) =====
+// ===== IMAGE LAZY LOADING =====
 const lazyImages = document.querySelectorAll('img[data-src]');
 
 const imageObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             const img = entry.target;
-            
-            // Defer loading to next idle callback
-            requestIdleCallback(() => {
-                const newImg = new Image();
-                newImg.onload = () => {
-                    img.src = img.dataset.src;
-                    img.classList.add('loaded');
-                    img.removeAttribute('data-src');
-                };
-                newImg.src = img.dataset.src;
-            }, { timeout: 300 });
-            
+            img.src = img.dataset.src;
+            img.classList.add('loaded');
             observer.unobserve(img);
         }
     });
-}, {
-    rootMargin: '100px 0px',
-    threshold: 0.01
 });
 
 lazyImages.forEach(img => imageObserver.observe(img));
@@ -550,36 +494,22 @@ specialtyCards.forEach(card => {
     });
 });
 
-// ===== REVEAL ON SCROLL (Optimized with throttling) =====
-let revealTicking = false;
-
+// ===== REVEAL ON SCROLL =====
 function reveal() {
-    const reveals = document.querySelectorAll('.reveal:not(.active)');
-    
-    if (reveals.length === 0) {
-        window.removeEventListener('scroll', revealHandler);
-        return;
-    }
-    
-    const windowHeight = window.innerHeight;
+    const reveals = document.querySelectorAll('.reveal');
     
     reveals.forEach(el => {
+        const windowHeight = window.innerHeight;
         const elementTop = el.getBoundingClientRect().top;
-        if (elementTop < windowHeight - 100) {
+        const elementVisible = 150;
+        
+        if (elementTop < windowHeight - elementVisible) {
             el.classList.add('active');
         }
     });
-    revealTicking = false;
 }
 
-function revealHandler() {
-    if (!revealTicking) {
-        requestAnimationFrame(reveal);
-        revealTicking = true;
-    }
-}
-
-window.addEventListener('scroll', revealHandler, { passive: true });
+window.addEventListener('scroll', reveal);
 
 // ===== FORM INPUT ANIMATION =====
 const formInputs = document.querySelectorAll('.form-group input, .form-group select, .form-group textarea');
@@ -1154,16 +1084,10 @@ async function loadMenuFromAPI(categories) {
                     const imageUrl = item.image || defaultImage;
                     const delay = Math.min((i + 1) * 50, 300); // Cap delay for faster perceived load
                     
-                    // Use data-src for lazy loading, smaller initial size
                     gridHTML += `
                         <div class="menu-item" data-aos="fade-up" data-aos-delay="${delay}">
                             <div class="menu-item-image">
-                                <img data-src="${imageUrl}" 
-                                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Crect fill='%231a1a1a' width='300' height='300'/%3E%3C/svg%3E"
-                                     alt="${item.name}" 
-                                     loading="lazy" 
-                                     decoding="async" 
-                                     onerror="this.src='${defaultImage}'">
+                                <img src="${imageUrl}" alt="${item.name}" loading="lazy" decoding="async" onerror="this.src='${defaultImage}'">
                                 ${item.badge ? `<span class="menu-badge">${item.badge}</span>` : ''}
                             </div>
                             <div class="menu-item-info">
@@ -1200,18 +1124,8 @@ async function loadMenuFromAPI(categories) {
                 document.querySelectorAll('.menu-tab-content').forEach(c => c.classList.remove('active'));
                 const target = document.getElementById(btn.dataset.tab);
                 if (target) target.classList.add('active');
-                
-                // Refresh image optimizer for newly visible images
-                if (window.HikariImageOptimizer) {
-                    window.HikariImageOptimizer.refreshImages();
-                }
             });
         });
-        
-        // Refresh image optimizer to handle new images
-        if (window.HikariImageOptimizer) {
-            window.HikariImageOptimizer.refreshImages();
-        }
         
         // Defer AOS refresh to not block main thread
         requestIdleCallback ? requestIdleCallback(() => {
