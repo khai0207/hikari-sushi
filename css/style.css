@@ -2909,3 +2909,154 @@ input, textarea, select {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-light);
 }
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+
+/* GPU Acceleration for smooth animations */
+.menu-item,
+.specialty-card,
+.gallery-item,
+.service-card,
+.feature-card,
+.testimonial-card {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Contain layout for better performance */
+.menu-grid,
+.gallery-grid,
+.specialties-grid,
+.services-grid,
+.features-grid {
+    contain: layout style;
+}
+
+/* Content visibility for off-screen optimization */
+.menu-tab-content:not(.active) {
+    content-visibility: hidden;
+}
+
+.menu-item,
+.gallery-item {
+    contain: layout style paint;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 280px;
+}
+
+/* Image containers - prevent layout shifts */
+.menu-item-image {
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.gallery-item {
+    aspect-ratio: 3 / 2;
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+}
+
+.specialty-image {
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+}
+
+/* Optimized image rendering */
+.menu-item-image img,
+.gallery-item img,
+.specialty-image img {
+    will-change: transform, opacity;
+    image-rendering: -webkit-optimize-contrast;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Reduce paint on scroll */
+.section {
+    will-change: auto;
+    transform: translateZ(0);
+}
+
+/* Skeleton loading animation */
+@keyframes skeleton-loading {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.menu-item-image::before,
+.gallery-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(201, 169, 98, 0.03) 50%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.menu-item-image.image-loaded::before,
+.gallery-item.image-loaded::before {
+    display: none;
+}
+
+/* Reduce animations when prefer-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .menu-item-image::before,
+    .gallery-item::before {
+        animation: none;
+    }
+}
+
+/* Fast scroll optimization */
+.fast-scroll .menu-item,
+.fast-scroll .gallery-item,
+.fast-scroll .specialty-card {
+    will-change: auto !important;
+    transition: none !important;
+}
+
+.fast-scroll .menu-item:hover,
+.fast-scroll .gallery-item:hover {
+    transform: none !important;
+}
+
+/* Low bandwidth mode */
+.low-bandwidth .menu-item-image::before,
+.low-bandwidth .gallery-item::before {
+    animation: none;
+    background: #1a1a1a;
+}
+
+/* Improve FPS during hover animations */
+.menu-item:hover .menu-item-image img,
+.gallery-item:hover img,
+.specialty-card:hover .specialty-image img {
+    will-change: transform;
+}
+
+/* Release will-change after animation */
+.menu-item:not(:hover) .menu-item-image img,
+.gallery-item:not(:hover) img {
+    will-change: auto;
+}

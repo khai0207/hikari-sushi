@@ -1084,10 +1084,16 @@ async function loadMenuFromAPI(categories) {
                     const imageUrl = item.image || defaultImage;
                     const delay = Math.min((i + 1) * 50, 300); // Cap delay for faster perceived load
                     
+                    // Use data-src for lazy loading, smaller initial size
                     gridHTML += `
                         <div class="menu-item" data-aos="fade-up" data-aos-delay="${delay}">
                             <div class="menu-item-image">
-                                <img src="${imageUrl}" alt="${item.name}" loading="lazy" decoding="async" onerror="this.src='${defaultImage}'">
+                                <img data-src="${imageUrl}" 
+                                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Crect fill='%231a1a1a' width='300' height='300'/%3E%3C/svg%3E"
+                                     alt="${item.name}" 
+                                     loading="lazy" 
+                                     decoding="async" 
+                                     onerror="this.src='${defaultImage}'">
                                 ${item.badge ? `<span class="menu-badge">${item.badge}</span>` : ''}
                             </div>
                             <div class="menu-item-info">
@@ -1124,8 +1130,18 @@ async function loadMenuFromAPI(categories) {
                 document.querySelectorAll('.menu-tab-content').forEach(c => c.classList.remove('active'));
                 const target = document.getElementById(btn.dataset.tab);
                 if (target) target.classList.add('active');
+                
+                // Refresh image optimizer for newly visible images
+                if (window.HikariImageOptimizer) {
+                    window.HikariImageOptimizer.refreshImages();
+                }
             });
         });
+        
+        // Refresh image optimizer to handle new images
+        if (window.HikariImageOptimizer) {
+            window.HikariImageOptimizer.refreshImages();
+        }
         
         // Defer AOS refresh to not block main thread
         requestIdleCallback ? requestIdleCallback(() => {
