@@ -1793,6 +1793,97 @@ input, textarea, select {
     color: var(--gray-light);
 }
 
+/* ===== RESERVATION SECTION ===== */
+.reservation {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--dark-light) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.reservation::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('../images/pattern-japanese.png') repeat;
+    opacity: 0.03;
+    pointer-events: none;
+}
+
+.reservation-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.reservation-info {
+    background: rgba(201, 169, 98, 0.05);
+    padding: 60px 50px;
+    border-radius: 20px;
+    border: 1px solid rgba(201, 169, 98, 0.2);
+}
+
+.reservation-description {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--gray-light);
+    margin-bottom: 40px;
+    font-family: var(--font-secondary);
+}
+
+.reservation-features {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+
+.reservation-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--white);
+}
+
+.reservation-feature i {
+    color: var(--primary);
+    font-size: 22px;
+}
+
+.reservation-feature span {
+    font-size: 15px;
+    font-family: var(--font-secondary);
+}
+
+.btn-reserve-large {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--dark);
+    padding: 20px 50px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: var(--font-secondary);
+    text-decoration: none;
+    transition: var(--transition-fast);
+    box-shadow: var(--shadow-gold);
+}
+
+.btn-reserve-large:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 40px rgba(201, 169, 98, 0.4);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+}
+
+.btn-reserve-large i {
+    font-size: 20px;
+}
+
 /* ===== CONTACT SECTION ===== */
 .contact {
     background: var(--dark);
@@ -2508,6 +2599,33 @@ input, textarea, select {
         padding: 30px 20px;
     }
     
+    /* Reservation Section Responsive */
+    .reservation-info {
+        padding: 40px 25px;
+    }
+    
+    .reservation-description {
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+    
+    .reservation-features {
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 35px;
+    }
+    
+    .reservation-feature {
+        justify-content: center;
+    }
+    
+    .btn-reserve-large {
+        padding: 16px 35px;
+        font-size: 16px;
+        width: 100%;
+        justify-content: center;
+    }
+
     .testimonial-card {
         padding: 30px 20px;
     }
