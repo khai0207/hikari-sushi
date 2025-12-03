@@ -1174,6 +1174,87 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- Testimonials Section -->
+                <form id="testimonialsForm" class="content-card full-width">
+                    <div class="content-card-header">
+                        <i class="fas fa-comments"></i>
+                        <div>
+                            <h2>Témoignages Clients</h2>
+                            <p>3 avis clients affichés sur le site</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="services-edit-grid">
+                            <!-- Testimonial 1 -->
+                            <div class="service-edit-item">
+                                <h4 style="color: var(--gold); margin-bottom: 1rem;">⭐ Témoignage 1</h4>
+                                <div class="form-group">
+                                    <label>Photo (URL)</label>
+                                    <input type="text" id="testimonial1_photo" placeholder="https://...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nom</label>
+                                    <input type="text" id="testimonial1_name" placeholder="Marie Dupont">
+                                </div>
+                                <div class="form-group">
+                                    <label>Avis</label>
+                                    <textarea id="testimonial1_text" rows="3" placeholder="Une expérience culinaire exceptionnelle..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Note (1-5 étoiles)</label>
+                                    <input type="number" id="testimonial1_rating" min="1" max="5" placeholder="5">
+                                </div>
+                            </div>
+                            <!-- Testimonial 2 -->
+                            <div class="service-edit-item">
+                                <h4 style="color: var(--gold); margin-bottom: 1rem;">⭐ Témoignage 2</h4>
+                                <div class="form-group">
+                                    <label>Photo (URL)</label>
+                                    <input type="text" id="testimonial2_photo" placeholder="https://...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nom</label>
+                                    <input type="text" id="testimonial2_name" placeholder="Pierre Martin">
+                                </div>
+                                <div class="form-group">
+                                    <label>Avis</label>
+                                    <textarea id="testimonial2_text" rows="3" placeholder="Le meilleur restaurant japonais..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Note (1-5 étoiles)</label>
+                                    <input type="number" id="testimonial2_rating" min="1" max="5" placeholder="5">
+                                </div>
+                            </div>
+                            <!-- Testimonial 3 -->
+                            <div class="service-edit-item">
+                                <h4 style="color: var(--gold); margin-bottom: 1rem;">⭐ Témoignage 3</h4>
+                                <div class="form-group">
+                                    <label>Photo (URL)</label>
+                                    <input type="text" id="testimonial3_photo" placeholder="https://...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nom</label>
+                                    <input type="text" id="testimonial3_name" placeholder="Sophie Bernard">
+                                </div>
+                                <div class="form-group">
+                                    <label>Avis</label>
+                                    <textarea id="testimonial3_text" rows="3" placeholder="Nous sommes venus pour notre anniversaire..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Note (1-5 étoiles)</label>
+                                    <input type="number" id="testimonial3_rating" min="1" max="5" placeholder="5">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </main>
@@ -1365,6 +1446,16 @@
             const fields = [];
             for (let i = 1; i <= 3; i++) {
                 fields.push(`service${i}_icon`, `service${i}_title`, `service${i}_description`);
+            }
+            await saveContent(e.target, fields);
+        });
+
+        // Testimonials Form
+        document.getElementById('testimonialsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fields = [];
+            for (let i = 1; i <= 3; i++) {
+                fields.push(`testimonial${i}_photo`, `testimonial${i}_name`, `testimonial${i}_text`, `testimonial${i}_rating`);
             }
             await saveContent(e.target, fields);
         });

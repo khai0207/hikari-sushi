@@ -950,6 +950,44 @@ async function loadDynamicContent() {
                 }
             }
             
+            // ===== TESTIMONIALS (3 cards) =====
+            const testimonialCards = document.querySelectorAll('.testimonial-card');
+            for (let i = 1; i <= 3; i++) {
+                const key = `testimonial${i}`;
+                if (content[key]) {
+                    const card = testimonialCards[i - 1];
+                    if (card) {
+                        const photo = card.querySelector('.testimonial-author img');
+                        if (photo && content[key].photo) photo.src = content[key].photo;
+                        
+                        const name = card.querySelector('.author-info h4');
+                        if (name && content[key].name) name.textContent = content[key].name;
+                        
+                        const text = card.querySelector('.testimonial-text');
+                        if (text && content[key].text) text.textContent = content[key].text;
+                        
+                        // Rating stars
+                        if (content[key].rating) {
+                            const starsContainer = card.querySelector('.stars');
+                            if (starsContainer) {
+                                const rating = parseInt(content[key].rating) || 5;
+                                let starsHTML = '';
+                                for (let s = 1; s <= 5; s++) {
+                                    if (s <= rating) {
+                                        starsHTML += '<i class="fas fa-star"></i>';
+                                    } else if (s - 0.5 <= rating) {
+                                        starsHTML += '<i class="fas fa-star-half-alt"></i>';
+                                    } else {
+                                        starsHTML += '<i class="far fa-star"></i>';
+                                    }
+                                }
+                                starsContainer.innerHTML = starsHTML;
+                            }
+                        }
+                    }
+                }
+            }
+            
             console.log('✅ Dynamic content loaded from database');
         }
     } catch (error) {
