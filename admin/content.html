@@ -1555,7 +1555,7 @@
             await saveContent(e.target, fields);
         });
 
-        // Generic image upload handler
+        // Generic image upload handler - NOW UPLOADS TO R2
         function setupImageUpload(previewId, fileId, hiddenId) {
             const preview = document.getElementById(previewId);
             const fileInput = document.getElementById(fileId);
@@ -1575,14 +1575,28 @@
                 }
                 
                 try {
-                    // Read original without compression for quality
+                    // Show loading state
+                    preview.innerHTML = '<div style="padding:20px;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Upload...</div>';
+                    
+                    // Read as base64 for upload
                     const base64 = await readFileAsBase64(file);
-                    hidden.value = base64;
-                    preview.innerHTML = `<img src="${base64}" alt="Preview">`;
-                    preview.classList.add('has-image');
+                    
+                    // Upload to R2
+                    const uploadResult = await HikariAPI.uploadImage(base64, hiddenId + '_' + Date.now());
+                    
+                    if (uploadResult.success) {
+                        // Store R2 URL instead of base64
+                        hidden.value = uploadResult.url;
+                        preview.innerHTML = `<img src="${uploadResult.url}" alt="Preview">`;
+                        preview.classList.add('has-image');
+                        showToast('Image uploadée!', 'success');
+                    } else {
+                        throw new Error(uploadResult.error || 'Upload failed');
+                    }
                 } catch (error) {
-                    console.error('Error processing image:', error);
-                    showToast('Erreur image', 'error');
+                    console.error('Error uploading image:', error);
+                    showToast('Erreur upload: ' + error.message, 'error');
+                    preview.innerHTML = '<i class="fas fa-image"></i><span>Cliquez pour ajouter</span>';
                 }
             });
         }
@@ -1597,7 +1611,7 @@
             });
         }
 
-        // About Image Upload (original)
+        // About Image Upload - NOW UPLOADS TO R2
         const aboutImagePreview = document.getElementById('about_image_preview');
         const aboutImageFile = document.getElementById('about_image_file');
         const aboutImageHidden = document.getElementById('about_image');
@@ -1614,13 +1628,26 @@
             }
 
             try {
+                // Show loading state
+                aboutImagePreview.innerHTML = '<div style="padding:20px;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Upload...</div>';
+                
                 const base64 = await readFileAsBase64(file);
-                aboutImageHidden.value = base64;
-                aboutImagePreview.innerHTML = `<img src="${base64}" alt="Preview">`;
-                aboutImagePreview.classList.add('has-image');
+                
+                // Upload to R2
+                const uploadResult = await HikariAPI.uploadImage(base64, 'about_image_' + Date.now());
+                
+                if (uploadResult.success) {
+                    aboutImageHidden.value = uploadResult.url;
+                    aboutImagePreview.innerHTML = `<img src="${uploadResult.url}" alt="Preview">`;
+                    aboutImagePreview.classList.add('has-image');
+                    showToast('Image uploadée!', 'success');
+                } else {
+                    throw new Error(uploadResult.error || 'Upload failed');
+                }
             } catch (error) {
-                console.error('Error processing image:', error);
-                showToast('Erreur lors du traitement de l\'image', 'error');
+                console.error('Error uploading image:', error);
+                showToast('Erreur upload: ' + error.message, 'error');
+                aboutImagePreview.innerHTML = '<i class="fas fa-image"></i><span>Cliquez pour ajouter</span>';
             }
         });
 
