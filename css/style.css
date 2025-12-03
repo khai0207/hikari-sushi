@@ -23,10 +23,10 @@
     --section-padding: 100px 0;
     --container-padding: 0 20px;
     
-    /* Transitions */
-    --transition-fast: 0.3s ease;
-    --transition-medium: 0.5s ease;
-    --transition-slow: 0.8s ease;
+    /* Transitions - Hardware accelerated */
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-medium: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     
     /* Shadows */
     --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -46,6 +46,10 @@ html {
     scroll-behavior: smooth;
     scroll-padding-top: 120px;
     overflow-x: hidden;
+    /* Optimize text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 body {
@@ -78,6 +82,9 @@ img {
     max-width: 100%;
     height: auto;
     display: block;
+    /* GPU acceleration for smooth image display */
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 button {
@@ -3059,4 +3066,121 @@ input, textarea, select {
 .menu-item:not(:hover) .menu-item-image img,
 .gallery-item:not(:hover) img {
     will-change: auto;
+}
+
+/* ===== CRITICAL PERFORMANCE OPTIMIZATIONS ===== */
+
+/* Force GPU compositing for smooth scrolling */
+.header,
+.hero,
+.hero-slideshow,
+.menu-content,
+.gallery,
+.testimonials-slider {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Contain paint for major sections */
+#about,
+#menu,
+#gallery,
+#specialties,
+#testimonials,
+#contact {
+    contain: layout paint;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+}
+
+/* Optimize tab content visibility */
+.menu-tab-content:not(.active) {
+    display: none !important;
+    content-visibility: hidden;
+}
+
+/* Hardware accelerated transforms */
+.menu-item,
+.gallery-item,
+.specialty-card,
+.testimonial-card {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+}
+
+/* Efficient hover transitions - only animate transform */
+.menu-item {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-item:hover {
+    transform: translate3d(0, -8px, 0);
+}
+
+/* Optimize slideshow performance */
+.hero-slide {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+.testimonial-track {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+}
+
+/* Efficient image fade */
+.menu-item-image img {
+    transition: opacity 0.3s ease;
+    opacity: 1;
+}
+
+.menu-item-image img[data-src] {
+    opacity: 0;
+}
+
+.menu-item-image img.loaded {
+    opacity: 1;
+}
+
+/* Smooth scroll target sections */
+section[id] {
+    scroll-margin-top: 100px;
+}
+
+/* Prevent CLS from font loading */
+.hero-title,
+.section-title,
+.menu-item h3 {
+    font-display: swap;
+}
+
+/* Optimize form inputs */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    will-change: border-color;
+}
+
+/* Virtual viewport optimization */
+.menu-grid {
+    contain: strict;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1200px;
+}
+
+/* Network-aware image loading states */
+.save-data .menu-item-image img,
+.slow-connection .menu-item-image img {
+    filter: blur(0) !important;
+}
+
+/* Print optimization */
+@media print {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
 }

@@ -1,10 +1,12 @@
-# Cloudflare Pages Custom Headers
+# Cloudflare Pages Custom Headers - Performance Optimized
 
-# All pages - Security headers
+# All pages - Security headers + Performance hints
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+  X-DNS-Prefetch-Control: on
+  Accept-CH: DPR, Width, Viewport-Width
 
 # Root index - always revalidate
 /
@@ -15,19 +17,20 @@
 /*.html
   Cache-Control: no-cache, no-store, must-revalidate
   Pragma: no-cache
+  Link: </css/style.css>; rel=preload; as=style, </js/image-optimizer.js>; rel=preload; as=script
 
 # Admin pages - never cache
 /admin/*
   Cache-Control: no-cache, no-store, must-revalidate
   Pragma: no-cache
 
-# JS files - revalidate each time
+# JS files - short cache with revalidation
 /js/*
-  Cache-Control: no-cache, must-revalidate
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
-# CSS files - revalidate each time  
+# CSS files - short cache with revalidation
 /css/*
-  Cache-Control: no-cache, must-revalidate
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 # Images - long cache for performance (1 year)
 /images/*
@@ -38,6 +41,7 @@
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
-# R2 Assets - long cache with revalidation
+# R2 Assets (uploaded images) - aggressive cache with stale fallback
 /assets/*
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800, stale-if-error=86400
+  Vary: Accept
