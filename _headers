@@ -1,43 +1,46 @@
 # Cloudflare Pages Custom Headers
 
-# All pages - Security headers
+# All pages - Security & Performance headers
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+  X-XSS-Protection: 1; mode=block
 
-# Root index - always revalidate
+# Root index - cache with revalidation for faster loads
 /
-  Cache-Control: no-cache, no-store, must-revalidate
-  Pragma: no-cache
+  Cache-Control: public, max-age=0, must-revalidate
 
-# HTML pages - no cache (always fresh)
+# HTML pages - cache with revalidation
 /*.html
-  Cache-Control: no-cache, no-store, must-revalidate
-  Pragma: no-cache
+  Cache-Control: public, max-age=0, must-revalidate
 
-# Admin pages - never cache
+# Admin pages - never cache (sensitive data)
 /admin/*
   Cache-Control: no-cache, no-store, must-revalidate
   Pragma: no-cache
 
-# JS files - revalidate each time
+# JS files - cache with revalidation (versioned)
 /js/*
-  Cache-Control: no-cache, must-revalidate
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
-# CSS files - revalidate each time  
+# CSS files - cache with revalidation
 /css/*
-  Cache-Control: no-cache, must-revalidate
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
-# Images - cache for 1 day
+# Images - long cache (rarely change)
 /images/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800, immutable
 
-# Fonts
+# Fonts - immutable long cache
 /*.woff2
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
-# R2 Assets (uploaded images) - cache for 7 days
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# R2 Assets (uploaded images) - long cache
 /assets/*
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400

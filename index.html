@@ -36,12 +36,35 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://hikari-sushi.fr/">
     
-    <!-- Preconnect for performance -->
+    <!-- DNS Prefetch for faster resolution -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
+    <link rel="dns-prefetch" href="https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev">
+    
+    <!-- Preconnect for critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="preconnect" href="https://images.unsplash.com">
+    
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="css/style.css" as="style">
+    
+    <!-- Google Fonts with display=swap for FOUT instead of FOIT -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- Font Awesome with async loading -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
+    <!-- AOS CSS with async loading -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"></noscript>
+    
+    <!-- Main CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -104,6 +127,9 @@
         </div>
     </header>
 
+    <!-- Preload hero image for LCP optimization -->
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1920&h=1080&fit=crop" fetchpriority="high">
+    
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-slideshow" id="heroSlideshow">
@@ -164,14 +190,14 @@
             <div class="about-content">
                 <div class="about-images" data-aos="fade-right">
                     <div class="about-img-main">
-                        <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&h=700&fit=crop" alt="Sushi Chef" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&h=700&fit=crop" alt="Sushi Chef" loading="lazy" decoding="async">
                         <div class="experience-badge">
                             <span class="number">10+</span>
                             <span class="text">Années<br>d'Expérience</span>
                         </div>
                     </div>
                     <div class="about-img-secondary">
-                        <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=300&h=300&fit=crop" alt="Japanese Food" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=300&h=300&fit=crop" alt="Japanese Food" loading="lazy" decoding="async">
                     </div>
                     <div class="about-pattern">
                         <svg viewBox="0 0 100 100">
@@ -272,7 +298,7 @@
         <div class="container">
             <div class="special-content">
                 <div class="special-image" data-aos="fade-right">
-                    <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=600&h=600&fit=crop" alt="Hikari Roll" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=600&h=600&fit=crop" alt="Hikari Roll" loading="lazy" decoding="async">
                     <div class="badge-special">
                         <span>Signature</span>
                         <span>du Chef</span>
@@ -324,7 +350,7 @@
                     <div class="menu-grid">
                         <div class="menu-item" data-aos="fade-up" data-aos-delay="100">
                             <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=300&fit=crop" alt="Sushi Saumon" loading="lazy">
+                                <img src="https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=300&fit=crop" alt="Sushi Saumon" loading="lazy" decoding="async">
                                 <span class="menu-badge">Populaire</span>
                             </div>
                             <div class="menu-item-info">
@@ -562,7 +588,7 @@
                             "Une expérience culinaire exceptionnelle ! Les sushis sont d'une fraîcheur incomparable et le service est impeccable. Je recommande vivement le HIKARI Roll, une véritable œuvre d'art."
                         </p>
                         <div class="testimonial-author">
-                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Marie Dupont">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Marie Dupont" loading="lazy" decoding="async">
                             <div class="author-info">
                                 <h4>Marie Dupont</h4>
                                 <div class="stars">
@@ -583,7 +609,7 @@
                             "Le meilleur restaurant japonais de Toulouse ! L'ambiance est zen et apaisante, parfaite pour un dîner romantique. Les chirashis sont absolument délicieux."
                         </p>
                         <div class="testimonial-author">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Pierre Martin">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Pierre Martin" loading="lazy" decoding="async">
                             <div class="author-info">
                                 <h4>Pierre Martin</h4>
                                 <div class="stars">
@@ -604,7 +630,7 @@
                             "Nous sommes venus pour notre anniversaire et tout était parfait. Le chef a préparé un menu spécial et l'équipe était aux petits soins. Merci HIKARI !"
                         </p>
                         <div class="testimonial-author">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sophie Bernard">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sophie Bernard" loading="lazy" decoding="async">
                             <div class="author-info">
                                 <h4>Sophie Bernard</h4>
                                 <div class="stars">
@@ -645,7 +671,7 @@
             <div class="specialties-grid">
                 <div class="specialty-card large" data-aos="fade-up" data-aos-delay="100">
                     <div class="specialty-image">
-                        <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=600&h=600&fit=crop" alt="HIKARI Roll" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=600&h=600&fit=crop" alt="HIKARI Roll" loading="lazy" decoding="async">
                         <div class="specialty-overlay">
                             <span class="specialty-tag">Signature du Chef</span>
                             <h3>HIKARI Roll</h3>
@@ -656,7 +682,7 @@
                 </div>
                 <div class="specialty-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="specialty-image">
-                        <img src="https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=400&h=400&fit=crop" alt="Chirashi Saumon Avocat" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=400&h=400&fit=crop" alt="Chirashi Saumon Avocat" loading="lazy" decoding="async">
                         <div class="specialty-overlay">
                             <span class="specialty-tag">Populaire</span>
                             <h3>Chirashi Saumon Avocat</h3>
@@ -667,7 +693,7 @@
                 </div>
                 <div class="specialty-card" data-aos="fade-up" data-aos-delay="300">
                     <div class="specialty-image">
-                        <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=400&fit=crop" alt="Yakitori" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=400&fit=crop" alt="Yakitori" loading="lazy" decoding="async">
                         <div class="specialty-overlay">
                             <span class="specialty-tag">Grill</span>
                             <h3>Yakitori</h3>
@@ -693,37 +719,37 @@
             </div>
             <div class="gallery-grid" data-aos="fade-up">
                 <div class="gallery-item" onclick="openLightbox(0)">
-                    <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&h=400&fit=crop" alt="Sushi préparation" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&h=400&fit=crop" alt="Sushi préparation" loading="lazy" decoding="async">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(1)">
-                    <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=600&h=400&fit=crop" alt="Plateau sushi" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=600&h=400&fit=crop" alt="Plateau sushi" loading="lazy" decoding="async">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(2)">
-                    <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=600&h=400&fit=crop" alt="Maki roll" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=600&h=400&fit=crop" alt="Maki roll" loading="lazy" decoding="async">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(3)">
-                    <img src="https://images.unsplash.com/photo-1514190051997-0f6f39ca5cde?w=600&h=400&fit=crop" alt="Restaurant ambiance" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1514190051997-0f6f39ca5cde?w=600&h=400&fit=crop" alt="Restaurant ambiance" loading="lazy" decoding="async">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(4)">
-                    <img src="https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=600&h=400&fit=crop" alt="Ramen" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=600&h=400&fit=crop" alt="Ramen" loading="lazy" decoding="async">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(5)">
-                    <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&h=400&fit=crop" alt="Yakitori" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&h=400&fit=crop" alt="Yakitori" loading="lazy" decoding="async">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
@@ -847,7 +873,7 @@
                 </div>
                 <div class="contact-map" data-aos="fade-left">
                     <div class="map-wrapper">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2889.5847961887!2d1.4547!3d43.5997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12aebb6b5e10e7e1%3A0x52e1bd0ec58fa9!2s17%20All%C3%A9e%20des%20Soupirs%2C%2031000%20Toulouse!5e0!3m2!1sfr!2sfr!4v1234567890" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2889.5847961887!2d1.4547!3d43.5997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12aebb6b5e10e7e1%3A0x52e1bd0ec58fa9!2s17%20All%C3%A9e%20des%20Soupirs%2C%2031000%20Toulouse!5e0!3m2!1sfr!2sfr!4v1234567890" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                     <div class="contact-cta">
                         <a href="tel:0561555077" class="btn btn-primary">
@@ -942,22 +968,37 @@
         <i class="fas fa-chevron-up"></i>
     </a>
 
-    <!-- D1 API Client (for dynamic menu & reservations) -->
-    <script src="js/api-client.js"></script>
+    <!-- D1 API Client (for dynamic menu & reservations) - defer for non-blocking -->
+    <script src="js/api-client.js" defer></script>
     
-    <!-- Scripts -->
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <script src="js/main.js"></script>
+    <!-- Scripts - defer for non-blocking -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js" defer></script>
+    <script src="js/main.js" defer></script>
     
     <!-- Dynamic Menu Loading -->
     <script>
-        // Load menu items from D1 API
+        // Defer dynamic content loading to after page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDynamicContent);
+        } else {
+            // Use requestIdleCallback for non-critical loading
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(initDynamicContent, { timeout: 2000 });
+            } else {
+                setTimeout(initDynamicContent, 100);
+            }
+        }
+        
+        function initDynamicContent() {
+            // Load menu items from D1 API
+            loadDynamicMenu();
+        }
+        
         async function loadDynamicMenu() {
             try {
                 const result = await HikariAPI.menu.getAll();
                 if (!result.success || result.data.length === 0) {
-                    console.log('Using static menu - D1 not configured or no items');
-                    return;
+                    return; // Keep static menu
                 }
                 
                 // Group items by category
@@ -974,16 +1015,18 @@
                     }
                 });
                 
-                // Update each tab content
-                Object.keys(categories).forEach(category => {
-                    const items = categories[category];
-                    if (items.length > 0) {
-                        updateMenuTab(category, items);
-                    }
+                // Use requestAnimationFrame for DOM updates
+                requestAnimationFrame(() => {
+                    Object.keys(categories).forEach(category => {
+                        const items = categories[category];
+                        if (items.length > 0) {
+                            updateMenuTab(category, items);
+                        }
+                    });
                 });
                 
             } catch (error) {
-                console.log('Using static menu - D1 error:', error.message);
+                // Silent fail - keep static menu
             }
         }
         
@@ -994,18 +1037,16 @@
             const menuGrid = tabContent.querySelector('.menu-grid');
             if (!menuGrid) return;
             
-            // Generate HTML for menu items
-            let html = '';
-            items.forEach((item, index) => {
+            // Build HTML string for better performance
+            const html = items.map((item, index) => {
                 const badgeHtml = item.badge ? 
                     `<span class="menu-badge ${item.badge === 'Nouveau' ? 'new' : ''}">${item.badge}</span>` : '';
-                
                 const imageUrl = item.image || 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=300&fit=crop';
                 
-                html += `
-                    <div class="menu-item" data-aos="fade-up" data-aos-delay="${(index + 1) * 100}">
+                return `
+                    <div class="menu-item" data-aos="fade-up" data-aos-delay="${Math.min((index + 1) * 100, 400)}">
                         <div class="menu-item-image">
-                            <img src="${imageUrl}" alt="${item.name}">
+                            <img src="${imageUrl}" alt="${item.name}" loading="lazy" decoding="async">
                             ${badgeHtml}
                         </div>
                         <div class="menu-item-info">
@@ -1017,17 +1058,17 @@
                         </div>
                     </div>
                 `;
-            });
+            }).join('');
             
             menuGrid.innerHTML = html;
             
-            // Refresh AOS for new elements
+            // Defer AOS refresh
             if (typeof AOS !== 'undefined') {
-                AOS.refresh();
+                requestIdleCallback ? requestIdleCallback(() => AOS.refresh()) : setTimeout(() => AOS.refresh(), 50);
             }
         }
         
-        // Submit reservation form to D1 API
+        // Reservation form handler
         document.getElementById('reservationForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1035,7 +1076,7 @@
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
             
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
             submitBtn.disabled = true;
             
             const data = {
@@ -1052,7 +1093,6 @@
                 const result = await HikariAPI.reservations.create(data);
                 
                 if (result.success) {
-                    // Show success message
                     form.innerHTML = `
                         <div class="success-message" style="text-align: center; padding: 40px;">
                             <i class="fas fa-check-circle" style="font-size: 60px; color: var(--gold); margin-bottom: 20px;"></i>
@@ -1061,19 +1101,13 @@
                         </div>
                     `;
                 } else {
-                    throw new Error(result.error || 'Erreur lors de la réservation');
+                    throw new Error(result.error || 'Erreur');
                 }
             } catch (error) {
                 alert('Erreur: ' + error.message);
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
-        });
-        
-        // Load dynamic menu when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Give API time to initialize
-            setTimeout(loadDynamicMenu, 500);
         });
     </script>
 </body>

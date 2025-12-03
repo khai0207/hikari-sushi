@@ -3,10 +3,13 @@ window.addEventListener('load', () => {
     const preloader = document.querySelector('.preloader');
     document.body.classList.add('loading');
     
+    // Reduced timeout for faster perceived load
     setTimeout(() => {
         preloader.classList.add('hidden');
         document.body.classList.remove('loading');
-    }, 1500);
+        // Clean up preloader from DOM after animation
+        setTimeout(() => preloader.remove(), 500);
+    }, 800);
 });
 
 // ===== HERO SLIDESHOW =====
@@ -114,11 +117,15 @@ if (heroSlides.length > 1) {
 }
 
 // ===== INITIALIZE AOS =====
+// Check for reduced motion preference
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 AOS.init({
-    duration: 800,
+    duration: prefersReducedMotion ? 0 : 600, // Faster animations
     easing: 'ease-out',
-    once: true,
-    offset: 100
+    once: true, // Only animate once for better performance
+    offset: 80,
+    disable: prefersReducedMotion // Disable if user prefers reduced motion
 });
 
 // ===== TYPING EFFECT =====
@@ -162,8 +169,12 @@ const header = document.querySelector('.header');
 const topBar = document.querySelector('.top-bar');
 const backToTop = document.querySelector('.back-to-top');
 
-window.addEventListener('scroll', () => {
-    const scrollY = window.scrollY;
+// Use passive listener for better scroll performance
+let ticking = false;
+let lastScrollY = 0;
+
+function updateHeaderOnScroll() {
+    const scrollY = lastScrollY;
     
     if (scrollY > 100) {
         header.classList.add('scrolled');
@@ -176,7 +187,16 @@ window.addEventListener('scroll', () => {
         topBar.classList.remove('hidden');
         backToTop.classList.remove('visible');
     }
-});
+    ticking = false;
+}
+
+window.addEventListener('scroll', () => {
+    lastScrollY = window.scrollY;
+    if (!ticking) {
+        requestAnimationFrame(updateHeaderOnScroll);
+        ticking = true;
+    }
+}, { passive: true });
 
 // ===== MOBILE NAVIGATION =====
 const hamburger = document.getElementById('hamburger');
@@ -218,23 +238,24 @@ navLinks.forEach(link => {
 // ===== ACTIVE NAVIGATION LINK =====
 const sections = document.querySelectorAll('section[id]');
 
-window.addEventListener('scroll', () => {
-    const scrollY = window.pageYOffset;
-    
-    sections.forEach(section => {
-        const sectionHeight = section.offsetHeight;
-        const sectionTop = section.offsetTop - 150;
-        const sectionId = section.getAttribute('id');
-        const navLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
-        
-        if (navLink) {
-            if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+// Use IntersectionObserver for better performance than scroll event
+const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const sectionId = entry.target.getAttribute('id');
+            const navLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
+            if (navLink) {
                 navLinks.forEach(link => link.classList.remove('active'));
                 navLink.classList.add('active');
             }
         }
     });
+}, {
+    threshold: 0.3,
+    rootMargin: '-100px 0px -50% 0px'
 });
+
+sections.forEach(section => navObserver.observe(section));
 
 // ===== MENU TABS =====
 const tabBtns = document.querySelectorAll('.tab-btn');
@@ -265,10 +286,12 @@ let currentSlide = 0;
 const totalSlides = testimonialCards.length;
 
 function updateSlider() {
-    testimonialTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
-    
-    dots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentSlide);
+    requestAnimationFrame(() => {
+        testimonialTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+        
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
     });
 }
 
@@ -282,8 +305,10 @@ function prevSlide() {
     updateSlider();
 }
 
-nextBtn.addEventListener('click', nextSlide);
-prevBtn.addEventListener('click', prevSlide);
+if (nextBtn && prevBtn) {
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+}
 
 dots.forEach((dot, index) => {
     dot.addEventListener('click', () => {
@@ -292,64 +317,67 @@ dots.forEach((dot, index) => {
     });
 });
 
-// Auto slide
-let autoSlide = setInterval(nextSlide, 5000);
-
-// Pause on hover
+// Auto slide with visibility check
+let autoSlide;
 const testimonialSlider = document.querySelector('.testimonials-slider');
-testimonialSlider.addEventListener('mouseenter', () => clearInterval(autoSlide));
-testimonialSlider.addEventListener('mouseleave', () => {
+
+function startAutoSlide() {
+    if (autoSlide) clearInterval(autoSlide);
     autoSlide = setInterval(nextSlide, 5000);
-});
+}
+
+function stopAutoSlide() {
+    if (autoSlide) clearInterval(autoSlide);
+}
+
+// Only auto-slide when visible and not hovered
+if (testimonialSlider) {
+    const sliderVisibilityObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                startAutoSlide();
+            } else {
+                stopAutoSlide();
+            }
+        });
+    }, { threshold: 0.3 });
+    
+    sliderVisibilityObserver.observe(testimonialSlider);
+    testimonialSlider.addEventListener('mouseenter', stopAutoSlide);
+    testimonialSlider.addEventListener('mouseleave', startAutoSlide);
+}
 
 // ===== SMOOTH SCROLL =====
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-        const href = this.getAttribute('href');
-        // Skip if href is just "#" or empty, or if it's an external link
-        if (!href || href === '#' || href.length <= 1) return;
-        // Skip if href contains "http" (external links)
-        if (href.includes('http') || href.includes('://')) return;
-        // Skip if href doesn't start with #
-        if (!href.startsWith('#')) return;
-        
-        e.preventDefault();
-        try {
-            const target = document.querySelector(href);
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-                // Close mobile menu if open
-                if (typeof closeMobileMenu === 'function') {
-                    closeMobileMenu();
-                }
-            }
-        } catch (err) {
-            // Invalid selector, ignore
-            console.log('Invalid scroll target:', href);
+// Use event delegation for better performance (single listener)
+document.body.addEventListener('click', function(e) {
+    const anchor = e.target.closest('a[href^="#"]');
+    if (!anchor) return;
+    
+    const href = anchor.getAttribute('href');
+    // Skip if href is just "#" or empty
+    if (!href || href === '#' || href.length <= 1) return;
+    // Skip external links
+    if (href.includes('://')) return;
+    
+    e.preventDefault();
+    try {
+        const target = document.querySelector(href);
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+            // Close mobile menu if open
+            closeMobileMenu();
         }
-    });
+    } catch (err) {
+        // Invalid selector, ignore
+    }
 });
 
-// ===== PARALLAX EFFECT =====
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    
-    // Hero parallax
-    const heroBg = document.querySelector('.hero-bg');
-    if (heroBg) {
-        heroBg.style.transform = `translateY(${scrolled * 0.5}px) scale(1.1)`;
-    }
-    
-    // Floating elements parallax
-    const floatingElements = document.querySelectorAll('.floating-img, .floating-shape');
-    floatingElements.forEach((el, index) => {
-        const speed = (index + 1) * 0.1;
-        el.style.transform = `translateY(${scrolled * speed}px)`;
-    });
-});
+// ===== PARALLAX EFFECT (Disabled for performance) =====
+// Parallax removed to improve scroll performance
+// The visual effect was minimal but caused significant jank
 
 // ===== COUNTER ANIMATION =====
 function animateCounter(el, target, duration = 2000) {
@@ -370,146 +398,65 @@ function animateCounter(el, target, duration = 2000) {
 }
 
 // ===== INTERSECTION OBSERVER FOR ANIMATIONS =====
-const observerOptions = {
-    threshold: 0.2,
+// Simplified - AOS handles most animation needs
+// Only keep counter animation observer
+const counterObserverOptions = {
+    threshold: 0.5,
     rootMargin: '0px'
 };
 
-const observer = new IntersectionObserver((entries) => {
+const counterObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.classList.add('animated');
-            
-            // Animate counters if present
             const counters = entry.target.querySelectorAll('[data-count]');
             counters.forEach(counter => {
                 const target = parseInt(counter.getAttribute('data-count'));
                 animateCounter(counter, target);
             });
+            counterObserver.unobserve(entry.target);
         }
     });
-}, observerOptions);
+}, counterObserverOptions);
 
-// Observe sections
-document.querySelectorAll('section').forEach(section => {
-    observer.observe(section);
+// Only observe elements with counters
+document.querySelectorAll('[data-count]').forEach(el => {
+    const parent = el.closest('section');
+    if (parent) counterObserver.observe(parent);
 });
 
 // ===== IMAGE LAZY LOADING =====
+// Using native loading="lazy" attribute in HTML
+// Only use JS observer as fallback for data-src images
 const lazyImages = document.querySelectorAll('img[data-src]');
 
-const imageObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const img = entry.target;
-            img.src = img.dataset.src;
-            img.classList.add('loaded');
-            observer.unobserve(img);
-        }
-    });
-});
+if (lazyImages.length > 0 && 'IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+                observer.unobserve(img);
+            }
+        });
+    }, { rootMargin: '50px' });
 
-lazyImages.forEach(img => imageObserver.observe(img));
-
-// ===== MOUSE CURSOR EFFECT (Optional - for desktop) =====
-if (window.innerWidth > 992) {
-    const cursor = document.createElement('div');
-    cursor.className = 'custom-cursor';
-    document.body.appendChild(cursor);
-    
-    const cursorDot = document.createElement('div');
-    cursorDot.className = 'cursor-dot';
-    document.body.appendChild(cursorDot);
-    
-    document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        
-        setTimeout(() => {
-            cursorDot.style.left = e.clientX + 'px';
-            cursorDot.style.top = e.clientY + 'px';
-        }, 100);
-    });
-    
-    // Add cursor styles
-    const cursorStyles = document.createElement('style');
-    cursorStyles.textContent = `
-        .custom-cursor {
-            width: 40px;
-            height: 40px;
-            border: 1px solid var(--primary);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            transition: transform 0.15s ease, width 0.15s ease, height 0.15s ease;
-            mix-blend-mode: difference;
-        }
-        
-        .cursor-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-        }
-        
-        a:hover ~ .custom-cursor,
-        button:hover ~ .custom-cursor {
-            transform: translate(-50%, -50%) scale(1.5);
-        }
-    `;
-    document.head.appendChild(cursorStyles);
+    lazyImages.forEach(img => imageObserver.observe(img));
 }
+
+// ===== MOUSE CURSOR EFFECT (Disabled for performance) =====
+// Custom cursor removed to improve INP and animation performance
+// This feature caused significant overhead on mouse move events
 
 // ===== MENU ITEM HOVER EFFECT =====
-const menuItems = document.querySelectorAll('.menu-item');
-
-menuItems.forEach(item => {
-    item.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-10px)';
-    });
-    
-    item.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
-    });
-});
+// Removed JS hover - using CSS :hover for better performance
+// CSS transform is hardware-accelerated and more efficient
 
 // ===== SPECIALTY CARDS HOVER =====
-const specialtyCards = document.querySelectorAll('.specialty-card');
-
-specialtyCards.forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        const overlay = this.querySelector('.specialty-overlay');
-        overlay.style.opacity = '1';
-    });
-    
-    card.addEventListener('mouseleave', function() {
-        const overlay = this.querySelector('.specialty-overlay');
-        overlay.style.opacity = '0';
-    });
-});
+// Removed JS hover - using CSS :hover for better performance
 
 // ===== REVEAL ON SCROLL =====
-function reveal() {
-    const reveals = document.querySelectorAll('.reveal');
-    
-    reveals.forEach(el => {
-        const windowHeight = window.innerHeight;
-        const elementTop = el.getBoundingClientRect().top;
-        const elementVisible = 150;
-        
-        if (elementTop < windowHeight - elementVisible) {
-            el.classList.add('active');
-        }
-    });
-}
-
-window.addEventListener('scroll', reveal);
+// Removed - AOS library handles this more efficiently
 
 // ===== FORM INPUT ANIMATION =====
 const formInputs = document.querySelectorAll('.form-group input, .form-group select, .form-group textarea');

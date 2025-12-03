@@ -2,22 +2,29 @@
  * HIKARI Sushi - Cloudflare Worker API
  * =====================================
  * API endpoints for D1 database operations
+ * Optimized for performance
  */
 
-// CORS headers
+// CORS headers - cached for reuse
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-// Helper: JSON response
-function jsonResponse(data, status = 200) {
+// Shared cache headers
+const cacheHeaders = {
+    'Cache-Control': 'public, max-age=60, stale-while-revalidate=300'
+};
+
+// Helper: JSON response with caching
+function jsonResponse(data, status = 200, cache = false) {
     return new Response(JSON.stringify(data), {
         status,
         headers: {
             'Content-Type': 'application/json',
-            ...corsHeaders
+            ...corsHeaders,
+            ...(cache ? cacheHeaders : {})
         }
     });
 }
@@ -69,10 +76,10 @@ export default {
 
             // ===== PUBLIC ROUTES =====
             if (path === '/api/content' && method === 'GET') {
-                return await getContent(request, env);
+                return await getContent(request, env, true); // Enable caching
             }
             if (path === '/api/menu' && method === 'GET') {
-                return await getMenuItems(request, env);
+                return await getMenuItems(request, env, true); // Enable caching
             }
             if (path === '/api/gallery' && method === 'GET') {
                 return await getGallery(env);
@@ -276,7 +283,7 @@ async function createAdmin(request, env) {
 
 // ===== CONTENT HANDLERS =====
 
-async function getContent(request, env) {
+async function getContent(request, env, cache = false) {
     const url = new URL(request.url);
     const section = url.searchParams.get('section');
     
@@ -297,7 +304,7 @@ async function getContent(request, env) {
         content[row.section][row.key] = row.type === 'json' ? JSON.parse(row.value) : row.value;
     });
 
-    return jsonResponse({ success: true, content });
+    return jsonResponse({ success: true, content }, 200, cache);
 }
 
 async function getAllContent(env) {
@@ -322,7 +329,7 @@ async function updateContent(request, env) {
 
 // ===== MENU HANDLERS =====
 
-async function getMenuItems(request, env) {
+async function getMenuItems(request, env, cache = false) {
     const url = new URL(request.url);
     const category = url.searchParams.get('category');
     
@@ -337,7 +344,7 @@ async function getMenuItems(request, env) {
     query += ' ORDER BY category, display_order';
 
     const result = await env.hikari_db.prepare(query).bind(...params).all();
-    return jsonResponse({ success: true, items: result.results });
+    return jsonResponse({ success: true, items: result.results }, 200, cache);
 }
 
 async function createMenuItem(request, env) {
@@ -593,8 +600,9 @@ async function serveImage(env, key) {
         
         const headers = new Headers();
         headers.set('Content-Type', object.httpMetadata?.contentType || 'image/jpeg');
-        headers.set('Cache-Control', 'public, max-age=31536000'); // Cache 1 year
+        headers.set('Cache-Control', 'public, max-age=31536000, immutable'); // 1 year immutable
         headers.set('Access-Control-Allow-Origin', '*');
+        headers.set('Vary', 'Accept-Encoding');
         
         return new Response(object.body, { headers });
     } catch (error) {

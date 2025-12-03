@@ -46,6 +46,10 @@ html {
     scroll-behavior: smooth;
     scroll-padding-top: 120px;
     overflow-x: hidden;
+    /* Improve text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 body {
@@ -256,6 +260,8 @@ input, textarea, select {
     background: transparent;
     padding: 20px 0;
     transition: all 0.4s ease;
+    will-change: transform, background-color;
+    contain: layout style;
 }
 
 .header.top-hidden {
@@ -423,6 +429,7 @@ input, textarea, select {
     opacity: 0;
     transform: scale(1.1);
     transition: opacity 1s ease-in-out, transform 8s ease-out;
+    will-change: opacity, transform;
 }
 
 .hero-slide.active {
@@ -935,6 +942,8 @@ input, textarea, select {
     transition: var(--transition-medium);
     position: relative;
     overflow: hidden;
+    contain: layout style;
+    will-change: transform;
 }
 
 .service-card::before {
@@ -1207,6 +1216,8 @@ input, textarea, select {
     overflow: hidden;
     border: 1px solid rgba(201, 169, 98, 0.1);
     transition: var(--transition-medium);
+    contain: layout style;
+    will-change: transform;
 }
 
 .menu-item:hover {
@@ -1313,6 +1324,7 @@ input, textarea, select {
 .testimonial-track {
     display: flex;
     transition: transform 0.5s ease;
+    will-change: transform;
 }
 
 .testimonial-card {
@@ -1323,6 +1335,7 @@ input, textarea, select {
     border-radius: 15px;
     text-align: center;
     margin: 0 15px;
+    contain: layout style;
 }
 
 .quote-icon {
@@ -1428,6 +1441,7 @@ input, textarea, select {
     border-radius: 15px;
     overflow: hidden;
     cursor: pointer;
+    contain: layout style;
 }
 
 .specialty-card.large {
@@ -1735,6 +1749,8 @@ input, textarea, select {
     border-radius: 15px;
     border: 1px solid rgba(201, 169, 98, 0.1);
     transition: var(--transition-medium);
+    contain: layout style;
+    will-change: transform;
 }
 
 .feature-card:hover {
@@ -2047,6 +2063,7 @@ input, textarea, select {
     transition: var(--transition-fast);
     z-index: 999;
     box-shadow: var(--shadow-gold);
+    will-change: opacity, transform;
 }
 
 .back-to-top.visible {
@@ -2757,6 +2774,7 @@ input, textarea, select {
     overflow: hidden;
     cursor: pointer;
     aspect-ratio: 3/2;
+    contain: layout style;
 }
 
 .gallery-item img {
