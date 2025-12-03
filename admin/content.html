@@ -1555,7 +1555,22 @@
             await saveContent(e.target, fields);
         });
 
-        // Generic image upload handler - NOW UPLOADS TO R2
+        // Helper function to delete old image from R2
+        async function deleteOldImageFromR2(oldUrl) {
+            if (oldUrl && oldUrl.includes('/assets/')) {
+                const oldKey = oldUrl.split('/assets/')[1];
+                if (oldKey) {
+                    try {
+                        console.log('Deleting old image:', oldKey);
+                        await HikariAPI.deleteImage(oldKey);
+                    } catch (e) {
+                        console.warn('Failed to delete old image:', e);
+                    }
+                }
+            }
+        }
+
+        // Generic image upload handler - NOW UPLOADS TO R2 AND DELETES OLD
         function setupImageUpload(previewId, fileId, hiddenId) {
             const preview = document.getElementById(previewId);
             const fileInput = document.getElementById(fileId);
@@ -1575,6 +1590,9 @@
                 }
                 
                 try {
+                    // Store old URL for deletion
+                    const oldUrl = hidden.value;
+                    
                     // Show loading state
                     preview.innerHTML = '<div style="padding:20px;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Upload...</div>';
                     
@@ -1585,6 +1603,9 @@
                     const uploadResult = await HikariAPI.uploadImage(base64, hiddenId + '_' + Date.now());
                     
                     if (uploadResult.success) {
+                        // Delete old image from R2 if exists
+                        await deleteOldImageFromR2(oldUrl);
+                        
                         // Store R2 URL instead of base64
                         hidden.value = uploadResult.url;
                         preview.innerHTML = `<img src="${uploadResult.url}" alt="Preview">`;
@@ -1611,7 +1632,7 @@
             });
         }
 
-        // About Image Upload - NOW UPLOADS TO R2
+        // About Image Upload - NOW UPLOADS TO R2 AND DELETES OLD
         const aboutImagePreview = document.getElementById('about_image_preview');
         const aboutImageFile = document.getElementById('about_image_file');
         const aboutImageHidden = document.getElementById('about_image');
@@ -1628,6 +1649,9 @@
             }
 
             try {
+                // Store old URL for deletion
+                const oldUrl = aboutImageHidden.value;
+                
                 // Show loading state
                 aboutImagePreview.innerHTML = '<div style="padding:20px;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Upload...</div>';
                 
@@ -1637,6 +1661,9 @@
                 const uploadResult = await HikariAPI.uploadImage(base64, 'about_image_' + Date.now());
                 
                 if (uploadResult.success) {
+                    // Delete old image from R2 if exists
+                    await deleteOldImageFromR2(oldUrl);
+                    
                     aboutImageHidden.value = uploadResult.url;
                     aboutImagePreview.innerHTML = `<img src="${uploadResult.url}" alt="Preview">`;
                     aboutImagePreview.classList.add('has-image');
