@@ -9,19 +9,21 @@
     // ===== CONFIGURATION =====
     const CONFIG = {
         // Khoảng cách từ viewport để bắt đầu tải (px)
-        rootMargin: '200px 0px 400px 0px',
+        rootMargin: '300px 0px 600px 0px',
         // Ngưỡng visibility để trigger load
         threshold: 0.01,
         // Thời gian fade-in (ms)
-        fadeInDuration: 400,
+        fadeInDuration: 300,
         // Số ảnh tải đồng thời tối đa
-        maxConcurrentLoads: 4,
+        maxConcurrentLoads: 6,
         // Delay giữa các batch load (ms)
-        batchDelay: 50,
+        batchDelay: 16, // ~1 frame at 60fps
         // Enable blur placeholder
         enableBlurPlaceholder: true,
         // Placeholder color
-        placeholderColor: '#1a1a1a'
+        placeholderColor: '#1a1a1a',
+        // Priority loading distance (px)
+        priorityDistance: 150
     };
 
     // ===== STATE =====
@@ -29,6 +31,7 @@
     let currentlyLoading = 0;
     let observer = null;
     let isLowBandwidth = false;
+    let imageCache = new Map();
 
     // ===== DETECT CONNECTION SPEED =====
     function detectConnection() {
@@ -38,11 +41,17 @@
                             connection.effectiveType === 'slow-2g' || 
                             connection.effectiveType === '2g';
             
+            // Add low-bandwidth class for CSS optimization
+            if (isLowBandwidth) {
+                document.body.classList.add('low-bandwidth');
+            }
+            
             // Listen for connection changes
             connection.addEventListener('change', () => {
                 isLowBandwidth = connection.saveData || 
                                 connection.effectiveType === 'slow-2g' || 
                                 connection.effectiveType === '2g';
+                document.body.classList.toggle('low-bandwidth', isLowBandwidth);
             });
         }
     }
