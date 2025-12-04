@@ -130,9 +130,19 @@ const HikariContent = {
                         const stringValue = (typeof value === 'object') 
                             ? JSON.stringify(value) 
                             : String(value);
+                        
+                        // Special handling for gallery - when section == key (e.g., gallery1.gallery1)
+                        // use just the section as the key
+                        let finalKey;
+                        if (section === key || section.startsWith('gallery')) {
+                            finalKey = section;
+                        } else {
+                            finalKey = `${section}_${key}`;
+                        }
+                        
                         data.push({
                             section,
-                            key: `${section}_${key}`,
+                            key: finalKey,
                             value: stringValue
                         });
                     }
