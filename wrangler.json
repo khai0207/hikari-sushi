@@ -14,5 +14,16 @@
 			"bucket_name": "hikari-assets",
 			"binding": "hikari_assets"
 		}
-	]
+	],
+	"kv_namespaces": [
+		{
+			"binding": "hikari_cache",
+			"id": "10cc2b3c2af54dcfad6e3d780eca50f1"
+		}
+	],
+	"triggers": {
+		"crons": [
+			"0 3 * * *"
+		]
+	}
 }

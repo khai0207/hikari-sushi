@@ -2,7 +2,8 @@
  * HIKARI Sushi - Cloudflare Worker API
  * =====================================
  * API endpoints for D1 database operations
- * Optimized for performance
+ * Optimized for performance with KV caching
+ * Cron job runs at 3:00 AM daily to refresh cache
  */
 
 // CORS headers - cached for reuse
@@ -12,9 +13,17 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-// Shared cache headers
+// Shared cache headers - aggressive caching for cached data
 const cacheHeaders = {
-    'Cache-Control': 'public, max-age=60, stale-while-revalidate=300'
+    'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400'
+};
+
+// Cache keys
+const CACHE_KEYS = {
+    CONTENT: 'cache:content',
+    MENU: 'cache:menu',
+    SETTINGS: 'cache:settings',
+    LAST_UPDATE: 'cache:last_update'
 };
 
 // Helper: JSON response with caching
@@ -96,6 +105,15 @@ export default {
                 return await serveImage(env, path.replace('/assets/', ''));
             }
 
+            // Manual cache refresh endpoint (before auth - protected by secret key)
+            if (path === '/api/refresh-cache' && method === 'POST') {
+                const { secret } = await request.json().catch(() => ({}));
+                if (secret !== 'hikari-cache-2024') {
+                    return errorResponse('Invalid secret', 403);
+                }
+                return await refreshAllCache(env);
+            }
+
             // ===== PROTECTED ADMIN ROUTES =====
             const authResult = await checkAuth(request, env);
             if (!authResult.valid) {
@@ -175,8 +193,72 @@ export default {
             console.error('API Error:', error);
             return errorResponse('Internal server error: ' + error.message, 500);
         }
+    },
+
+    // ===== SCHEDULED (CRON) HANDLER =====
+    // Runs at 3:00 AM daily (configured in wrangler.json)
+    async scheduled(event, env, ctx) {
+        console.log('🕐 Cron job started at:', new Date().toISOString());
+        
+        try {
+            // Refresh all cache
+            await refreshCacheInternal(env);
+            console.log('✅ Cache refreshed successfully');
+        } catch (error) {
+            console.error('❌ Cache refresh failed:', error);
+        }
     }
 };
+
+// ===== CACHE FUNCTIONS =====
+
+async function refreshCacheInternal(env) {
+    // 1. Cache all content
+    const contentResult = await env.hikari_db.prepare('SELECT * FROM site_content').all();
+    const content = {};
+    contentResult.results.forEach(row => {
+        if (!content[row.section]) content[row.section] = {};
+        content[row.section][row.key] = row.type === 'json' ? JSON.parse(row.value) : row.value;
+    });
+    await env.hikari_cache.put(CACHE_KEYS.CONTENT, JSON.stringify(content), { expirationTtl: 86400 }); // 24h
+
+    // 2. Cache menu items
+    const menuResult = await env.hikari_db.prepare(
+        'SELECT * FROM menu_items WHERE is_active = 1 ORDER BY category, display_order'
+    ).all();
+    await env.hikari_cache.put(CACHE_KEYS.MENU, JSON.stringify(menuResult.results), { expirationTtl: 86400 });
+
+    // 3. Cache settings
+    const settingsResult = await env.hikari_db.prepare('SELECT * FROM settings').all();
+    const settings = {};
+    settingsResult.results.forEach(row => {
+        settings[row.key] = row.type === 'json' ? JSON.parse(row.value) : row.value;
+    });
+    await env.hikari_cache.put(CACHE_KEYS.SETTINGS, JSON.stringify(settings), { expirationTtl: 86400 });
+
+    // 4. Save last update timestamp
+    await env.hikari_cache.put(CACHE_KEYS.LAST_UPDATE, new Date().toISOString());
+
+    return { content, menu: menuResult.results, settings };
+}
+
+async function refreshAllCache(env) {
+    try {
+        const result = await refreshCacheInternal(env);
+        return jsonResponse({ 
+            success: true, 
+            message: 'Cache refreshed',
+            lastUpdate: await env.hikari_cache.get(CACHE_KEYS.LAST_UPDATE),
+            stats: {
+                contentSections: Object.keys(result.content).length,
+                menuItems: result.menu.length,
+                settingsKeys: Object.keys(result.settings).length
+            }
+        });
+    } catch (error) {
+        return errorResponse('Cache refresh failed: ' + error.message, 500);
+    }
+}
 
 // ===== AUTH HANDLERS =====
 
@@ -283,9 +365,22 @@ async function createAdmin(request, env) {
 
 // ===== CONTENT HANDLERS =====
 
-async function getContent(request, env, cache = false) {
+async function getContent(request, env, useCache = false) {
     const url = new URL(request.url);
     const section = url.searchParams.get('section');
+    
+    // Try to get from KV cache first (for public requests)
+    if (useCache && !section) {
+        try {
+            const cached = await env.hikari_cache.get(CACHE_KEYS.CONTENT);
+            if (cached) {
+                console.log('📦 Serving content from cache');
+                return jsonResponse({ success: true, content: JSON.parse(cached), cached: true }, 200, true);
+            }
+        } catch (e) {
+            console.log('Cache miss, falling back to D1');
+        }
+    }
     
     let query = 'SELECT * FROM site_content';
     let params = [];
@@ -304,7 +399,7 @@ async function getContent(request, env, cache = false) {
         content[row.section][row.key] = row.type === 'json' ? JSON.parse(row.value) : row.value;
     });
 
-    return jsonResponse({ success: true, content }, 200, cache);
+    return jsonResponse({ success: true, content }, 200, useCache);
 }
 
 async function getAllContent(env) {
@@ -324,14 +419,31 @@ async function updateContent(request, env) {
         updated_at = CURRENT_TIMESTAMP
     `).bind(section, key, value, type || 'text').run();
 
+    // Invalidate content cache after update
+    await env.hikari_cache.delete(CACHE_KEYS.CONTENT);
+    console.log('🗑️ Content cache invalidated');
+
     return jsonResponse({ success: true });
 }
 
 // ===== MENU HANDLERS =====
 
-async function getMenuItems(request, env, cache = false) {
+async function getMenuItems(request, env, useCache = false) {
     const url = new URL(request.url);
     const category = url.searchParams.get('category');
+    
+    // Try to get from KV cache first (for public requests without category filter)
+    if (useCache && (!category || category === 'all')) {
+        try {
+            const cached = await env.hikari_cache.get(CACHE_KEYS.MENU);
+            if (cached) {
+                console.log('📦 Serving menu from cache');
+                return jsonResponse({ success: true, items: JSON.parse(cached), cached: true }, 200, true);
+            }
+        } catch (e) {
+            console.log('Cache miss, falling back to D1');
+        }
+    }
     
     let query = 'SELECT * FROM menu_items WHERE is_active = 1';
     let params = [];
@@ -344,7 +456,7 @@ async function getMenuItems(request, env, cache = false) {
     query += ' ORDER BY category, display_order';
 
     const result = await env.hikari_db.prepare(query).bind(...params).all();
-    return jsonResponse({ success: true, items: result.results }, 200, cache);
+    return jsonResponse({ success: true, items: result.results }, 200, useCache);
 }
 
 async function createMenuItem(request, env) {
@@ -357,6 +469,10 @@ async function createMenuItem(request, env) {
         data.name, data.description, data.price, data.category,
         data.image, data.badge, data.display_order || 0
     ).run();
+
+    // Invalidate menu cache after create
+    await env.hikari_cache.delete(CACHE_KEYS.MENU);
+    console.log('🗑️ Menu cache invalidated');
 
     return jsonResponse({ success: true, id: result.meta.last_row_id });
 }
@@ -375,11 +491,20 @@ async function updateMenuItem(request, env, id) {
         data.image, data.badge, data.display_order || 0, data.is_active ?? 1, id
     ).run();
 
+    // Invalidate menu cache after update
+    await env.hikari_cache.delete(CACHE_KEYS.MENU);
+    console.log('🗑️ Menu cache invalidated');
+
     return jsonResponse({ success: true });
 }
 
 async function deleteMenuItem(env, id) {
     await env.hikari_db.prepare('DELETE FROM menu_items WHERE id = ?').bind(id).run();
+    
+    // Invalidate menu cache after delete
+    await env.hikari_cache.delete(CACHE_KEYS.MENU);
+    console.log('🗑️ Menu cache invalidated');
+    
     return jsonResponse({ success: true });
 }
 
@@ -464,7 +589,20 @@ async function deleteGalleryItem(env, id) {
 
 // ===== SETTINGS HANDLERS =====
 
-async function getSettings(env) {
+async function getSettings(env, useCache = true) {
+    // Try to get from KV cache first
+    if (useCache) {
+        try {
+            const cached = await env.hikari_cache.get(CACHE_KEYS.SETTINGS);
+            if (cached) {
+                console.log('📦 Serving settings from cache');
+                return jsonResponse({ success: true, settings: JSON.parse(cached), cached: true });
+            }
+        } catch (e) {
+            console.log('Cache miss, falling back to D1');
+        }
+    }
+    
     const result = await env.hikari_db.prepare('SELECT * FROM settings').all();
     
     const settings = {};
@@ -484,6 +622,10 @@ async function updateSettings(request, env) {
             ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
         `).bind(key, typeof value === 'object' ? JSON.stringify(value) : value).run();
     }
+
+    // Invalidate settings cache after update
+    await env.hikari_cache.delete(CACHE_KEYS.SETTINGS);
+    console.log('🗑️ Settings cache invalidated');
 
     return jsonResponse({ success: true });
 }
