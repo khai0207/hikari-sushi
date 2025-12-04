@@ -1,5 +1,6 @@
 // ===== IMAGE CACHE SYSTEM =====
 const imageCache = new Map();
+let criticalImagesLoaded = false;
 
 function preloadImage(url) {
     if (!url || imageCache.has(url)) return Promise.resolve(imageCache.get(url));
@@ -20,18 +21,51 @@ async function preloadImages(urls) {
     return Promise.allSettled(promises);
 }
 
+// Preload critical images early (called before DOMContentLoaded)
+async function preloadCriticalImages() {
+    try {
+        // Fetch menu data early
+        const response = await fetch('https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/api/menu');
+        const result = await response.json();
+        
+        if (result.success && result.items) {
+            // Get first 10 images (hero + visible menu items)
+            const criticalUrls = result.items
+                .slice(0, 10)
+                .map(item => item.image)
+                .filter(Boolean);
+            
+            console.log('🚀 Preloading', criticalUrls.length, 'critical images...');
+            await preloadImages(criticalUrls);
+            console.log('✅ Critical images preloaded');
+            criticalImagesLoaded = true;
+        }
+    } catch (e) {
+        console.log('Preload skipped:', e.message);
+    }
+}
+
+// Start preloading immediately
+preloadCriticalImages();
+
 // ===== PRELOADER =====
 window.addEventListener('load', () => {
     const preloader = document.querySelector('.preloader');
     document.body.classList.add('loading');
     
-    // Reduced timeout for faster perceived load
-    setTimeout(() => {
+    // Wait for critical images before hiding preloader
+    const hidePreloader = () => {
         preloader.classList.add('hidden');
         document.body.classList.remove('loading');
-        // Clean up preloader from DOM after animation
         setTimeout(() => preloader.remove(), 500);
-    }, 800);
+    };
+    
+    // If critical images loaded, hide immediately; otherwise wait max 1.5s
+    if (criticalImagesLoaded) {
+        setTimeout(hidePreloader, 300);
+    } else {
+        setTimeout(hidePreloader, 1500);
+    }
 });
 
 // ===== HERO SLIDESHOW =====
@@ -1079,11 +1113,17 @@ async function loadMenuFromAPI(categories) {
                 categoryItems.forEach((item, i) => {
                     const imageUrl = item.image || defaultImage;
                     const delay = Math.min((i + 1) * 50, 300); // Cap delay for faster perceived load
+                    const isCached = imageCache.has(imageUrl);
                     
                     gridHTML += `
                         <div class="menu-item" data-aos="fade-up" data-aos-delay="${delay}">
-                            <div class="menu-item-image">
-                                <img src="${imageUrl}" alt="${item.name}" loading="lazy" decoding="async" onerror="this.src='${defaultImage}'">
+                            <div class="menu-item-image ${!isCached ? 'img-skeleton' : ''}">
+                                <img src="${imageUrl}" alt="${item.name}" 
+                                    ${isCached ? '' : 'loading="lazy"'} 
+                                    decoding="async" 
+                                    data-loaded="${isCached}"
+                                    onload="this.dataset.loaded='true'; this.parentElement.classList.remove('img-skeleton')"
+                                    onerror="this.src='${defaultImage}'; this.dataset.loaded='true'; this.parentElement.classList.remove('img-skeleton')">
                                 ${item.badge ? `<span class="menu-badge">${item.badge}</span>` : ''}
                             </div>
                             <div class="menu-item-info">

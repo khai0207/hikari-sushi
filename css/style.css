@@ -86,6 +86,28 @@ img {
     backface-visibility: hidden;
 }
 
+/* Skeleton Loading Animation */
+@keyframes skeleton-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.7; }
+}
+
+.img-skeleton {
+    background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* Smooth image load transition */
+img[data-loaded="false"] {
+    opacity: 0;
+}
+
+img[data-loaded="true"] {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
 button {
     font-family: inherit;
     cursor: pointer;
