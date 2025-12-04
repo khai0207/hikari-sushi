@@ -82,6 +82,8 @@ img {
     max-width: 100%;
     height: auto;
     display: block;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 button {
@@ -750,6 +752,8 @@ input, textarea, select {
     height: 500px;
     object-fit: cover;
     transition: var(--transition-medium);
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .about-img-main:hover img {
@@ -803,6 +807,8 @@ input, textarea, select {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .about-pattern {
@@ -1208,6 +1214,7 @@ input, textarea, select {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
+    contain: layout style;
 }
 
 .menu-item {
@@ -1237,6 +1244,8 @@ input, textarea, select {
     height: 100%;
     object-fit: cover;
     transition: var(--transition-medium);
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .menu-item:hover .menu-item-image img {
@@ -1463,6 +1472,8 @@ input, textarea, select {
     height: 100%;
     object-fit: cover;
     transition: var(--transition-slow);
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .specialty-card:hover .specialty-image img {
@@ -2925,6 +2936,7 @@ input, textarea, select {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
+    contain: layout style;
 }
 
 .gallery-item {
@@ -2941,6 +2953,7 @@ input, textarea, select {
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
+    backface-visibility: hidden;
 }
 
 .gallery-item:hover img {

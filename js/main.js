@@ -1,3 +1,25 @@
+// ===== IMAGE CACHE SYSTEM =====
+const imageCache = new Map();
+
+function preloadImage(url) {
+    if (!url || imageCache.has(url)) return Promise.resolve(imageCache.get(url));
+    
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            imageCache.set(url, img);
+            resolve(img);
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+    });
+}
+
+async function preloadImages(urls) {
+    const promises = urls.filter(url => url && !imageCache.has(url)).map(url => preloadImage(url));
+    return Promise.allSettled(promises);
+}
+
 // ===== PRELOADER =====
 window.addEventListener('load', () => {
     const preloader = document.querySelector('.preloader');
@@ -877,6 +899,7 @@ async function loadDynamicContent() {
             
             // ===== GALLERY (6 images) =====
             const galleryItems = document.querySelectorAll('.gallery-item');
+            const galleryUrls = [];
             for (let i = 1; i <= 6; i++) {
                 const key = `gallery${i}`;
                 if (content[key]) {
@@ -885,6 +908,8 @@ async function loadDynamicContent() {
                     if (typeof content[key] === 'object' && content[key][key]) {
                         imageUrl = content[key][key];
                     }
+                    
+                    if (imageUrl) galleryUrls.push(imageUrl);
                     
                     const item = galleryItems[i - 1];
                     if (item && imageUrl) {
@@ -895,6 +920,8 @@ async function loadDynamicContent() {
                     if (imageUrl) galleryImages[i - 1] = imageUrl;
                 }
             }
+            // Preload gallery images
+            if (galleryUrls.length > 0) preloadImages(galleryUrls);
             
             // ===== MAP EMBED =====
             if (content.contact && content.contact.map_embed) {
@@ -1001,6 +1028,11 @@ async function loadMenuFromAPI(categories) {
         }
         
         const menuItems = result.items;
+        
+        // Preload all menu item images in background
+        const imageUrls = menuItems.map(item => item.image).filter(Boolean);
+        preloadImages(imageUrls);
+        
         const menuTabs = document.querySelector('.menu-tabs');
         const menuContent = document.querySelector('.menu-content');
         
