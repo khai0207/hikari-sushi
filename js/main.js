@@ -1,6 +1,7 @@
 // ===== IMAGE CACHE SYSTEM =====
 const imageCache = new Map();
 let criticalImagesLoaded = false;
+let allMenuImages = [];
 
 function preloadImage(url) {
     if (!url || imageCache.has(url)) return Promise.resolve(imageCache.get(url));
@@ -21,7 +22,7 @@ async function preloadImages(urls) {
     return Promise.allSettled(promises);
 }
 
-// Preload critical images early (called before DOMContentLoaded)
+// Preload ALL images early (called before DOMContentLoaded)
 async function preloadCriticalImages() {
     try {
         // Fetch menu data early
@@ -29,43 +30,41 @@ async function preloadCriticalImages() {
         const result = await response.json();
         
         if (result.success && result.items) {
-            // Get first 10 images (hero + visible menu items)
-            const criticalUrls = result.items
-                .slice(0, 10)
+            // Get ALL menu images
+            allMenuImages = result.items
                 .map(item => item.image)
                 .filter(Boolean);
             
-            console.log('🚀 Preloading', criticalUrls.length, 'critical images...');
-            await preloadImages(criticalUrls);
+            console.log('🚀 Preloading', allMenuImages.length, 'critical images...');
+            
+            // Preload all images in parallel
+            await preloadImages(allMenuImages);
+            
             console.log('✅ Critical images preloaded');
             criticalImagesLoaded = true;
         }
     } catch (e) {
         console.log('Preload skipped:', e.message);
+        criticalImagesLoaded = true; // Don't block on error
     }
 }
 
 // Start preloading immediately
-preloadCriticalImages();
+const preloadPromise = preloadCriticalImages();
 
 // ===== PRELOADER =====
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
     const preloader = document.querySelector('.preloader');
     document.body.classList.add('loading');
     
-    // Wait for critical images before hiding preloader
-    const hidePreloader = () => {
-        preloader.classList.add('hidden');
-        document.body.classList.remove('loading');
-        setTimeout(() => preloader.remove(), 500);
-    };
+    // Wait for critical images (max 3 seconds)
+    const timeout = new Promise(resolve => setTimeout(resolve, 3000));
+    await Promise.race([preloadPromise, timeout]);
     
-    // If critical images loaded, hide immediately; otherwise wait max 1.5s
-    if (criticalImagesLoaded) {
-        setTimeout(hidePreloader, 300);
-    } else {
-        setTimeout(hidePreloader, 1500);
-    }
+    // Hide preloader
+    preloader.classList.add('hidden');
+    document.body.classList.remove('loading');
+    setTimeout(() => preloader.remove(), 500);
 });
 
 // ===== HERO SLIDESHOW =====
