@@ -23,6 +23,7 @@ const CACHE_KEYS = {
     CONTENT: 'cache:content',
     MENU: 'cache:menu',
     SETTINGS: 'cache:settings',
+    IMAGES: 'cache:images',
     LAST_UPDATE: 'cache:last_update'
 };
 
@@ -95,6 +96,10 @@ export default {
             }
             if (path === '/api/settings' && method === 'GET') {
                 return await getSettings(env);
+            }
+            // Fast endpoint for all image URLs (cached in KV)
+            if (path === '/api/images' && method === 'GET') {
+                return await getImageUrls(env);
             }
             if (path === '/api/reservations' && method === 'POST') {
                 return await createReservation(request, env);
@@ -285,10 +290,59 @@ async function refreshCacheInternal(env) {
     });
     await env.hikari_cache.put(CACHE_KEYS.SETTINGS, JSON.stringify(settings), { expirationTtl: 86400 });
 
-    // 4. Save last update timestamp
+    // 4. Cache all image URLs for fast prefetch
+    const imageUrls = collectImageUrls(menuResult.results, content);
+    await env.hikari_cache.put(CACHE_KEYS.IMAGES, JSON.stringify(imageUrls), { expirationTtl: 86400 });
+
+    // 5. Save last update timestamp
     await env.hikari_cache.put(CACHE_KEYS.LAST_UPDATE, new Date().toISOString());
 
-    return { content, menu: menuResult.results, settings };
+    return { content, menu: menuResult.results, settings, images: imageUrls };
+}
+
+// Collect all image URLs from menu and content
+function collectImageUrls(menuItems, content) {
+    const imageUrls = new Set();
+    
+    // Menu item images
+    menuItems.forEach(item => {
+        if (item.image) imageUrls.add(item.image);
+    });
+    
+    // Content images (gallery, about, services, etc.)
+    Object.values(content).forEach(section => {
+        if (typeof section === 'object') {
+            Object.values(section).forEach(value => {
+                if (typeof value === 'string' && (value.includes('/assets/') || value.includes('unsplash'))) {
+                    imageUrls.add(value);
+                }
+            });
+        }
+    });
+    
+    return Array.from(imageUrls);
+}
+
+// Fast endpoint to get all cached image URLs
+async function getImageUrls(env) {
+    try {
+        const cached = await env.hikari_cache.get(CACHE_KEYS.IMAGES);
+        if (cached) {
+            return jsonResponse({ 
+                success: true, 
+                images: JSON.parse(cached),
+                cached: true 
+            }, 200, true);
+        }
+    } catch (e) {}
+    
+    // Fallback: collect from DB
+    const menuResult = await env.hikari_db.prepare(
+        'SELECT image FROM menu_items WHERE is_active = 1 AND image IS NOT NULL'
+    ).all();
+    const images = menuResult.results.map(r => r.image).filter(Boolean);
+    
+    return jsonResponse({ success: true, images, cached: false }, 200, true);
 }
 
 async function refreshAllCache(env) {

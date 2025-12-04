@@ -22,25 +22,21 @@ async function preloadImages(urls) {
     return Promise.allSettled(promises);
 }
 
-// Preload ALL images early (called before DOMContentLoaded)
+// Preload ALL images using fast /api/images endpoint
 async function preloadCriticalImages() {
     try {
-        // Fetch menu data early
-        const response = await fetch('https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/api/menu');
+        // Use dedicated images endpoint (faster, cached in KV)
+        const response = await fetch('https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/api/images');
         const result = await response.json();
         
-        if (result.success && result.items) {
-            // Get ALL menu images
-            allMenuImages = result.items
-                .map(item => item.image)
-                .filter(Boolean);
-            
-            console.log('🚀 Preloading', allMenuImages.length, 'critical images...');
+        if (result.success && result.images && result.images.length > 0) {
+            allMenuImages = result.images;
+            console.log('🚀 Preloading', allMenuImages.length, 'images from cache...');
             
             // Preload all images in parallel
             await preloadImages(allMenuImages);
             
-            console.log('✅ Critical images preloaded');
+            console.log('✅ All images preloaded');
             criticalImagesLoaded = true;
         }
     } catch (e) {
