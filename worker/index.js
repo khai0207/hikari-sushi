@@ -201,9 +201,13 @@ export default {
         console.log('🕐 Cron job started at:', new Date().toISOString());
         
         try {
-            // Refresh all cache
-            await refreshCacheInternal(env);
-            console.log('✅ Cache refreshed successfully');
+            // Refresh all KV cache
+            const result = await refreshCacheInternal(env);
+            console.log('✅ KV Cache refreshed successfully');
+            
+            // Warm CDN cache for images
+            await warmImageCache(env, result.menu, result.content);
+            console.log('✅ Image CDN cache warmed');
         } catch (error) {
             console.error('❌ Cache refresh failed:', error);
         }
@@ -211,6 +215,51 @@ export default {
 };
 
 // ===== CACHE FUNCTIONS =====
+
+// Warm CDN cache by fetching all images
+async function warmImageCache(env, menuItems, content) {
+    const imageUrls = new Set();
+    const baseUrl = 'https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev';
+    
+    // Collect menu item images
+    menuItems.forEach(item => {
+        if (item.image && item.image.includes('/assets/')) {
+            imageUrls.add(item.image);
+        }
+    });
+    
+    // Collect content images (gallery, about, etc.)
+    Object.values(content).forEach(section => {
+        if (typeof section === 'object') {
+            Object.values(section).forEach(value => {
+                if (typeof value === 'string' && value.includes('/assets/')) {
+                    imageUrls.add(value);
+                }
+            });
+        }
+    });
+    
+    console.log(`🖼️ Warming cache for ${imageUrls.size} images...`);
+    
+    // Fetch all images in parallel (max 10 concurrent)
+    const urlArray = Array.from(imageUrls);
+    const batchSize = 10;
+    
+    for (let i = 0; i < urlArray.length; i += batchSize) {
+        const batch = urlArray.slice(i, i + batchSize);
+        await Promise.allSettled(
+            batch.map(url => {
+                const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
+                return fetch(fullUrl, { 
+                    method: 'GET',
+                    cf: { cacheTtl: 86400, cacheEverything: true }
+                });
+            })
+        );
+    }
+    
+    return imageUrls.size;
+}
 
 async function refreshCacheInternal(env) {
     // 1. Cache all content
@@ -245,6 +294,10 @@ async function refreshCacheInternal(env) {
 async function refreshAllCache(env) {
     try {
         const result = await refreshCacheInternal(env);
+        
+        // Also warm image CDN cache
+        const imageCount = await warmImageCache(env, result.menu, result.content);
+        
         return jsonResponse({ 
             success: true, 
             message: 'Cache refreshed',
@@ -252,7 +305,8 @@ async function refreshAllCache(env) {
             stats: {
                 contentSections: Object.keys(result.content).length,
                 menuItems: result.menu.length,
-                settingsKeys: Object.keys(result.settings).length
+                settingsKeys: Object.keys(result.settings).length,
+                imagesWarmed: imageCount
             }
         });
     } catch (error) {
@@ -705,6 +759,13 @@ async function uploadImage(request, env) {
         // Return the URL through our worker
         const publicUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${key}`;
         
+        // Warm CDN cache for the new image (fire and forget)
+        fetch(publicUrl, { 
+            method: 'GET',
+            cf: { cacheTtl: 86400, cacheEverything: true }
+        }).catch(() => {});
+        console.log('🖼️ New image uploaded and cache warmed:', key);
+        
         return jsonResponse({
             success: true,
             url: publicUrl,
@@ -722,6 +783,10 @@ async function deleteImage(env, key) {
         const decodedKey = decodeURIComponent(key);
         
         await env.hikari_assets.delete(decodedKey);
+        
+        // Note: CDN cache will expire naturally (max-age: 1 year)
+        // For immediate purge, you'd need Cloudflare API with Zone ID
+        console.log('🗑️ Image deleted:', decodedKey);
         
         return jsonResponse({ success: true });
     } catch (error) {
