@@ -714,8 +714,18 @@ async function loadDynamicContent() {
             let hasHours = false;
             
             days.forEach(day => {
-                const lunch = content.hours?.[`${day}_lunch`];
-                const dinner = content.hours?.[`${day}_dinner`];
+                // Handle both formats: content.hours.monday.lunch OR content.hours.monday_lunch
+                let lunch, dinner;
+                if (content.hours?.[day]) {
+                    // Format: {monday: {lunch: "...", dinner: "..."}}
+                    lunch = content.hours[day].lunch;
+                    dinner = content.hours[day].dinner;
+                } else {
+                    // Format: {monday_lunch: "...", monday_dinner: "..."}
+                    lunch = content.hours?.[`${day}_lunch`];
+                    dinner = content.hours?.[`${day}_dinner`];
+                }
+                
                 if (lunch || dinner) {
                     hasHours = true;
                     hoursData[day] = { lunch, dinner };
@@ -870,13 +880,19 @@ async function loadDynamicContent() {
             for (let i = 1; i <= 6; i++) {
                 const key = `gallery${i}`;
                 if (content[key]) {
+                    // Handle both formats: content.gallery1 = "url" OR content.gallery1 = {gallery1: "url"}
+                    let imageUrl = content[key];
+                    if (typeof content[key] === 'object' && content[key][key]) {
+                        imageUrl = content[key][key];
+                    }
+                    
                     const item = galleryItems[i - 1];
-                    if (item) {
+                    if (item && imageUrl) {
                         const img = item.querySelector('img');
-                        if (img) img.src = content[key];
+                        if (img) img.src = imageUrl;
                     }
                     // Also update lightbox galleryImages array
-                    galleryImages[i - 1] = content[key];
+                    if (imageUrl) galleryImages[i - 1] = imageUrl;
                 }
             }
             
