@@ -285,6 +285,8 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1.5rem;
+            /* Prevent layout recalculation */
+            contain: layout style;
         }
 
         .menu-card {
@@ -293,6 +295,8 @@
             overflow: hidden;
             border: 1px solid var(--border-color);
             transition: all 0.3s;
+            /* Keep card in GPU layer */
+            contain: content;
         }
 
         .menu-card:hover {
@@ -313,13 +317,13 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.5s;
-            /* Optimize rendering */
-            will-change: transform;
-            content-visibility: auto;
+            /* Prevent repainting and keep in GPU memory */
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         .menu-card:hover .menu-card-image img {
-            transform: scale(1.1);
+            transform: translateZ(0) scale(1.1);
         }
 
         .menu-card-badge {
@@ -1650,7 +1654,9 @@
             });
         }
 
-        // Render menu items
+        // Render menu items - optimized to avoid re-rendering images
+        let lastRenderedIds = [];
+        
         function renderMenuItems() {
             let filtered = menuItems;
 
@@ -1669,23 +1675,35 @@
             if (filtered.length === 0) {
                 menuGrid.innerHTML = '';
                 emptyState.style.display = 'block';
+                lastRenderedIds = [];
                 return;
             }
 
             emptyState.style.display = 'none';
             
+            // Check if we need to re-render (different items)
+            const currentIds = filtered.map(i => i.id).join(',');
+            if (currentIds === lastRenderedIds.join(',')) {
+                return; // No change, skip re-render
+            }
+            lastRenderedIds = filtered.map(i => i.id);
+            
             // Use cached images for faster rendering
             const defaultImg = 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop';
             
-            menuGrid.innerHTML = filtered.map(item => {
+            // Use DocumentFragment for better performance
+            const fragment = document.createDocumentFragment();
+            
+            filtered.forEach(item => {
                 const cachedImage = imageCache.get(item.image) || item.image || defaultImg;
-                return `
-                <div class="menu-card">
+                
+                const card = document.createElement('div');
+                card.className = 'menu-card';
+                card.dataset.id = item.id;
+                card.innerHTML = `
                     <div class="menu-card-image">
                         <img src="${cachedImage}" 
                              alt="${item.name}"
-                             loading="lazy"
-                             decoding="async"
                              onerror="this.src='${defaultImg}'">
                         ${item.badge ? `<span class="menu-card-badge">${item.badge}</span>` : ''}
                     </div>
@@ -1707,8 +1725,12 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            `}).join('');
+                `;
+                fragment.appendChild(card);
+            });
+            
+            menuGrid.innerHTML = '';
+            menuGrid.appendChild(fragment);
         }
 
         function getCategoryLabel(category) {
