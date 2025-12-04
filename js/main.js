@@ -1051,6 +1051,9 @@ async function loadDynamicContent() {
 // Load menu items from API and render (optimized for INP)
 async function loadMenuFromAPI(categories) {
     try {
+        // Wait for initial preload to complete first
+        await preloadPromise;
+        
         const response = await fetch(`${API_URL}/api/menu`);
         const result = await response.json();
         
@@ -1062,9 +1065,16 @@ async function loadMenuFromAPI(categories) {
         
         const menuItems = result.items;
         
-        // Preload all menu item images in background
-        const imageUrls = menuItems.map(item => item.image).filter(Boolean);
-        preloadImages(imageUrls);
+        // All images should already be cached from preloadCriticalImages
+        // But preload any missing ones just in case
+        const uncachedUrls = menuItems
+            .map(item => item.image)
+            .filter(url => url && !imageCache.has(url));
+        
+        if (uncachedUrls.length > 0) {
+            console.log('⏳ Loading', uncachedUrls.length, 'additional images...');
+            await preloadImages(uncachedUrls);
+        }
         
         const menuTabs = document.querySelector('.menu-tabs');
         const menuContent = document.querySelector('.menu-content');
