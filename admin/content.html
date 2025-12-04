@@ -394,6 +394,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            /* Optimize rendering */
+            content-visibility: auto;
         }
 
         .image-preview.has-image i,
@@ -1355,6 +1357,16 @@
         // Protect page
         HikariAPI.protectAdminPage();
 
+        // Image Cache for faster loading
+        const imageCache = new Map();
+        
+        function cacheImage(url) {
+            if (!url || imageCache.has(url)) return;
+            const img = new Image();
+            img.onload = () => imageCache.set(url, true);
+            img.src = url;
+        }
+
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.getElementById('mobileToggle');
@@ -1696,7 +1708,7 @@
             const previewId = key + '_preview';
             const preview = document.getElementById(previewId);
             if (preview && value) {
-                preview.innerHTML = `<img src="${value}" alt="Preview">`;
+                preview.innerHTML = `<img src="${value}" alt="Preview" loading="lazy" decoding="async">`;
                 preview.classList.add('has-image');
             }
         }
@@ -1708,6 +1720,15 @@
                 console.log('Content loaded:', result);
                 
                 if (result.success && result.data) {
+                    // First pass: collect all image URLs for preloading
+                    const imageUrls = result.data
+                        .filter(item => item.key.includes('image') || item.key.startsWith('gallery'))
+                        .map(item => item.value)
+                        .filter(url => url);
+                    
+                    // Preload images in parallel
+                    imageUrls.forEach(url => cacheImage(url));
+                    
                     result.data.forEach(item => {
                         const element = document.getElementById(item.key);
                         if (element) {
@@ -1730,7 +1751,7 @@
                             if (item.key === 'about_image') {
                                 const preview = document.getElementById('about_image_preview');
                                 if (preview && item.value) {
-                                    preview.innerHTML = `<img src="${item.value}" alt="Preview">`;
+                                    preview.innerHTML = `<img src="${item.value}" alt="Preview" loading="lazy">`;
                                     preview.classList.add('has-image');
                                 }
                             }

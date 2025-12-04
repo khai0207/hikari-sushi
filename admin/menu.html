@@ -305,6 +305,7 @@
             position: relative;
             height: 200px;
             overflow: hidden;
+            background: var(--bg-input);
         }
 
         .menu-card-image img {
@@ -312,6 +313,9 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.5s;
+            /* Optimize rendering */
+            will-change: transform;
+            content-visibility: auto;
         }
 
         .menu-card:hover .menu-card-image img {
@@ -1349,6 +1353,33 @@
         // Protect page
         HikariAPI.protectAdminPage();
 
+        // Image Cache - cache images in memory to avoid re-downloading
+        const imageCache = new Map();
+        
+        async function preloadImage(url) {
+            if (!url || imageCache.has(url)) return imageCache.get(url);
+            
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    imageCache.set(url, url);
+                    resolve(url);
+                };
+                img.onerror = () => {
+                    const fallback = 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop';
+                    imageCache.set(url, fallback);
+                    resolve(fallback);
+                };
+                img.src = url;
+            });
+        }
+        
+        // Preload all images when menu loads
+        async function preloadAllImages(items) {
+            const promises = items.map(item => preloadImage(item.image));
+            await Promise.all(promises);
+        }
+
         // State
         let menuItems = [];
         let categories = []; // Categories from database
@@ -1358,6 +1389,7 @@
         let deleteId = null;
         let deleteCategoryName = null;
         let uploadedImageData = null;
+        let isInitialLoad = true;
 
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
@@ -1550,7 +1582,9 @@
 
         // Load menu items
         async function loadMenuItems() {
-            menuGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i></div>';
+            if (isInitialLoad) {
+                menuGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+            }
             
             try {
                 // Load categories first
@@ -1558,6 +1592,13 @@
                 
                 const result = await HikariAPI.menu.getAll();
                 menuItems = result.success ? result.data : [];
+                
+                // Preload all images in background (only on initial load)
+                if (isInitialLoad && menuItems.length > 0) {
+                    menuGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement des images...</div>';
+                    await preloadAllImages(menuItems);
+                    isInitialLoad = false;
+                }
                 
                 // Sort menu items by category order
                 menuItems.sort((a, b) => {
@@ -1632,12 +1673,20 @@
             }
 
             emptyState.style.display = 'none';
-            menuGrid.innerHTML = filtered.map(item => `
+            
+            // Use cached images for faster rendering
+            const defaultImg = 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop';
+            
+            menuGrid.innerHTML = filtered.map(item => {
+                const cachedImage = imageCache.get(item.image) || item.image || defaultImg;
+                return `
                 <div class="menu-card">
                     <div class="menu-card-image">
-                        <img src="${item.image || 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop'}" 
+                        <img src="${cachedImage}" 
                              alt="${item.name}"
-                             onerror="this.src='https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop'">
+                             loading="lazy"
+                             decoding="async"
+                             onerror="this.src='${defaultImg}'">
                         ${item.badge ? `<span class="menu-card-badge">${item.badge}</span>` : ''}
                     </div>
                     <div class="menu-card-content">
@@ -1659,7 +1708,7 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function getCategoryLabel(category) {
