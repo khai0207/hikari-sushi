@@ -385,7 +385,7 @@ const HikariStats = {
 };
 
 // ===== UPLOAD API =====
-async function uploadImage(imageData, filename = 'image', type = 'menu') {
+async function uploadImage(imageData, filename = 'image', type = 'menu', thumbnailData = null) {
     try {
         const token = getToken();
         
@@ -398,7 +398,8 @@ async function uploadImage(imageData, filename = 'image', type = 'menu') {
             body: JSON.stringify({
                 image: imageData,  // base64 data URL
                 filename: filename,
-                type: type  // 'menu' for menu items, other for content images
+                type: type,  // 'menu' for menu items
+                thumbnail: thumbnailData  // base64 thumbnail (generated on frontend)
             })
         });
         
@@ -408,7 +409,7 @@ async function uploadImage(imageData, filename = 'image', type = 'menu') {
             throw new Error(result.error || 'Upload failed');
         }
         
-        // Result now includes: url, key, thumbnail, thumbnailKey
+        // Result includes: url, key, thumbnail, thumbnailKey
         return result;
     } catch (error) {
         console.error('Upload error:', error);

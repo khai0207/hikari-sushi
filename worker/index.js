@@ -831,17 +831,29 @@ async function getMenuItems(request, env, useCache = false) {
     return jsonResponse({ success: true, items: result.results }, 200, useCache);
 }
 
+// Helper: Ensure thumbnail column exists
+async function ensureThumbnailColumn(env) {
+    try {
+        // Check if column exists by querying table info
+        const tableInfo = await env.hikari_db.prepare("PRAGMA table_info(menu_items)").all();
+        const hasThumbCol = tableInfo.results.some(col => col.name === 'thumbnail');
+        
+        if (!hasThumbCol) {
+            await env.hikari_db.prepare('ALTER TABLE menu_items ADD COLUMN thumbnail TEXT').run();
+            console.log('📊 Added thumbnail column to menu_items');
+        }
+        return true;
+    } catch (e) {
+        console.error('Migration error:', e);
+        return false;
+    }
+}
+
 async function createMenuItem(request, env) {
     const data = await request.json();
     
-    // Check if thumbnail column exists, if not add it
-    try {
-        await env.hikari_db.prepare('SELECT thumbnail FROM menu_items LIMIT 1').first();
-    } catch (e) {
-        // Column doesn't exist, add it
-        await env.hikari_db.prepare('ALTER TABLE menu_items ADD COLUMN thumbnail TEXT').run();
-        console.log('📊 Added thumbnail column to menu_items');
-    }
+    // Ensure thumbnail column exists
+    await ensureThumbnailColumn(env);
     
     const result = await env.hikari_db.prepare(`
         INSERT INTO menu_items (name, description, price, category, image, thumbnail, badge, display_order)
@@ -860,6 +872,9 @@ async function createMenuItem(request, env) {
 
 async function updateMenuItem(request, env, id) {
     const data = await request.json();
+    
+    // Ensure thumbnail column exists
+    await ensureThumbnailColumn(env);
     
     await env.hikari_db.prepare(`
         UPDATE menu_items SET
@@ -1032,77 +1047,24 @@ async function getStats(env) {
 
 // ===== R2 IMAGE UPLOAD HANDLER =====
 
-// Helper: Generate thumbnail using Cloudflare Image Resizing
-async function generateThumbnail(env, originalKey, imageData, mimeType) {
-    try {
-        // Only generate thumbnail for images > 100KB
-        if (imageData.byteLength < 100 * 1024) {
-            return null; // No thumbnail needed for small images
-        }
-        
-        // Create thumbnail key (add -thumb before extension)
-        const thumbKey = originalKey.replace(/\.([^.]+)$/, '-thumb.webp');
-        
-        // First, upload original to R2 temporarily to use Cloudflare Image Resizing
-        await env.hikari_assets.put(originalKey, imageData, {
-            httpMetadata: { contentType: mimeType }
-        });
-        
-        // Use Cloudflare Image Resizing to create optimized thumbnail
-        const imageUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${originalKey}`;
-        
-        const resizeResponse = await fetch(imageUrl, {
-            cf: {
-                image: {
-                    width: 400,      // Thumbnail width for menu list
-                    height: 400,     // Thumbnail height
-                    fit: 'cover',    // Cover to maintain aspect ratio
-                    quality: 75,     // Good quality but smaller file
-                    format: 'webp',  // WebP for best compression
-                    metadata: 'none' // Strip all metadata (GPS, camera info, ICC profiles)
-                }
-            }
-        });
-        
-        if (resizeResponse.ok) {
-            const thumbData = await resizeResponse.arrayBuffer();
-            
-            // Upload thumbnail to R2
-            await env.hikari_assets.put(thumbKey, thumbData, {
-                httpMetadata: { contentType: 'image/webp' }
-            });
-            
-            console.log(`📷 Thumbnail created: ${thumbKey} (${Math.round(thumbData.byteLength / 1024)}KB from ${Math.round(imageData.byteLength / 1024)}KB)`);
-            
-            return thumbKey;
-        }
-        
-        return null;
-    } catch (error) {
-        console.error('Thumbnail generation error:', error);
-        return null;
-    }
-}
-
 async function uploadImage(request, env) {
     try {
         const contentType = request.headers.get('Content-Type') || '';
         
-        let imageData, mimeType, fileName;
-        let isMenuImage = false; // Flag to determine if this is a menu image
+        let imageData, mimeType, fileName, thumbnailData;
+        let isMenuImage = false;
         
         if (contentType.includes('application/json')) {
             // Handle base64 upload
-            const { image, filename, type } = await request.json();
+            const { image, filename, type, thumbnail } = await request.json();
             
             if (!image) {
                 return errorResponse('No image provided');
             }
             
-            // Check if this is a menu image upload
-            isMenuImage = type === 'menu' || (filename && filename.toLowerCase().includes('menu'));
+            isMenuImage = type === 'menu';
             
-            // Parse base64 data URL
+            // Parse main image base64
             const matches = image.match(/^data:(.+);base64,(.+)$/);
             if (!matches) {
                 return errorResponse('Invalid image format');
@@ -1112,88 +1074,62 @@ async function uploadImage(request, env) {
             const base64Data = matches[2];
             imageData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
             fileName = filename || `image-${Date.now()}`;
+            
+            // Parse thumbnail if provided
+            if (thumbnail) {
+                const thumbMatches = thumbnail.match(/^data:(.+);base64,(.+)$/);
+                if (thumbMatches) {
+                    thumbnailData = Uint8Array.from(atob(thumbMatches[2]), c => c.charCodeAt(0));
+                }
+            }
         } else if (contentType.includes('multipart/form-data')) {
-            // Handle form data upload
             const formData = await request.formData();
             const file = formData.get('image');
             const type = formData.get('type');
+            const thumbFile = formData.get('thumbnail');
             
             if (!file) {
                 return errorResponse('No image provided');
             }
             
             isMenuImage = type === 'menu';
-            
             imageData = new Uint8Array(await file.arrayBuffer());
             mimeType = file.type;
             fileName = file.name || `image-${Date.now()}`;
+            
+            if (thumbFile) {
+                thumbnailData = new Uint8Array(await thumbFile.arrayBuffer());
+            }
         } else {
             return errorResponse('Unsupported content type');
         }
         
-        // Generate unique key - always use webp for menu images
-        const ext = isMenuImage ? 'webp' : (mimeType.split('/')[1] || 'jpg');
-        const key = `menu/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+        // Generate unique key
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(7);
+        const key = `menu/${timestamp}-${random}.webp`;
         
         let thumbnailKey = null;
         let thumbnailUrl = null;
         
-        // For menu images > 100KB, create optimized version and thumbnail
-        if (isMenuImage && imageData.byteLength > 100 * 1024) {
-            // Generate thumbnail first (this also uploads original temporarily)
-            thumbnailKey = await generateThumbnail(env, key, imageData, mimeType);
-            
-            if (thumbnailKey) {
-                thumbnailUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${thumbnailKey}`;
-            }
-            
-            // Now optimize the original image (strip metadata, convert to webp)
-            const imageUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${key}`;
-            const optimizedResponse = await fetch(imageUrl, {
-                cf: {
-                    image: {
-                        width: 800,      // Max width for full image
-                        height: 800,     // Max height
-                        fit: 'inside',   // Fit inside dimensions (don't crop)
-                        quality: 85,     // High quality for detail view
-                        format: 'webp',  // WebP format
-                        metadata: 'none' // Strip metadata
-                    }
-                }
+        // Upload main image
+        await env.hikari_assets.put(key, imageData, {
+            httpMetadata: { contentType: 'image/webp' }
+        });
+        
+        // Upload thumbnail if provided
+        if (thumbnailData && isMenuImage) {
+            thumbnailKey = `menu/${timestamp}-${random}-thumb.webp`;
+            await env.hikari_assets.put(thumbnailKey, thumbnailData, {
+                httpMetadata: { contentType: 'image/webp' }
             });
-            
-            if (optimizedResponse.ok) {
-                const optimizedData = await optimizedResponse.arrayBuffer();
-                // Re-upload optimized version
-                await env.hikari_assets.put(key, optimizedData, {
-                    httpMetadata: { contentType: 'image/webp' }
-                });
-                console.log(`🖼️ Optimized menu image: ${key} (${Math.round(optimizedData.byteLength / 1024)}KB from ${Math.round(imageData.byteLength / 1024)}KB)`);
-            }
-        } else {
-            // For small images or non-menu images, upload as-is
-            await env.hikari_assets.put(key, imageData, {
-                httpMetadata: { contentType: mimeType }
-            });
+            thumbnailUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${thumbnailKey}`;
+            console.log(`📷 Thumbnail uploaded: ${thumbnailKey} (${Math.round(thumbnailData.byteLength / 1024)}KB)`);
         }
         
-        // Return the URL through our worker
         const publicUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${key}`;
         
-        // Warm CDN cache for the new images (fire and forget)
-        fetch(publicUrl, { 
-            method: 'GET',
-            cf: { cacheTtl: 86400, cacheEverything: true }
-        }).catch(() => {});
-        
-        if (thumbnailUrl) {
-            fetch(thumbnailUrl, { 
-                method: 'GET',
-                cf: { cacheTtl: 86400, cacheEverything: true }
-            }).catch(() => {});
-        }
-        
-        console.log('🖼️ Image uploaded:', key, thumbnailKey ? `with thumb: ${thumbnailKey}` : '');
+        console.log(`🖼️ Image uploaded: ${key} (${Math.round(imageData.byteLength / 1024)}KB)`);
         
         return jsonResponse({
             success: true,
