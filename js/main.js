@@ -313,11 +313,30 @@ if (navOverlay) {
 }
 
 navLinks.forEach(link => {
-    link.addEventListener('click', closeMobileMenu);
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href');
+        const targetSection = document.querySelector(targetId);
+        
+        // Close mobile menu
+        closeMobileMenu();
+        
+        // Update URL hash without scrolling (we'll scroll manually)
+        history.pushState(null, null, targetId);
+        
+        // Smooth scroll to section
+        if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
 });
 
 // ===== ACTIVE NAVIGATION LINK =====
 const sections = document.querySelectorAll('section[id]');
+
+// Track if user is actively scrolling (not from click)
+let isScrolling = false;
+let scrollTimeout;
 
 // Use IntersectionObserver for better performance than scroll event
 const navObserver = new IntersectionObserver((entries) => {
@@ -328,6 +347,14 @@ const navObserver = new IntersectionObserver((entries) => {
             if (navLink) {
                 navLinks.forEach(link => link.classList.remove('active'));
                 navLink.classList.add('active');
+                
+                // Update URL hash when scrolling (debounced)
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    if (window.location.hash !== `#${sectionId}`) {
+                        history.replaceState(null, null, `#${sectionId}`);
+                    }
+                }, 100);
             }
         }
     });
@@ -337,6 +364,19 @@ const navObserver = new IntersectionObserver((entries) => {
 });
 
 sections.forEach(section => navObserver.observe(section));
+
+// Handle initial hash on page load
+window.addEventListener('load', () => {
+    const hash = window.location.hash;
+    if (hash) {
+        const targetSection = document.querySelector(hash);
+        if (targetSection) {
+            setTimeout(() => {
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+            }, 500); // Wait for preloader
+        }
+    }
+});
 
 // ===== MENU TABS =====
 const tabBtns = document.querySelectorAll('.tab-btn');
