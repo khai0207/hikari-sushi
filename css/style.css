@@ -1385,7 +1385,6 @@ input, textarea, select {
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
-    text-align: center;
 }
 
 .testimonial-author {
@@ -1393,8 +1392,6 @@ input, textarea, select {
     align-items: center;
     justify-content: center;
     gap: 20px;
-    flex-wrap: wrap;
-    width: 100%;
 }
 
 .testimonial-author img {
@@ -1403,10 +1400,6 @@ input, textarea, select {
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid var(--primary);
-}
-
-.author-info {
-    text-align: left;
 }
 
 .author-info h4 {
@@ -2178,55 +2171,17 @@ input, textarea, select {
 .hours-list li {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
     padding: 10px 0;
     border-bottom: 1px solid rgba(201, 169, 98, 0.1);
     font-size: 14px;
-    gap: 15px;
 }
 
 .hours-list li span:first-child {
     color: var(--gray-light);
-    flex-shrink: 0;
-    min-width: 80px;
 }
 
 .hours-list li span:last-child {
     color: var(--primary);
-    text-align: right;
-    white-space: nowrap;
-}
-
-/* Contact section hours list */
-.hours-list-contact {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.hours-list-contact li {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 8px 0;
-    font-size: 14px;
-    gap: 15px;
-    border-bottom: 1px solid rgba(201, 169, 98, 0.1);
-}
-
-.hours-list-contact li:last-child {
-    border-bottom: none;
-}
-
-.hours-list-contact li span:first-child {
-    color: var(--gray-light);
-    flex-shrink: 0;
-}
-
-.hours-list-contact li span:last-child {
-    color: var(--primary);
-    text-align: right;
-    white-space: nowrap;
 }
 
 .footer-bottom {
@@ -2747,23 +2702,10 @@ input, textarea, select {
 
     .testimonial-card {
         padding: 30px 20px;
-        text-align: center;
     }
     
     .testimonial-text {
         font-size: 16px;
-        text-align: center;
-        padding: 0 10px;
-    }
-    
-    .testimonial-author {
-        justify-content: center;
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .author-info {
-        text-align: center;
     }
     
     .footer-grid {
@@ -2958,23 +2900,10 @@ input, textarea, select {
     
     .testimonial-card {
         padding: 25px 15px;
-        text-align: center;
     }
     
     .testimonial-text {
         font-size: 15px;
-        text-align: center;
-        padding: 0 5px;
-    }
-    
-    .testimonial-author {
-        justify-content: center;
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .author-info {
-        text-align: center;
     }
     
     .testimonial-author-name {
