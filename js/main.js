@@ -882,23 +882,23 @@ async function loadDynamicContent() {
                 if (hoursCard) {
                     const hoursContent = hoursCard.querySelector('.hours-content');
                     if (hoursContent) {
-                        let html = '';
+                        let html = '<ul class="hours-list-contact">';
                         days.forEach(day => {
                             const lunch = hoursData[day]?.lunch || '';
                             const dinner = hoursData[day]?.dinner || '';
                             
-                            if (lunch || dinner) {
-                                if (lunch && dinner) {
-                                    html += `<p><strong>${dayNames[day]}</strong>: ${lunch} / ${dinner}</p>`;
-                                } else if (lunch) {
-                                    html += `<p><strong>${dayNames[day]}</strong>: ${lunch}</p>`;
-                                } else if (dinner) {
-                                    html += `<p><strong>${dayNames[day]}</strong>: ${dinner}</p>`;
-                                }
-                            } else {
-                                html += `<p><strong>${dayNames[day]}</strong>: Fermé</p>`;
+                            let timeText = 'Fermé';
+                            if (lunch && dinner) {
+                                timeText = `${lunch} / ${dinner}`;
+                            } else if (lunch) {
+                                timeText = lunch;
+                            } else if (dinner) {
+                                timeText = `Fermé / ${dinner}`;
                             }
+                            
+                            html += `<li><span>${dayNames[day]}</span><span>${timeText}</span></li>`;
                         });
+                        html += '</ul>';
                         hoursContent.innerHTML = html;
                     }
                 }

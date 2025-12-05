@@ -2190,6 +2190,38 @@ input, textarea, select {
     white-space: nowrap;
 }
 
+/* Contact section hours list */
+.hours-list-contact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.hours-list-contact li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    font-size: 14px;
+    gap: 15px;
+    border-bottom: 1px solid rgba(201, 169, 98, 0.1);
+}
+
+.hours-list-contact li:last-child {
+    border-bottom: none;
+}
+
+.hours-list-contact li span:first-child {
+    color: var(--gray-light);
+    flex-shrink: 0;
+}
+
+.hours-list-contact li span:last-child {
+    color: var(--primary);
+    text-align: right;
+    white-space: nowrap;
+}
+
 .footer-bottom {
     padding: 25px 0;
     text-align: center;
