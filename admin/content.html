@@ -1184,41 +1184,6 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // Load content from API
-        async function loadContent() {
-            try {
-                const result = await HikariAPI.content.getAll();
-                console.log('Content loaded:', result);
-                
-                if (result.success && result.data) {
-                    result.data.forEach(item => {
-                        const element = document.getElementById(item.key);
-                        if (element) {
-                            // Handle typed_words - convert JSON array to comma-separated string
-                            if (item.key === 'hero_typed_words') {
-                                try {
-                                    const words = JSON.parse(item.value);
-                                    element.value = Array.isArray(words) ? words.join(', ') : item.value;
-                                } catch {
-                                    element.value = item.value;
-                                }
-                            } else {
-                                element.value = item.value;
-                            }
-                            console.log('Set', item.key, '=', element.value);
-                            
-                            // Handle about_image preview
-                            if (item.key === 'about_image' && item.value) {
-                                updateAboutImagePreview(item.value);
-                            }
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading content:', error);
-            }
-        }
-
         // Save content helper
         async function saveContent(form, fields) {
             const btn = form.querySelector('button[type="submit"]');
