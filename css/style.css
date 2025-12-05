@@ -2171,17 +2171,23 @@ input, textarea, select {
 .hours-list li {
     display: flex;
     justify-content: space-between;
+    align-items: baseline;
     padding: 10px 0;
     border-bottom: 1px solid rgba(201, 169, 98, 0.1);
     font-size: 14px;
+    gap: 15px;
 }
 
 .hours-list li span:first-child {
     color: var(--gray-light);
+    flex-shrink: 0;
+    min-width: 80px;
 }
 
 .hours-list li span:last-child {
     color: var(--primary);
+    text-align: right;
+    white-space: nowrap;
 }
 
 .footer-bottom {
