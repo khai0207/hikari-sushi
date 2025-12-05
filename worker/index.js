@@ -23,7 +23,6 @@ const CACHE_KEYS = {
     CONTENT: 'cache:content',
     MENU: 'cache:menu',
     SETTINGS: 'cache:settings',
-    IMAGES: 'cache:images',
     LAST_UPDATE: 'cache:last_update'
 };
 
@@ -97,17 +96,18 @@ export default {
             if (path === '/api/settings' && method === 'GET') {
                 return await getSettings(env);
             }
-            // Fast endpoint for all image URLs (cached in KV)
-            if (path === '/api/images' && method === 'GET') {
-                return await getImageUrls(env);
-            }
             if (path === '/api/reservations' && method === 'POST') {
                 return await createReservation(request, env);
             }
             
-            // Serve images from R2
+            // Serve images from R2 with optional resizing
+            // Format: /assets/menu/image.jpg?w=300&h=300&q=85
             if (path.startsWith('/assets/') && method === 'GET') {
-                return await serveImage(env, path.replace('/assets/', ''));
+                const key = path.replace('/assets/', '');
+                const width = parseInt(url.searchParams.get('w')) || null;
+                const height = parseInt(url.searchParams.get('h')) || null;
+                const quality = parseInt(url.searchParams.get('q')) || 85;
+                return await serveImage(env, key, { width, height, quality }, request);
             }
 
             // Manual cache refresh endpoint (before auth - protected by secret key)
@@ -290,59 +290,10 @@ async function refreshCacheInternal(env) {
     });
     await env.hikari_cache.put(CACHE_KEYS.SETTINGS, JSON.stringify(settings), { expirationTtl: 86400 });
 
-    // 4. Cache all image URLs for fast prefetch
-    const imageUrls = collectImageUrls(menuResult.results, content);
-    await env.hikari_cache.put(CACHE_KEYS.IMAGES, JSON.stringify(imageUrls), { expirationTtl: 86400 });
-
-    // 5. Save last update timestamp
+    // 4. Save last update timestamp
     await env.hikari_cache.put(CACHE_KEYS.LAST_UPDATE, new Date().toISOString());
 
-    return { content, menu: menuResult.results, settings, images: imageUrls };
-}
-
-// Collect all image URLs from menu and content
-function collectImageUrls(menuItems, content) {
-    const imageUrls = new Set();
-    
-    // Menu item images
-    menuItems.forEach(item => {
-        if (item.image) imageUrls.add(item.image);
-    });
-    
-    // Content images (gallery, about, services, etc.)
-    Object.values(content).forEach(section => {
-        if (typeof section === 'object') {
-            Object.values(section).forEach(value => {
-                if (typeof value === 'string' && (value.includes('/assets/') || value.includes('unsplash'))) {
-                    imageUrls.add(value);
-                }
-            });
-        }
-    });
-    
-    return Array.from(imageUrls);
-}
-
-// Fast endpoint to get all cached image URLs
-async function getImageUrls(env) {
-    try {
-        const cached = await env.hikari_cache.get(CACHE_KEYS.IMAGES);
-        if (cached) {
-            return jsonResponse({ 
-                success: true, 
-                images: JSON.parse(cached),
-                cached: true 
-            }, 200, true);
-        }
-    } catch (e) {}
-    
-    // Fallback: collect from DB
-    const menuResult = await env.hikari_db.prepare(
-        'SELECT image FROM menu_items WHERE is_active = 1 AND image IS NOT NULL'
-    ).all();
-    const images = menuResult.results.map(r => r.image).filter(Boolean);
-    
-    return jsonResponse({ success: true, images, cached: false }, 200, true);
+    return { content, menu: menuResult.results, settings };
 }
 
 async function refreshAllCache(env) {
@@ -849,16 +800,91 @@ async function deleteImage(env, key) {
     }
 }
 
-// ===== SERVE IMAGE FROM R2 =====
+// ===== SERVE IMAGE FROM R2 WITH OPTIONAL RESIZING =====
 
-async function serveImage(env, key) {
+async function serveImage(env, key, options = {}, request = null) {
     try {
+        const { width, height, quality = 85 } = options;
+        
         const object = await env.hikari_assets.get(key);
         
         if (!object) {
+            // If og-image.jpg not found, generate placeholder or use first menu item image
+            if (key === 'og-image.jpg') {
+                // Try to get first menu item with image from cache
+                try {
+                    const cachedMenu = await env.hikari_cache?.get('MENU');
+                    if (cachedMenu) {
+                        const items = JSON.parse(cachedMenu);
+                        const firstWithImage = items.find(item => item.image);
+                        if (firstWithImage?.image) {
+                            // Redirect to first menu item image
+                            return Response.redirect(firstWithImage.image, 302);
+                        }
+                    }
+                } catch (e) {}
+                
+                // Return 1200x630 placeholder SVG for og:image
+                const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+                    <rect fill="#1a1a1a" width="1200" height="630"/>
+                    <text x="50%" y="45%" fill="#c5a47e" font-family="serif" font-size="72" text-anchor="middle">🍣 HIKARI</text>
+                    <text x="50%" y="60%" fill="#e0d5c5" font-family="sans-serif" font-size="32" text-anchor="middle">Sushi &amp; Roll - Toulouse</text>
+                </svg>`;
+                return new Response(svg, {
+                    headers: {
+                        'Content-Type': 'image/svg+xml',
+                        'Cache-Control': 'public, max-age=86400',
+                        'Access-Control-Allow-Origin': '*'
+                    }
+                });
+            }
             return new Response('Image not found', { status: 404 });
         }
         
+        // If resize requested and Cloudflare Image Resizing is available
+        if ((width || height) && request) {
+            const contentType = object.httpMetadata?.contentType || 'image/jpeg';
+            
+            // Only resize JPEG/PNG/WebP images
+            if (contentType.match(/image\/(jpeg|jpg|png|webp)/i)) {
+                // Build resize options for sharp quality (2x for retina)
+                const resizeOptions = {
+                    cf: {
+                        image: {
+                            // Use 2x size for retina displays, max reasonable size
+                            width: width ? Math.min(width * 2, 1200) : undefined,
+                            height: height ? Math.min(height * 2, 1200) : undefined,
+                            fit: 'cover',
+                            quality: quality,
+                            format: 'webp', // Convert to WebP for better compression
+                            metadata: 'none' // Strip metadata to reduce size
+                        }
+                    }
+                };
+                
+                // Create a new request to fetch resized image through Cloudflare
+                const imageUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${key}`;
+                
+                try {
+                    // Fetch the original image and let Cloudflare resize it
+                    const resizedResponse = await fetch(imageUrl, resizeOptions);
+                    
+                    if (resizedResponse.ok) {
+                        const headers = new Headers(resizedResponse.headers);
+                        headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+                        headers.set('Access-Control-Allow-Origin', '*');
+                        headers.set('Vary', 'Accept, Accept-Encoding');
+                        headers.set('X-Resized', `${width}x${height}@${quality}`);
+                        
+                        return new Response(resizedResponse.body, { headers });
+                    }
+                } catch (e) {
+                    console.log('Image resize fallback to original:', e.message);
+                }
+            }
+        }
+        
+        // Return original image if no resize or resize failed
         const headers = new Headers();
         headers.set('Content-Type', object.httpMetadata?.contentType || 'image/jpeg');
         headers.set('Cache-Control', 'public, max-age=31536000, immutable'); // 1 year immutable

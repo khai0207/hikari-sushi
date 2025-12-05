@@ -16,14 +16,14 @@
     <meta property="og:url" content="https://hikari-sushi.fr/">
     <meta property="og:title" content="HIKARI Sushi & Roll - Restaurant Japonais à Toulouse">
     <meta property="og:description" content="Découvrez l'art de la cuisine japonaise authentique. Sushis frais, makis créatifs et ambiance zen au cœur de Toulouse.">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&h=630&fit=crop">
+    <meta property="og:image" content="https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/og-image.jpg">
     <meta property="og:locale" content="fr_FR">
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="HIKARI Sushi & Roll - Restaurant Japonais à Toulouse">
     <meta name="twitter:description" content="Découvrez l'art de la cuisine japonaise authentique. Sushis frais, makis créatifs et ambiance zen.">
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&h=630&fit=crop">
+    <meta name="twitter:image" content="https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/og-image.jpg">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍣</text></svg>">
@@ -41,17 +41,14 @@
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="https://unpkg.com">
-    <link rel="dns-prefetch" href="https://images.unsplash.com">
     <link rel="dns-prefetch" href="https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev">
     
     <!-- Preconnect for critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="preconnect" href="https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev">
     
     <!-- Prefetch API data early -->
-    <link rel="prefetch" href="https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/api/images" as="fetch" crossorigin>
     <link rel="prefetch" href="https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/api/menu" as="fetch" crossorigin>
     <link rel="prefetch" href="https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/api/content" as="fetch" crossorigin>
     
@@ -135,7 +132,7 @@
     <section class="hero" id="home">
         <div class="hero-slideshow" id="heroSlideshow">
             <!-- Slides will be loaded dynamically from menu items -->
-            <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1920&h=1080&fit=crop')"></div>
+            <div class="hero-slide active img-skeleton"></div>
             <div class="hero-overlay"></div>
         </div>
 
@@ -191,14 +188,14 @@
             <div class="about-content">
                 <div class="about-images" data-aos="fade-right">
                     <div class="about-img-main">
-                        <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&h=700&fit=crop" alt="Sushi Chef" loading="lazy" decoding="async">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 700'%3E%3Crect fill='%23222' width='600' height='700'/%3E%3C/svg%3E" alt="Sushi Chef" loading="lazy" decoding="async" class="img-skeleton">
                         <div class="experience-badge">
                             <span class="number">10+</span>
                             <span class="text">Années<br>d'Expérience</span>
                         </div>
                     </div>
                     <div class="about-img-secondary">
-                        <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=300&h=300&fit=crop" alt="Japanese Food" loading="lazy" decoding="async">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Crect fill='%23222' width='300' height='300'/%3E%3C/svg%3E" alt="Japanese Food" loading="lazy" decoding="async" class="img-skeleton">
                     </div>
                     <div class="about-pattern">
                         <svg viewBox="0 0 100 100">
@@ -299,7 +296,7 @@
         <div class="container">
             <div class="special-content">
                 <div class="special-image" data-aos="fade-right">
-                    <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=600&h=600&fit=crop" alt="Hikari Roll" loading="lazy" decoding="async">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Crect fill='%23222' width='600' height='600'/%3E%3C/svg%3E" alt="Hikari Roll" loading="lazy" decoding="async" class="img-skeleton">
                     <div class="badge-special">
                         <span>Signature</span>
                         <span>du Chef</span>
@@ -347,218 +344,10 @@
                 <button class="tab-btn" data-tab="desserts">Desserts</button>
             </div>
             <div class="menu-content">
-                <div class="menu-tab-content active" id="sushi">
-                    <div class="menu-grid">
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="100">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=300&fit=crop" alt="Sushi Saumon" loading="lazy" decoding="async">
-                                <span class="menu-badge">Populaire</span>
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Sushi Saumon</h3>
-                                    <span class="menu-price">6.50€</span>
-                                </div>
-                                <p>2 pièces de sushi au saumon frais, riz vinaigré</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="200">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1633478062482-790e3bb4e2c7?w=300&h=300&fit=crop" alt="Sushi Thon" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Sushi Thon</h3>
-                                    <span class="menu-price">7.00€</span>
-                                </div>
-                                <p>2 pièces de sushi au thon rouge premium</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="300">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=300&h=300&fit=crop" alt="Sushi Crevette" loading="lazy">
-                                <span class="menu-badge new">Nouveau</span>
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Sushi Crevette</h3>
-                                    <span class="menu-price">6.00€</span>
-                                </div>
-                                <p>2 pièces de sushi à la crevette tempura</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="400">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1534482421-64566f976cfa?w=300&h=300&fit=crop" alt="Sashimi Mix" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Sashimi Mix</h3>
-                                    <span class="menu-price">18.00€</span>
-                                </div>
-                                <p>Assortiment de 12 tranches de poisson frais</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="500">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=300&h=300&fit=crop" alt="Chirashi Saumon" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Chirashi Saumon</h3>
-                                    <span class="menu-price">16.50€</span>
-                                </div>
-                                <p>Bol de riz garni de saumon frais et avocat</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="600">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1582450871972-ab5ca641643d?w=300&h=300&fit=crop" alt="Sushi Anguille" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Sushi Anguille</h3>
-                                    <span class="menu-price">8.50€</span>
-                                </div>
-                                <p>2 pièces de sushi à l'anguille grillée</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="menu-tab-content" id="maki">
-                    <div class="menu-grid">
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="100">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=300&h=300&fit=crop" alt="Hikari Roll" loading="lazy">
-                                <span class="menu-badge">Signature</span>
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>HIKARI Roll</h3>
-                                    <span class="menu-price">18.50€</span>
-                                </div>
-                                <p>10 pièces - Création exclusive du chef</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="200">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=300&h=300&fit=crop" alt="California Saumon" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>California Saumon</h3>
-                                    <span class="menu-price">12.00€</span>
-                                </div>
-                                <p>8 pièces au saumon, avocat, cheese</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="300">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=300&h=300&fit=crop" alt="Dragon Roll" loading="lazy">
-                                <span class="menu-badge new">Nouveau</span>
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Dragon Roll</h3>
-                                    <span class="menu-price">16.00€</span>
-                                </div>
-                                <p>8 pièces tempura crevette, avocat, anguille</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="400">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1615361200098-9e630ec29b4e?w=300&h=300&fit=crop" alt="Maki Saumon" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Maki Saumon</h3>
-                                    <span class="menu-price">7.50€</span>
-                                </div>
-                                <p>6 pièces de maki au saumon frais</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="menu-tab-content" id="plats">
-                    <div class="menu-grid">
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="100">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&h=300&fit=crop" alt="Yakitori Poulet" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Yakitori Poulet</h3>
-                                    <span class="menu-price">8.50€</span>
-                                </div>
-                                <p>3 brochettes de poulet grillées sauce teriyaki</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="200">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=300&h=300&fit=crop" alt="Ramen" loading="lazy">
-                                <span class="menu-badge">Populaire</span>
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Ramen Tonkotsu</h3>
-                                    <span class="menu-price">14.50€</span>
-                                </div>
-                                <p>Bouillon porc, nouilles, œuf, chashu, nori</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="300">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1562967916-eb82221dfb44?w=300&h=300&fit=crop" alt="Tempura" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Tempura Mix</h3>
-                                    <span class="menu-price">13.00€</span>
-                                </div>
-                                <p>Assortiment de légumes et crevettes tempura</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="400">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=300&h=300&fit=crop" alt="Gyoza" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Gyoza</h3>
-                                    <span class="menu-price">9.00€</span>
-                                </div>
-                                <p>6 raviolis japonais grillés au porc</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="menu-tab-content" id="desserts">
-                    <div class="menu-grid">
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="100">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=300&h=300&fit=crop" alt="Mochi" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Mochi Glacé</h3>
-                                    <span class="menu-price">6.50€</span>
-                                </div>
-                                <p>3 pièces - Matcha, mangue, fraise</p>
-                            </div>
-                        </div>
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="200">
-                            <div class="menu-item-image">
-                                <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=300&h=300&fit=crop" alt="Dorayaki" loading="lazy">
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-header">
-                                    <h3>Dorayaki</h3>
-                                    <span class="menu-price">5.50€</span>
-                                </div>
-                                <p>Pancakes japonais fourrés au haricot rouge</p>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Menu loaded dynamically from database -->
+                <div class="menu-loading" style="text-align: center; padding: 3rem; color: var(--text-light);">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>Chargement du menu...</p>
                 </div>
             </div>
             <div class="menu-cta" data-aos="fade-up">
@@ -574,7 +363,7 @@
         <div class="container">
             <div class="reservation-content">
                 <div class="reservation-image" data-aos="fade-right">
-                    <img src="https://images.unsplash.com/photo-1579027989536-b7b1f875659b?w=600&h=600&fit=crop" alt="Restaurant HIKARI" loading="lazy" decoding="async">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Crect fill='%23222' width='600' height='600'/%3E%3C/svg%3E" alt="Restaurant HIKARI" loading="lazy" decoding="async" class="img-skeleton">
                     <div class="badge-reservation">
                         <span>Réservez</span>
                         <span>Votre Table</span>
@@ -719,7 +508,7 @@
             <div class="specialties-grid">
                 <div class="specialty-card large" data-aos="fade-up" data-aos-delay="100">
                     <div class="specialty-image">
-                        <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=600&h=600&fit=crop" alt="HIKARI Roll" loading="lazy" decoding="async">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Crect fill='%23222' width='600' height='600'/%3E%3C/svg%3E" alt="HIKARI Roll" loading="lazy" decoding="async" class="img-skeleton">
                         <div class="specialty-overlay">
                             <span class="specialty-tag">Signature du Chef</span>
                             <h3>HIKARI Roll</h3>
@@ -730,7 +519,7 @@
                 </div>
                 <div class="specialty-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="specialty-image">
-                        <img src="https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=400&h=400&fit=crop" alt="Chirashi Saumon Avocat" loading="lazy" decoding="async">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%23222' width='400' height='400'/%3E%3C/svg%3E" alt="Chirashi Saumon Avocat" loading="lazy" decoding="async" class="img-skeleton">
                         <div class="specialty-overlay">
                             <span class="specialty-tag">Populaire</span>
                             <h3>Chirashi Saumon Avocat</h3>
@@ -741,7 +530,7 @@
                 </div>
                 <div class="specialty-card" data-aos="fade-up" data-aos-delay="300">
                     <div class="specialty-image">
-                        <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=400&fit=crop" alt="Yakitori" loading="lazy" decoding="async">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%23222' width='400' height='400'/%3E%3C/svg%3E" alt="Yakitori" loading="lazy" decoding="async" class="img-skeleton">
                         <div class="specialty-overlay">
                             <span class="specialty-tag">Grill</span>
                             <h3>Yakitori</h3>
@@ -767,37 +556,37 @@
             </div>
             <div class="gallery-grid" data-aos="fade-up">
                 <div class="gallery-item" onclick="openLightbox(0)">
-                    <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&h=400&fit=crop" alt="Sushi préparation" loading="lazy" decoding="async">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23222' width='600' height='400'/%3E%3C/svg%3E" alt="Sushi préparation" loading="lazy" decoding="async" class="img-skeleton">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(1)">
-                    <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=600&h=400&fit=crop" alt="Plateau sushi" loading="lazy" decoding="async">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23222' width='600' height='400'/%3E%3C/svg%3E" alt="Plateau sushi" loading="lazy" decoding="async" class="img-skeleton">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(2)">
-                    <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=600&h=400&fit=crop" alt="Maki roll" loading="lazy" decoding="async">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23222' width='600' height='400'/%3E%3C/svg%3E" alt="Maki roll" loading="lazy" decoding="async" class="img-skeleton">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(3)">
-                    <img src="https://images.unsplash.com/photo-1514190051997-0f6f39ca5cde?w=600&h=400&fit=crop" alt="Restaurant ambiance" loading="lazy" decoding="async">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23222' width='600' height='400'/%3E%3C/svg%3E" alt="Restaurant ambiance" loading="lazy" decoding="async" class="img-skeleton">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(4)">
-                    <img src="https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=600&h=400&fit=crop" alt="Ramen" loading="lazy" decoding="async">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23222' width='600' height='400'/%3E%3C/svg%3E" alt="Ramen" loading="lazy" decoding="async" class="img-skeleton">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(5)">
-                    <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&h=400&fit=crop" alt="Yakitori" loading="lazy" decoding="async">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23222' width='600' height='400'/%3E%3C/svg%3E" alt="Yakitori" loading="lazy" decoding="async" class="img-skeleton">
                     <div class="gallery-overlay">
                         <i class="fas fa-search-plus"></i>
                     </div>
@@ -1087,11 +876,24 @@
             const menuGrid = tabContent.querySelector('.menu-grid');
             if (!menuGrid) return;
             
+            // Helper function to add resize params to image URL
+            function getResizedImageUrl(url, width = 300, height = 300, quality = 85) {
+                if (!url || url.startsWith('data:')) return url;
+                // Only add params to our API URLs
+                if (url.includes('hikari-sushi-api')) {
+                    const separator = url.includes('?') ? '&' : '?';
+                    return `${url}${separator}w=${width}&h=${height}&q=${quality}`;
+                }
+                return url;
+            }
+            
             // Build HTML string for better performance
             const html = items.map((item, index) => {
                 const badgeHtml = item.badge ? 
                     `<span class="menu-badge ${item.badge === 'Nouveau' ? 'new' : ''}">${item.badge}</span>` : '';
-                const imageUrl = item.image || 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=300&fit=crop';
+                const originalUrl = item.image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Crect fill='%23333' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' fill='%23666' font-family='sans-serif' font-size='14' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
+                // Resize menu images to 300x300 for optimal display (rendered at 2x = 600x600 for retina)
+                const imageUrl = getResizedImageUrl(originalUrl, 300, 300, 85);
                 
                 return `
                     <div class="menu-item" data-aos="fade-up" data-aos-delay="${Math.min((index + 1) * 100, 400)}">
