@@ -332,8 +332,8 @@ const navObserver = new IntersectionObserver((entries) => {
         }
     });
 }, {
-    threshold: 0.3,
-    rootMargin: '-100px 0px -50% 0px'
+    threshold: 0.15,
+    rootMargin: '-80px 0px -40% 0px'
 });
 
 sections.forEach(section => navObserver.observe(section));
@@ -1066,6 +1066,41 @@ async function loadDynamicContent() {
             }
             
             // NOTE: Services and Features are kept as static content for better performance
+            
+            // ===== RESERVATION SECTION =====
+            if (content.reservation) {
+                // Image
+                const reservationImg = document.querySelector('.reservation-image img');
+                if (reservationImg && content.reservation.image) {
+                    reservationImg.src = getResizedImageUrl(content.reservation.image, IMAGE_SIZES.reservation.w, IMAGE_SIZES.reservation.h, IMAGE_SIZES.reservation.q);
+                    reservationImg.classList.remove('img-skeleton');
+                }
+                
+                // Badge text
+                const badgeSpans = document.querySelectorAll('.badge-reservation span');
+                if (badgeSpans.length >= 2) {
+                    if (content.reservation.badge1) badgeSpans[0].textContent = content.reservation.badge1;
+                    if (content.reservation.badge2) badgeSpans[1].textContent = content.reservation.badge2;
+                }
+                
+                // Title
+                const reservationTitle = document.querySelector('.reservation-title');
+                if (reservationTitle && content.reservation.title) {
+                    reservationTitle.textContent = content.reservation.title;
+                }
+                
+                // Description
+                const reservationDesc = document.querySelector('.reservation-desc');
+                if (reservationDesc && content.reservation.description) {
+                    reservationDesc.textContent = content.reservation.description;
+                }
+                
+                // Features (3)
+                const features = document.querySelectorAll('.reservation-feature span');
+                if (features.length >= 1 && content.reservation.feature1) features[0].textContent = content.reservation.feature1;
+                if (features.length >= 2 && content.reservation.feature2) features[1].textContent = content.reservation.feature2;
+                if (features.length >= 3 && content.reservation.feature3) features[2].textContent = content.reservation.feature3;
+            }
             
             console.log('✅ Dynamic content loaded from database');
         }

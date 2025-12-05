@@ -1044,6 +1044,68 @@
                     </div>
                 </form>
 
+                <!-- Reservation Section -->
+                <form id="reservationForm" class="content-card full-width">
+                    <div class="content-card-header">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div>
+                            <h2>Section Réservation</h2>
+                            <p>Personnalisez la section de réservation</p>
+                        </div>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="form-group">
+                            <label>Image de fond</label>
+                            <div class="image-upload-container">
+                                <input type="file" id="reservation_image_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="reservation_image_preview">
+                                    <i class="fas fa-image"></i>
+                                    <span>Cliquez pour télécharger</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="reservation_image">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Badge ligne 1</label>
+                                <input type="text" id="reservation_badge1" placeholder="Réservez">
+                            </div>
+                            <div class="form-group">
+                                <label>Badge ligne 2</label>
+                                <input type="text" id="reservation_badge2" placeholder="Votre Table">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Titre</label>
+                            <input type="text" id="reservation_title" placeholder="Vivez l'Expérience HIKARI">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="reservation_description" rows="3" placeholder="Réservez dès maintenant pour vivre une expérience culinaire japonaise authentique..."></textarea>
+                        </div>
+                        <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+                        <h4 style="color: var(--gold); margin-bottom: 1rem;">🔹 Points forts (3)</h4>
+                        <div class="form-group">
+                            <label>Point 1</label>
+                            <input type="text" id="reservation_feature1" placeholder="Réservation en ligne 24h/24">
+                        </div>
+                        <div class="form-group">
+                            <label>Point 2</label>
+                            <input type="text" id="reservation_feature2" placeholder="Confirmation instantanée">
+                        </div>
+                        <div class="form-group">
+                            <label>Point 3</label>
+                            <input type="text" id="reservation_feature3" placeholder="Tables de 2 à 20 personnes">
+                        </div>
+                    </div>
+                    <div class="content-card-footer">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+
                 <!-- Gallery Section -->
                 <form id="galleryForm" class="content-card full-width">
                     <div class="content-card-header">
@@ -1545,6 +1607,12 @@
             await saveContent(e.target, fields);
         });
 
+        // Reservation Form
+        document.getElementById('reservationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveContent(e.target, ['reservation_image', 'reservation_badge1', 'reservation_badge2', 'reservation_title', 'reservation_description', 'reservation_feature1', 'reservation_feature2', 'reservation_feature3']);
+        });
+
         // Services Form
         document.getElementById('servicesForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1704,6 +1772,7 @@
         setupImageUpload('specialty1_image_preview', 'specialty1_image_file', 'specialty1_image');
         setupImageUpload('specialty2_image_preview', 'specialty2_image_file', 'specialty2_image');
         setupImageUpload('specialty3_image_preview', 'specialty3_image_file', 'specialty3_image');
+        setupImageUpload('reservation_image_preview', 'reservation_image_file', 'reservation_image');
         setupImageUpload('gallery1_preview', 'gallery1_file', 'gallery1');
         setupImageUpload('gallery2_preview', 'gallery2_file', 'gallery2');
         setupImageUpload('gallery3_preview', 'gallery3_file', 'gallery3');
