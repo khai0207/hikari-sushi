@@ -1392,6 +1392,7 @@ input, textarea, select {
     align-items: center;
     justify-content: center;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .testimonial-author img {
@@ -1400,6 +1401,10 @@ input, textarea, select {
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid var(--primary);
+}
+
+.author-info {
+    text-align: left;
 }
 
 .author-info h4 {
@@ -2751,6 +2756,12 @@ input, textarea, select {
     
     .testimonial-author {
         justify-content: center;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .author-info {
+        text-align: center;
     }
     
     .footer-grid {
@@ -2956,6 +2967,12 @@ input, textarea, select {
     
     .testimonial-author {
         justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .author-info {
+        text-align: center;
     }
     
     .testimonial-author-name {
