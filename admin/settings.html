@@ -1005,7 +1005,7 @@
             resultDiv.style.display = 'none';
             
             try {
-                const token = sessionStorage.getItem('auth_token');
+                const token = sessionStorage.getItem('hikari_auth_token');
                 const response = await fetch('https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/api/admin/migrate-thumbnails', {
                     method: 'POST',
                     headers: {
