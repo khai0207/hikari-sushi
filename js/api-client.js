@@ -114,8 +114,10 @@ const HikariAuth = {
     async verify() {
         try {
             const data = await apiRequest('/api/auth/verify');
+            console.log('Verify result:', data);
             return data;
         } catch (error) {
+            console.error('Verify error:', error);
             return { valid: false };
         }
     },
@@ -125,18 +127,40 @@ const HikariAuth = {
     },
 
     async protectPage() {
-        if (!this.isLoggedIn()) {
+        const token = getToken();
+        
+        // No token at all
+        if (!token) {
+            console.log('No token found, redirecting to login');
             window.location.href = 'login.html';
             return false;
         }
         
-        const result = await this.verify();
-        if (!result.valid) {
+        // Skip verification for pending-2fa tokens (shouldn't be stored, but just in case)
+        if (token.startsWith('pending-2fa-')) {
+            console.log('Pending 2FA token found, clearing and redirecting');
             removeToken();
             window.location.href = 'login.html';
             return false;
         }
-        return true;
+        
+        try {
+            const result = await this.verify();
+            console.log('Session verification:', result);
+            
+            if (!result.valid) {
+                console.log('Session invalid, clearing token');
+                removeToken();
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error('Session verification failed:', error);
+            // Don't logout on network errors, just return true to allow page access
+            // This prevents logout on temporary network issues
+            return true;
+        }
     },
     
     // 2FA Methods
