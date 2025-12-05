@@ -878,9 +878,45 @@
         /* Loading */
         .loading {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 4rem;
+            gap: 1.5rem;
+        }
+        
+        .loading-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .loading-logo img {
+            width: 60px;
+            height: 60px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .loading-logo span {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.15em;
+        }
+        
+        .loading-text {
+            color: var(--text-muted);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .loading-text i {
+            color: var(--gold);
+            animation: spin 1s linear infinite;
         }
 
         .loading i {
@@ -891,6 +927,11 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
         }
 
         /* Sidebar Overlay */
@@ -1580,7 +1621,17 @@
         // Load menu items
         async function loadMenuItems() {
             if (isInitialLoad) {
-                menuGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+                menuGrid.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-logo">
+                            <img src="../images/logo.png" alt="HIKARI">
+                            <span>HIKARI</span>
+                        </div>
+                        <div class="loading-text">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Chargement...
+                        </div>
+                    </div>`;
             }
             
             try {
@@ -1592,7 +1643,17 @@
                 
                 // Preload all images in background (only on initial load)
                 if (isInitialLoad && menuItems.length > 0) {
-                    menuGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Chargement des images...</div>';
+                    menuGrid.innerHTML = `
+                        <div class="loading">
+                            <div class="loading-logo">
+                                <img src="../images/logo.png" alt="HIKARI">
+                                <span>HIKARI</span>
+                            </div>
+                            <div class="loading-text">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Chargement des images...
+                            </div>
+                        </div>`;
                     await preloadAllImages(menuItems);
                     isInitialLoad = false;
                 }
