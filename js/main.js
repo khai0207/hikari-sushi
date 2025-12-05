@@ -636,156 +636,151 @@ async function loadDynamicContent() {
             const content = result.content;
             
             // ===== HERO SECTION =====
-            // Admin saves as hero_badge, hero_title, hero_typed_words (JSON array), hero_subtitle
-            // Badge
-            const badge = document.querySelector('.hero-badge span:last-child');
-            if (badge && content.hero_badge) {
-                badge.textContent = content.hero_badge;
-            }
-            
-            // Title (before typed text)
-            const heroTitleLine = document.querySelector('.hero-title .line:first-child');
-            if (heroTitleLine && content.hero_title) {
-                heroTitleLine.textContent = content.hero_title;
-            }
-            
-            // Typed words - update the words array
-            if (content.hero_typed_words) {
-                try {
-                    const typedWords = typeof content.hero_typed_words === 'string' 
-                        ? JSON.parse(content.hero_typed_words) 
-                        : content.hero_typed_words;
-                    if (Array.isArray(typedWords)) {
-                        words.length = 0;
-                        typedWords.forEach(word => words.push(word));
-                    }
-                } catch (e) {
-                    console.log('Could not parse typed words:', e);
+            if (content.hero) {
+                // Badge
+                const badge = document.querySelector('.hero-badge span:last-child');
+                if (badge && content.hero.badge) {
+                    badge.textContent = content.hero.badge;
+                }
+                
+                // Title (before typed text)
+                const heroTitleLine = document.querySelector('.hero-title .line:first-child');
+                if (heroTitleLine && content.hero.title) {
+                    heroTitleLine.textContent = content.hero.title;
+                }
+                
+                // Typed words - update the words array
+                if (content.hero.typed_words && Array.isArray(content.hero.typed_words)) {
+                    words.length = 0;
+                    content.hero.typed_words.forEach(word => words.push(word));
+                }
+                
+                // Subtitle
+                const heroSubtitle = document.querySelector('.hero-subtitle');
+                if (heroSubtitle && content.hero.subtitle) {
+                    heroSubtitle.textContent = content.hero.subtitle;
                 }
             }
             
-            // Subtitle
-            const heroSubtitle = document.querySelector('.hero-subtitle');
-            if (heroSubtitle && content.hero_subtitle) {
-                heroSubtitle.textContent = content.hero_subtitle;
-            }
-            
             // ===== ABOUT SECTION =====
-            // Admin saves as about_subtitle, about_title, about_description, about_image
-            const aboutSubtitle = document.querySelector('#about .section-subtitle');
-            if (aboutSubtitle && content.about_subtitle) {
-                aboutSubtitle.innerHTML = `<span class="line"></span>${content.about_subtitle}<span class="line"></span>`;
-            }
-            
-            const aboutTitle = document.querySelector('#about .section-title');
-            if (aboutTitle && content.about_title) {
-                aboutTitle.innerHTML = content.about_title.replace(/\n/g, '<br>');
-            }
-            
-            const aboutLead = document.querySelector('#about .about-text .lead');
-            if (aboutLead && content.about_description) {
-                aboutLead.textContent = content.about_description;
-            }
-            
-            // About image (resized for optimal display)
-            const aboutMainImg = document.querySelector('.about-img-main img');
-            if (aboutMainImg && content.about_image) {
-                aboutMainImg.src = getResizedImageUrl(content.about_image, IMAGE_SIZES.about.w, IMAGE_SIZES.about.h, IMAGE_SIZES.about.q);
-                aboutMainImg.classList.remove('img-skeleton');
+            if (content.about) {
+                const aboutSubtitle = document.querySelector('#about .section-subtitle');
+                if (aboutSubtitle && content.about.subtitle) {
+                    aboutSubtitle.innerHTML = `<span class="line"></span>${content.about.subtitle}<span class="line"></span>`;
+                }
+                
+                const aboutTitle = document.querySelector('#about .section-title');
+                if (aboutTitle && content.about.title) {
+                    aboutTitle.innerHTML = content.about.title.replace(/\n/g, '<br>');
+                }
+                
+                const aboutLead = document.querySelector('#about .about-text .lead');
+                if (aboutLead && content.about.description) {
+                    aboutLead.textContent = content.about.description;
+                }
+                
+                // About image (resized for optimal display)
+                const aboutMainImg = document.querySelector('.about-img-main img');
+                if (aboutMainImg && content.about.image) {
+                    aboutMainImg.src = getResizedImageUrl(content.about.image, IMAGE_SIZES.about.w, IMAGE_SIZES.about.h, IMAGE_SIZES.about.q);
+                    aboutMainImg.classList.remove('img-skeleton');
+                }
             }
             
             // ===== CONTACT INFO =====
-            // Admin saves as contact_phone, contact_email, contact_address, contact_map_embed
-            // Phone - update all phone links and displays
-            if (content.contact_phone) {
-                const phoneClean = content.contact_phone.replace(/\s/g, '');
+            if (content.contact) {
+                // Phone - update all phone links and displays
+                if (content.contact.phone) {
+                    const phoneClean = content.contact.phone.replace(/\s/g, '');
+                    
+                    // All phone links
+                    document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+                        link.href = `tel:${phoneClean}`;
+                    });
+                    
+                    // Phone text displays
+                    document.querySelectorAll('.footer-contact a[href^="tel:"]').forEach(el => {
+                        el.textContent = content.contact.phone;
+                    });
+                    
+                    // btn-call strong
+                    document.querySelectorAll('.btn-call strong').forEach(el => {
+                        el.textContent = content.contact.phone;
+                    });
+                }
                 
-                // All phone links
-                document.querySelectorAll('a[href^="tel:"]').forEach(link => {
-                    link.href = `tel:${phoneClean}`;
-                });
+                // Email
+                if (content.contact.email) {
+                    document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
+                        link.href = `mailto:${content.contact.email}`;
+                        if (link.textContent.includes('@')) {
+                            link.textContent = content.contact.email;
+                        }
+                    });
+                }
                 
-                // Phone text displays
-                document.querySelectorAll('.footer-contact a[href^="tel:"]').forEach(el => {
-                    el.textContent = content.contact_phone;
-                });
-                
-                // btn-call strong
-                document.querySelectorAll('.btn-call strong').forEach(el => {
-                    el.textContent = content.contact_phone;
-                });
-            }
-            
-            // Email
-            if (content.contact_email) {
-                document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
-                    link.href = `mailto:${content.contact_email}`;
-                    if (link.textContent.includes('@')) {
-                        link.textContent = content.contact_email;
+                // Address
+                if (content.contact.address) {
+                    const addressSpan = document.querySelector('.footer-contact li:first-child span');
+                    if (addressSpan) {
+                        addressSpan.innerHTML = content.contact.address.replace(', ', '<br>');
                     }
-                });
-            }
-            
-            // Address
-            if (content.contact_address) {
-                const addressSpan = document.querySelector('.footer-contact li:first-child span');
-                if (addressSpan) {
-                    addressSpan.innerHTML = content.contact_address.replace(', ', '<br>');
                 }
             }
             
             // ===== SOCIAL LINKS =====
-            // Admin saves as social_facebook, social_instagram, social_tripadvisor, social_google
-            // Facebook
-            const fbLinks = document.querySelectorAll('a[aria-label="Facebook"]');
-            fbLinks.forEach(link => {
-                if (content.social_facebook && content.social_facebook.trim()) {
-                    link.href = content.social_facebook;
-                    link.target = '_blank';
-                    link.rel = 'noopener noreferrer';
-                } else {
-                    link.style.display = 'none'; // Hide if no link
-                }
-            });
-            
-            // Instagram
-            const igLinks = document.querySelectorAll('a[aria-label="Instagram"]');
-            igLinks.forEach(link => {
-                if (content.social_instagram && content.social_instagram.trim()) {
-                    link.href = content.social_instagram;
-                    link.target = '_blank';
-                    link.rel = 'noopener noreferrer';
-                } else {
-                    link.style.display = 'none';
-                }
-            });
-            
-            // TripAdvisor
-            const taLinks = document.querySelectorAll('a[aria-label="Tripadvisor"]');
-            taLinks.forEach(link => {
-                if (content.social_tripadvisor && content.social_tripadvisor.trim()) {
-                    link.href = content.social_tripadvisor;
-                    link.target = '_blank';
-                    link.rel = 'noopener noreferrer';
-                } else {
-                    link.style.display = 'none';
-                }
-            });
-            
-            // Google
-            const googleLinks = document.querySelectorAll('a[aria-label="Google"]');
-            googleLinks.forEach(link => {
-                if (content.social_google && content.social_google.trim()) {
-                    link.href = content.social_google;
-                    link.target = '_blank';
-                    link.rel = 'noopener noreferrer';
-                } else {
-                    link.style.display = 'none';
-                }
-            });
+            if (content.social) {
+                // Facebook
+                const fbLinks = document.querySelectorAll('a[aria-label="Facebook"]');
+                fbLinks.forEach(link => {
+                    if (content.social.facebook && content.social.facebook.trim()) {
+                        link.href = content.social.facebook;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none'; // Hide if no link
+                    }
+                });
+                
+                // Instagram
+                const igLinks = document.querySelectorAll('a[aria-label="Instagram"]');
+                igLinks.forEach(link => {
+                    if (content.social.instagram && content.social.instagram.trim()) {
+                        link.href = content.social.instagram;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
+                
+                // TripAdvisor
+                const taLinks = document.querySelectorAll('a[aria-label="Tripadvisor"]');
+                taLinks.forEach(link => {
+                    if (content.social.tripadvisor && content.social.tripadvisor.trim()) {
+                        link.href = content.social.tripadvisor;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
+                
+                // Google
+                const googleLinks = document.querySelectorAll('a[aria-label="Google"]');
+                googleLinks.forEach(link => {
+                    if (content.social.google && content.social.google.trim()) {
+                        link.href = content.social.google;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
+            }
             
             // ===== HOURS =====
-            // Admin saves as hours_monday_lunch, hours_monday_dinner, etc.
+            // Build hours object from individual content items
             const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
             const dayNames = {
                 monday: 'Lundi',
@@ -801,9 +796,17 @@ async function loadDynamicContent() {
             let hasHours = false;
             
             days.forEach(day => {
-                // Format: hours_monday_lunch, hours_monday_dinner
-                const lunch = content[`hours_${day}_lunch`];
-                const dinner = content[`hours_${day}_dinner`];
+                // Handle both formats: content.hours.monday.lunch OR content.hours.monday_lunch
+                let lunch, dinner;
+                if (content.hours?.[day]) {
+                    // Format: {monday: {lunch: "...", dinner: "..."}}
+                    lunch = content.hours[day].lunch;
+                    dinner = content.hours[day].dinner;
+                } else {
+                    // Format: {monday_lunch: "...", monday_dinner: "..."}
+                    lunch = content.hours?.[`${day}_lunch`];
+                    dinner = content.hours?.[`${day}_dinner`];
+                }
                 
                 if (lunch || dinner) {
                     hasHours = true;
@@ -862,90 +865,103 @@ async function loadDynamicContent() {
             }
             
             // ===== FOOTER DESCRIPTION =====
-            // Note: Not currently editable in admin, using static content
-            // if (content.footer_description) {
-            //     const footerDesc = document.querySelector('.footer-brand > p');
-            //     if (footerDesc) footerDesc.textContent = content.footer_description;
-            // }
+            if (content.footer && content.footer.description) {
+                const footerDesc = document.querySelector('.footer-brand > p');
+                if (footerDesc) {
+                    footerDesc.textContent = content.footer.description;
+                }
+            }
             
-            // ===== MENU - Load from API =====
-            // Menu items are loaded separately from /api/menu
+            // ===== MENU CATEGORIES =====
+            if (content.menu && content.menu.categories) {
+                try {
+                    const categories = typeof content.menu.categories === 'string' 
+                        ? JSON.parse(content.menu.categories) 
+                        : content.menu.categories;
+                    
+                    if (Array.isArray(categories) && categories.length > 0) {
+                        // Load menu items from API
+                        await loadMenuFromAPI(categories);
+                    }
+                } catch (e) {
+                    console.log('ℹ️ Using default menu categories');
+                }
+            }
             
             // ===== ABOUT EXTENDED (2nd image + experience badge) =====
-            // Admin saves as about_image2, about_experience_number, about_experience_text
-            // Second image (resized)
-            const aboutSecondImg = document.querySelector('.about-img-secondary img');
-            if (aboutSecondImg && content.about_image2) {
-                aboutSecondImg.src = getResizedImageUrl(content.about_image2, IMAGE_SIZES.aboutSmall.w, IMAGE_SIZES.aboutSmall.h, IMAGE_SIZES.aboutSmall.q);
-                aboutSecondImg.classList.remove('img-skeleton');
-            }
-            
-            // Experience badge
-            if (content.about_experience_number) {
-                const expNumber = document.querySelector('.experience-badge .number');
-                if (expNumber) expNumber.textContent = content.about_experience_number;
-            }
-            if (content.about_experience_text) {
-                const expText = document.querySelector('.experience-badge .text');
-                if (expText) expText.innerHTML = content.about_experience_text.replace(' ', '<br>');
+            if (content.about) {
+                // Second image (resized)
+                const aboutSecondImg = document.querySelector('.about-img-secondary img');
+                if (aboutSecondImg && content.about.image2) {
+                    aboutSecondImg.src = getResizedImageUrl(content.about.image2, IMAGE_SIZES.aboutSmall.w, IMAGE_SIZES.aboutSmall.h, IMAGE_SIZES.aboutSmall.q);
+                    aboutSecondImg.classList.remove('img-skeleton');
+                }
+                
+                // Experience badge
+                if (content.about.experience_number) {
+                    const expNumber = document.querySelector('.experience-badge .number');
+                    if (expNumber) expNumber.textContent = content.about.experience_number;
+                }
+                if (content.about.experience_text) {
+                    const expText = document.querySelector('.experience-badge .text');
+                    if (expText) expText.innerHTML = content.about.experience_text.replace(' ', '<br>');
+                }
             }
             
             // ===== PLAT SIGNATURE =====
-            // Admin saves as signature_image, signature_name, signature_description, signature_old_price, signature_new_price
-            const signatureImg = document.querySelector('.special-image img');
-            if (signatureImg && content.signature_image) {
-                signatureImg.src = getResizedImageUrl(content.signature_image, IMAGE_SIZES.signature.w, IMAGE_SIZES.signature.h, IMAGE_SIZES.signature.q);
-                signatureImg.classList.remove('img-skeleton');
-            }
-            
-            const signatureName = document.querySelector('.special-title');
-            if (signatureName && content.signature_name) {
-                signatureName.textContent = content.signature_name;
-            }
-            
-            const signatureDesc = document.querySelector('.special-desc');
-            if (signatureDesc && content.signature_description) {
-                signatureDesc.textContent = content.signature_description;
-            }
-            
-            const oldPrice = document.querySelector('.special-price .old-price');
-            if (oldPrice && content.signature_old_price) {
-                oldPrice.textContent = content.signature_old_price;
-            }
-            
-            const newPrice = document.querySelector('.special-price .new-price');
-            if (newPrice && content.signature_new_price) {
-                newPrice.textContent = content.signature_new_price;
+            if (content.signature) {
+                const signatureImg = document.querySelector('.special-image img');
+                if (signatureImg && content.signature.image) {
+                    signatureImg.src = getResizedImageUrl(content.signature.image, IMAGE_SIZES.signature.w, IMAGE_SIZES.signature.h, IMAGE_SIZES.signature.q);
+                    signatureImg.classList.remove('img-skeleton');
+                }
+                
+                const signatureName = document.querySelector('.special-title');
+                if (signatureName && content.signature.name) {
+                    signatureName.textContent = content.signature.name;
+                }
+                
+                const signatureDesc = document.querySelector('.special-desc');
+                if (signatureDesc && content.signature.description) {
+                    signatureDesc.textContent = content.signature.description;
+                }
+                
+                const oldPrice = document.querySelector('.special-price .old-price');
+                if (oldPrice && content.signature.old_price) {
+                    oldPrice.textContent = content.signature.old_price;
+                }
+                
+                const newPrice = document.querySelector('.special-price .new-price');
+                if (newPrice && content.signature.new_price) {
+                    newPrice.textContent = content.signature.new_price;
+                }
             }
             
             // ===== SPECIALTIES (3 cards) =====
-            // Admin saves as specialty1_image, specialty1_name, specialty1_tag, specialty1_description
             const specialtyCards = document.querySelectorAll('.specialty-card');
             for (let i = 1; i <= 3; i++) {
-                const imageKey = `specialty${i}_image`;
-                const nameKey = `specialty${i}_name`;
-                const tagKey = `specialty${i}_tag`;
-                const descKey = `specialty${i}_description`;
-                
-                const card = specialtyCards[i - 1];
-                if (card) {
-                    const isLarge = card.classList.contains('large');
+                const key = `specialty${i}`;
+                if (content[key]) {
+                    const card = specialtyCards[i - 1];
+                    const isLarge = card?.classList.contains('large');
                     const size = isLarge ? IMAGE_SIZES.specialtyLarge : IMAGE_SIZES.specialty;
                     
-                    const img = card.querySelector('.specialty-image img');
-                    if (img && content[imageKey]) {
-                        img.src = getResizedImageUrl(content[imageKey], size.w, size.h, size.q);
-                        img.classList.remove('img-skeleton');
+                    if (card) {
+                        const img = card.querySelector('.specialty-image img');
+                        if (img && content[key].image) {
+                            img.src = getResizedImageUrl(content[key].image, size.w, size.h, size.q);
+                            img.classList.remove('img-skeleton');
+                        }
+                        
+                        const tag = card.querySelector('.specialty-tag');
+                        if (tag && content[key].tag) tag.textContent = content[key].tag;
+                        
+                        const name = card.querySelector('h3');
+                        if (name && content[key].name) name.textContent = content[key].name;
+                        
+                        const desc = card.querySelector('.specialty-overlay p');
+                        if (desc && content[key].description) desc.textContent = content[key].description;
                     }
-                    
-                    const tag = card.querySelector('.specialty-tag');
-                    if (tag && content[tagKey]) tag.textContent = content[tagKey];
-                    
-                    const name = card.querySelector('h3');
-                    if (name && content[nameKey]) name.textContent = content[nameKey];
-                    
-                    const desc = card.querySelector('.specialty-overlay p');
-                    if (desc && content[descKey]) desc.textContent = content[descKey];
                 }
             }
             
@@ -981,97 +997,53 @@ async function loadDynamicContent() {
             if (galleryUrls.length > 0) preloadImages(galleryUrls);
             
             // ===== MAP EMBED =====
-            // Admin saves as contact_map_embed
-            if (content.contact_map_embed) {
+            if (content.contact && content.contact.map_embed) {
                 const mapIframe = document.querySelector('.map-wrapper iframe');
                 // Only accept valid Google Maps embed URLs
-                if (mapIframe && content.contact_map_embed.includes('google.com/maps/embed')) {
-                    mapIframe.src = content.contact_map_embed;
+                if (mapIframe && content.contact.map_embed.includes('google.com/maps/embed')) {
+                    mapIframe.src = content.contact.map_embed;
                 }
             }
             
-            // ===== SERVICES (3 cards) =====
-            // Admin saves as service1_icon, service1_title, service1_description
-            const serviceCards = document.querySelectorAll('.service-card');
-            for (let i = 1; i <= 3; i++) {
-                const iconKey = `service${i}_icon`;
-                const titleKey = `service${i}_title`;
-                const descKey = `service${i}_description`;
-                
-                const card = serviceCards[i - 1];
-                if (card) {
-                    const iconImg = card.querySelector('.service-icon img');
-                    if (iconImg && content[iconKey]) iconImg.src = content[iconKey];
-                    
-                    const title = card.querySelector('h3');
-                    if (title && content[titleKey]) title.textContent = content[titleKey];
-                    
-                    const desc = card.querySelector('p');
-                    if (desc && content[descKey]) desc.textContent = content[descKey];
-                }
-            }
-            
-            // ===== TESTIMONIALS (3 cards) =====
-            // Admin saves as testimonial1_photo, testimonial1_name, testimonial1_text, testimonial1_rating
+            // ===== TESTIMONIALS (3 cards) - Load from database =====
             const testimonialCards = document.querySelectorAll('.testimonial-card');
             for (let i = 1; i <= 3; i++) {
-                const photoKey = `testimonial${i}_photo`;
-                const nameKey = `testimonial${i}_name`;
-                const textKey = `testimonial${i}_text`;
-                const ratingKey = `testimonial${i}_rating`;
-                
-                const card = testimonialCards[i - 1];
-                if (card) {
-                    const photo = card.querySelector('.testimonial-author img');
-                    if (photo && content[photoKey]) photo.src = content[photoKey];
-                    
-                    const name = card.querySelector('.author-info h4');
-                    if (name && content[nameKey]) name.textContent = content[nameKey];
-                    
-                    const text = card.querySelector('.testimonial-text');
-                    if (text && content[textKey]) text.textContent = `"${content[textKey]}"`;
-                    
-                    // Rating stars
-                    if (content[ratingKey]) {
-                        const starsContainer = card.querySelector('.stars');
-                        if (starsContainer) {
-                            const rating = parseFloat(content[ratingKey]) || 5;
-                            let starsHTML = '';
-                            for (let s = 1; s <= 5; s++) {
-                                if (s <= rating) {
-                                    starsHTML += '<i class="fas fa-star"></i>';
-                                } else if (s - 0.5 <= rating) {
-                                    starsHTML += '<i class="fas fa-star-half-alt"></i>';
-                                } else {
-                                    starsHTML += '<i class="far fa-star"></i>';
+                const key = `testimonial${i}`;
+                if (content[key]) {
+                    const card = testimonialCards[i - 1];
+                    if (card) {
+                        const photo = card.querySelector('.testimonial-author img');
+                        if (photo && content[key].photo) photo.src = content[key].photo;
+                        
+                        const name = card.querySelector('.author-info h4');
+                        if (name && content[key].name) name.textContent = content[key].name;
+                        
+                        const text = card.querySelector('.testimonial-text');
+                        if (text && content[key].text) text.textContent = `"${content[key].text}"`;
+                        
+                        // Rating stars
+                        if (content[key].rating) {
+                            const starsContainer = card.querySelector('.stars');
+                            if (starsContainer) {
+                                const rating = parseFloat(content[key].rating) || 5;
+                                let starsHTML = '';
+                                for (let s = 1; s <= 5; s++) {
+                                    if (s <= rating) {
+                                        starsHTML += '<i class="fas fa-star"></i>';
+                                    } else if (s - 0.5 <= rating) {
+                                        starsHTML += '<i class="fas fa-star-half-alt"></i>';
+                                    } else {
+                                        starsHTML += '<i class="far fa-star"></i>';
+                                    }
                                 }
+                                starsContainer.innerHTML = starsHTML;
                             }
-                            starsContainer.innerHTML = starsHTML;
                         }
                     }
                 }
             }
             
-            // ===== FEATURES / NOS POINTS FORTS (4 cards) =====
-            // Admin saves as feature1_icon, feature1_title, feature1_description
-            const featureCards = document.querySelectorAll('.features-grid .feature-card');
-            for (let i = 1; i <= 4; i++) {
-                const iconKey = `feature${i}_icon`;
-                const titleKey = `feature${i}_title`;
-                const descKey = `feature${i}_description`;
-                
-                const card = featureCards[i - 1];
-                if (card) {
-                    const icon = card.querySelector('.feature-icon i');
-                    if (icon && content[iconKey]) icon.className = content[iconKey];
-                    
-                    const title = card.querySelector('h3');
-                    if (title && content[titleKey]) title.textContent = content[titleKey];
-                    
-                    const desc = card.querySelector('p');
-                    if (desc && content[descKey]) desc.textContent = content[descKey];
-                }
-            }
+            // NOTE: Services and Features are kept as static content for better performance
             
             console.log('✅ Dynamic content loaded from database');
         }
