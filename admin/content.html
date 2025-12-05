@@ -1230,27 +1230,6 @@
             await saveContent(e.target, ['about_subtitle', 'about_title', 'about_description', 'about_description2', 'about_description3', 'about_image']);
         });
 
-        document.getElementById('contactForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await saveContent(e.target, ['contact_phone', 'contact_email', 'contact_address', 'contact_map_embed']);
-        });
-
-        document.getElementById('socialForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await saveContent(e.target, ['social_facebook', 'social_instagram', 'social_tripadvisor', 'social_google']);
-        });
-
-        // Hours form handler
-        document.getElementById('hoursForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-            const fields = [];
-            days.forEach(day => {
-                fields.push(`hours_${day}_lunch`, `hours_${day}_dinner`);
-            });
-            await saveContent(e.target, fields);
-        });
-
         // About Extended Form
         document.getElementById('aboutExtendedForm').addEventListener('submit', async (e) => {
             e.preventDefault();
