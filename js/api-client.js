@@ -6,19 +6,19 @@
 
 const API_BASE = 'https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev';
 
-// Storage for auth token
+// Storage for auth token - using sessionStorage so token is cleared on tab close/refresh
 const AUTH_KEY = 'hikari_auth_token';
 
 function getToken() {
-    return localStorage.getItem(AUTH_KEY);
+    return sessionStorage.getItem(AUTH_KEY);
 }
 
 function setToken(token) {
-    localStorage.setItem(AUTH_KEY, token);
+    sessionStorage.setItem(AUTH_KEY, token);
 }
 
 function removeToken() {
-    localStorage.removeItem(AUTH_KEY);
+    sessionStorage.removeItem(AUTH_KEY);
 }
 
 // API request helper
