@@ -577,13 +577,6 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="reservations.html">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Réservations</span>
-                        <span class="nav-badge" id="pendingBadge">0</span>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="content.html">
                         <i class="fas fa-edit"></i>
                         <span>Contenu</span>
@@ -635,29 +628,11 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon success">
-                        <i class="fas fa-calendar-check"></i>
+                        <i class="fas fa-folder"></i>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value" id="todayReservations">0</span>
-                        <span class="stat-label">Réservations Aujourd'hui</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon warning">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="pendingReservations">0</span>
-                        <span class="stat-label">En Attente</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon info">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="totalReservations">0</span>
-                        <span class="stat-label">Total Réservations</span>
+                        <span class="stat-value" id="totalCategories">0</span>
+                        <span class="stat-label">Catégories</span>
                     </div>
                 </div>
             </div>
@@ -674,12 +649,6 @@
                         </div>
                         <span>Ajouter un Plat</span>
                     </a>
-                    <a href="reservations.html" class="action-card">
-                        <div class="action-icon">
-                            <i class="fas fa-list"></i>
-                        </div>
-                        <span>Voir Réservations</span>
-                    </a>
                     <a href="content.html" class="action-card">
                         <div class="action-icon">
                             <i class="fas fa-edit"></i>
@@ -692,38 +661,6 @@
                         </div>
                         <span>Paramètres</span>
                     </a>
-                </div>
-            </div>
-
-            <!-- Recent Reservations -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>Réservations Récentes</h2>
-                    <a href="reservations.html" class="btn-link">Voir tout →</a>
-                </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Nom</th>
-                                <th>Date</th>
-                                <th>Heure</th>
-                                <th>Personnes</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentReservations">
-                            <tr>
-                                <td colspan="6">
-                                    <div class="empty-state">
-                                        <i class="fas fa-calendar-times"></i>
-                                        <p>Aucune réservation</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -783,97 +720,18 @@
                 const menuResult = await HikariAPI.menu.getAll();
                 const menuItems = menuResult.success ? menuResult.data : [];
                 
-                // Get reservations
-                const resResult = await HikariAPI.reservations.getAll();
-                const reservations = resResult.success ? resResult.data : [];
-                
-                // Calculate stats
-                const today = new Date().toISOString().split('T')[0];
-                const todayReservations = reservations.filter(r => r.date === today);
-                const pendingReservations = reservations.filter(r => r.status === 'pending');
+                // Count unique categories
+                const categories = new Set(menuItems.map(item => item.category));
                 
                 document.getElementById('totalMenuItems').textContent = menuItems.length;
-                document.getElementById('todayReservations').textContent = todayReservations.length;
-                document.getElementById('pendingReservations').textContent = pendingReservations.length;
-                document.getElementById('totalReservations').textContent = reservations.length;
-                document.getElementById('pendingBadge').textContent = pendingReservations.length;
-                
-                // Load recent reservations
-                renderRecentReservations(reservations.slice(0, 5));
+                document.getElementById('totalCategories').textContent = categories.size;
             } catch (error) {
                 console.error('Error loading dashboard:', error);
             }
         }
 
-        // Render recent reservations
-        function renderRecentReservations(reservations) {
-            const tbody = document.getElementById('recentReservations');
-            
-            if (reservations.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <i class="fas fa-calendar-times"></i>
-                                <p>Aucune réservation</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = reservations.map(res => `
-                <tr>
-                    <td>
-                        <div class="customer-info">
-                            <span class="customer-name">${res.name}</span>
-                            <span class="customer-phone">${res.phone}</span>
-                        </div>
-                    </td>
-                    <td>${res.date}</td>
-                    <td>${res.time}</td>
-                    <td>${res.guests} pers.</td>
-                    <td>
-                        <span class="status-badge status-${res.status}">
-                            ${getStatusLabel(res.status)}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="action-buttons">
-                            ${res.status === 'pending' ? `
-                                <button class="btn-icon btn-success" onclick="updateStatus('${res.id}', 'confirmed')" title="Confirmer">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                                <button class="btn-icon btn-danger" onclick="updateStatus('${res.id}', 'cancelled')" title="Annuler">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            ` : ''}
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function getStatusLabel(status) {
-            const labels = { pending: 'En attente', confirmed: 'Confirmé', cancelled: 'Annulé' };
-            return labels[status] || status;
-        }
-
-        // Update reservation status
-        async function updateStatus(id, status) {
-            const result = await HikariAPI.reservations.update(id, { status });
-            if (result.success) {
-                showToast('Statut mis à jour');
-                loadDashboardData();
-            } else {
-                showToast('Erreur: ' + result.error, 'error');
-            }
-        }
-
         // Initialize
         loadDashboardData();
-        window.updateStatus = updateStatus;
     </script>
 </body>
 </html>

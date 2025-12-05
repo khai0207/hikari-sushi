@@ -581,13 +581,6 @@
                         <span>Menu</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="reservations.html">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Réservations</span>
-                        <span class="nav-badge" id="pendingBadge">0</span>
-                    </a>
-                </li>
                 <li class="nav-item active">
                     <a href="content.html">
                         <i class="fas fa-edit"></i>
@@ -709,137 +702,6 @@
                                 </div>
                             </div>
                             <input type="hidden" id="about_image">
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Contact Section -->
-                <form id="contactForm" class="content-card">
-                    <div class="content-card-header">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <h2>Informations Contact</h2>
-                            <p>Téléphone, email, adresse</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="form-group">
-                            <label>Téléphone</label>
-                            <input type="text" id="contact_phone" placeholder="05 61 55 50 77">
-                        </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="contact_email" placeholder="hikari.sushi31@gmail.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Adresse</label>
-                            <input type="text" id="contact_address" placeholder="17 allée des Soupirs, 31000 Toulouse">
-                        </div>
-                        <div class="form-group">
-                            <label>URL Google Maps Embed</label>
-                            <input type="text" id="contact_map_embed" placeholder="https://www.google.com/maps/embed?...">
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Social Section -->
-                <form id="socialForm" class="content-card">
-                    <div class="content-card-header">
-                        <i class="fas fa-share-alt"></i>
-                        <div>
-                            <h2>Réseaux Sociaux</h2>
-                            <p>Liens vers vos réseaux (laisser vide pour masquer)</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="form-group">
-                            <label><i class="fab fa-facebook-f"></i> Facebook</label>
-                            <input type="url" id="social_facebook" placeholder="https://facebook.com/...">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fab fa-instagram"></i> Instagram</label>
-                            <input type="url" id="social_instagram" placeholder="https://instagram.com/...">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fab fa-tripadvisor"></i> TripAdvisor</label>
-                            <input type="url" id="social_tripadvisor" placeholder="https://tripadvisor.com/...">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fab fa-google"></i> Google Business</label>
-                            <input type="url" id="social_google" placeholder="https://g.page/...">
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Horaires Section -->
-                <form id="hoursForm" class="content-card">
-                    <div class="content-card-header">
-                        <i class="fas fa-clock"></i>
-                        <div>
-                            <h2>Horaires d'Ouverture</h2>
-                            <p>Définissez vos horaires (laisser vide si fermé)</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="hours-grid">
-                            <div class="hours-header">
-                                <span>Jour</span>
-                                <span>Midi</span>
-                                <span>Soir</span>
-                            </div>
-                            <div class="hours-row">
-                                <label>Lundi</label>
-                                <input type="text" id="hours_monday_lunch" placeholder="Fermé">
-                                <input type="text" id="hours_monday_dinner" placeholder="19h - 22h">
-                            </div>
-                            <div class="hours-row">
-                                <label>Mardi</label>
-                                <input type="text" id="hours_tuesday_lunch" placeholder="12h - 14h30">
-                                <input type="text" id="hours_tuesday_dinner" placeholder="19h - 22h">
-                            </div>
-                            <div class="hours-row">
-                                <label>Mercredi</label>
-                                <input type="text" id="hours_wednesday_lunch" placeholder="12h - 14h30">
-                                <input type="text" id="hours_wednesday_dinner" placeholder="19h - 22h">
-                            </div>
-                            <div class="hours-row">
-                                <label>Jeudi</label>
-                                <input type="text" id="hours_thursday_lunch" placeholder="12h - 14h30">
-                                <input type="text" id="hours_thursday_dinner" placeholder="19h - 22h">
-                            </div>
-                            <div class="hours-row">
-                                <label>Vendredi</label>
-                                <input type="text" id="hours_friday_lunch" placeholder="12h - 14h30">
-                                <input type="text" id="hours_friday_dinner" placeholder="19h - 22h">
-                            </div>
-                            <div class="hours-row">
-                                <label>Samedi</label>
-                                <input type="text" id="hours_saturday_lunch" placeholder="12h - 14h30">
-                                <input type="text" id="hours_saturday_dinner" placeholder="19h - 22h">
-                            </div>
-                            <div class="hours-row">
-                                <label>Dimanche</label>
-                                <input type="text" id="hours_sunday_lunch" placeholder="12h - 14h30">
-                                <input type="text" id="hours_sunday_dinner" placeholder="19h - 22h">
-                            </div>
                         </div>
                     </div>
                     <div class="content-card-footer">
@@ -1181,72 +1043,6 @@
                     </div>
                 </form>
 
-                <!-- Services Section -->
-                <form id="servicesForm" class="content-card full-width">
-                    <div class="content-card-header">
-                        <i class="fas fa-concierge-bell"></i>
-                        <div>
-                            <h2>Nos Services</h2>
-                            <p>3 services mis en avant</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="services-edit-grid">
-                            <div class="service-edit-item">
-                                <h4 style="color: var(--gold); margin-bottom: 1rem;">Service 1</h4>
-                                <div class="form-group">
-                                    <label>URL Icône (ou laisser par défaut)</label>
-                                    <input type="text" id="service1_icon" placeholder="https://cdn-icons-png.flaticon.com/512/...">
-                                </div>
-                                <div class="form-group">
-                                    <label>Titre</label>
-                                    <input type="text" id="service1_title" placeholder="Sushis & Sashimis">
-                                </div>
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea id="service1_description" rows="2" placeholder="Des créations authentiques..."></textarea>
-                                </div>
-                            </div>
-                            <div class="service-edit-item">
-                                <h4 style="color: var(--gold); margin-bottom: 1rem;">Service 2</h4>
-                                <div class="form-group">
-                                    <label>URL Icône</label>
-                                    <input type="text" id="service2_icon" placeholder="https://cdn-icons-png.flaticon.com/512/...">
-                                </div>
-                                <div class="form-group">
-                                    <label>Titre</label>
-                                    <input type="text" id="service2_title" placeholder="California Rolls">
-                                </div>
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea id="service2_description" rows="2" placeholder="Nos California rolls revisités..."></textarea>
-                                </div>
-                            </div>
-                            <div class="service-edit-item">
-                                <h4 style="color: var(--gold); margin-bottom: 1rem;">Service 3</h4>
-                                <div class="form-group">
-                                    <label>URL Icône</label>
-                                    <input type="text" id="service3_icon" placeholder="https://cdn-icons-png.flaticon.com/512/...">
-                                </div>
-                                <div class="form-group">
-                                    <label>Titre</label>
-                                    <input type="text" id="service3_title" placeholder="Yakitoris">
-                                </div>
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea id="service3_description" rows="2" placeholder="Brochettes grillées à la perfection..."></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-
                 <!-- Testimonials Section -->
                 <form id="testimonialsForm" class="content-card full-width">
                     <div class="content-card-header">
@@ -1316,91 +1112,6 @@
                                 <div class="form-group">
                                     <label>Note (1-5 étoiles)</label>
                                     <input type="number" id="testimonial3_rating" min="1" max="5" placeholder="5">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Features / Points Forts Section -->
-                <form id="featuresForm" class="content-card full-width">
-                    <div class="content-card-header">
-                        <i class="fas fa-star"></i>
-                        <div>
-                            <h2>Nos Points Forts</h2>
-                            <p>4 atouts mis en avant (section "Pourquoi nous choisir")</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="services-edit-grid" style="grid-template-columns: repeat(2, 1fr);">
-                            <!-- Feature 1 -->
-                            <div class="service-edit-item">
-                                <h4 style="color: var(--gold); margin-bottom: 1rem;">💎 Point Fort 1</h4>
-                                <div class="form-group">
-                                    <label>Icône FontAwesome (ex: fas fa-fish)</label>
-                                    <input type="text" id="feature1_icon" placeholder="fas fa-fish">
-                                </div>
-                                <div class="form-group">
-                                    <label>Titre</label>
-                                    <input type="text" id="feature1_title" placeholder="Produits Frais">
-                                </div>
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea id="feature1_description" rows="2" placeholder="Poissons et fruits de mer sélectionnés quotidiennement..."></textarea>
-                                </div>
-                            </div>
-                            <!-- Feature 2 -->
-                            <div class="service-edit-item">
-                                <h4 style="color: var(--gold); margin-bottom: 1rem;">💎 Point Fort 2</h4>
-                                <div class="form-group">
-                                    <label>Icône FontAwesome</label>
-                                    <input type="text" id="feature2_icon" placeholder="fas fa-leaf">
-                                </div>
-                                <div class="form-group">
-                                    <label>Titre</label>
-                                    <input type="text" id="feature2_title" placeholder="Ingrédients Bio">
-                                </div>
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea id="feature2_description" rows="2" placeholder="Légumes et condiments issus de l'agriculture biologique..."></textarea>
-                                </div>
-                            </div>
-                            <!-- Feature 3 -->
-                            <div class="service-edit-item">
-                                <h4 style="color: var(--gold); margin-bottom: 1rem;">💎 Point Fort 3</h4>
-                                <div class="form-group">
-                                    <label>Icône FontAwesome</label>
-                                    <input type="text" id="feature3_icon" placeholder="fas fa-utensils">
-                                </div>
-                                <div class="form-group">
-                                    <label>Titre</label>
-                                    <input type="text" id="feature3_title" placeholder="Chef Expert">
-                                </div>
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea id="feature3_description" rows="2" placeholder="Notre maître sushi apporte son expertise..."></textarea>
-                                </div>
-                            </div>
-                            <!-- Feature 4 -->
-                            <div class="service-edit-item">
-                                <h4 style="color: var(--gold); margin-bottom: 1rem;">💎 Point Fort 4</h4>
-                                <div class="form-group">
-                                    <label>Icône FontAwesome</label>
-                                    <input type="text" id="feature4_icon" placeholder="fas fa-glass-cheers">
-                                </div>
-                                <div class="form-group">
-                                    <label>Titre</label>
-                                    <input type="text" id="feature4_title" placeholder="Événements Privés">
-                                </div>
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea id="feature4_description" rows="2" placeholder="Organisez vos événements dans un cadre unique..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -1613,32 +1324,12 @@
             await saveContent(e.target, ['reservation_image', 'reservation_badge1', 'reservation_badge2', 'reservation_title', 'reservation_description', 'reservation_feature1', 'reservation_feature2', 'reservation_feature3']);
         });
 
-        // Services Form
-        document.getElementById('servicesForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fields = [];
-            for (let i = 1; i <= 3; i++) {
-                fields.push(`service${i}_icon`, `service${i}_title`, `service${i}_description`);
-            }
-            await saveContent(e.target, fields);
-        });
-
         // Testimonials Form
         document.getElementById('testimonialsForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const fields = [];
             for (let i = 1; i <= 3; i++) {
                 fields.push(`testimonial${i}_photo`, `testimonial${i}_name`, `testimonial${i}_text`, `testimonial${i}_rating`);
-            }
-            await saveContent(e.target, fields);
-        });
-
-        // Features Form (Nos Points Forts)
-        document.getElementById('featuresForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fields = [];
-            for (let i = 1; i <= 4; i++) {
-                fields.push(`feature${i}_icon`, `feature${i}_title`, `feature${i}_description`);
             }
             await saveContent(e.target, fields);
         });
