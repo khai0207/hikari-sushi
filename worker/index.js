@@ -1122,9 +1122,9 @@ async function uploadImage(request, env) {
             httpMetadata: { contentType: 'image/webp' }
         });
         
-        // Upload thumbnail if provided
+        // Upload thumbnail if provided (save to menu-thumbnails folder)
         if (thumbnailData && isMenuImage) {
-            thumbnailKey = `menu/${timestamp}-${random}-thumb.webp`;
+            thumbnailKey = `menu-thumbnails/${timestamp}-${random}.webp`;
             await env.hikari_assets.put(thumbnailKey, thumbnailData, {
                 httpMetadata: { contentType: 'image/webp' }
             });
@@ -1157,8 +1157,9 @@ async function deleteImage(env, key) {
         // Delete original image
         await env.hikari_assets.delete(decodedKey);
         
-        // Also delete thumbnail if exists (add -thumb before extension)
-        const thumbKey = decodedKey.replace(/\.([^.]+)$/, '-thumb.webp');
+        // Also delete thumbnail if exists (in menu-thumbnails folder)
+        const filename = decodedKey.split('/').pop().replace(/\.[^.]+$/, '.webp');
+        const thumbKey = `menu-thumbnails/${filename}`;
         try {
             await env.hikari_assets.delete(thumbKey);
             console.log('🗑️ Thumbnail deleted:', thumbKey);
@@ -1210,8 +1211,11 @@ async function migrateThumbnails(env) {
                 
                 const key = match[1];
                 
+                // Create thumbnail key in menu-thumbnails folder
+                const filename = key.split('/').pop().replace(/\.[^.]+$/, '.webp');
+                const thumbKey = `menu-thumbnails/${filename}`;
+                
                 // Check if thumbnail already exists
-                const thumbKey = key.replace(/\.([^.]+)$/, '-thumb.webp');
                 const existingThumb = await env.hikari_assets.head(thumbKey);
                 
                 if (existingThumb) {
