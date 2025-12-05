@@ -1223,14 +1223,16 @@ async function loadMenuFromAPI(categories) {
                 `;
             } else {
                 categoryItems.forEach((item, i) => {
-                    const imageUrl = item.image || defaultImage;
+                    // Use thumbnail if available, otherwise fallback to full image
+                    const thumbnailUrl = item.thumbnail || item.image || defaultImage;
+                    const fullImageUrl = item.image || defaultImage;
                     const delay = Math.min((i + 1) * 50, 300); // Cap delay for faster perceived load
-                    const isCached = imageCache.has(imageUrl);
+                    const isCached = imageCache.has(thumbnailUrl);
                     
                     gridHTML += `
-                        <div class="menu-item" data-aos="fade-up" data-aos-delay="${delay}">
+                        <div class="menu-item" data-aos="fade-up" data-aos-delay="${delay}" data-full-image="${fullImageUrl}">
                             <div class="menu-item-image ${!isCached ? 'img-skeleton' : ''}">
-                                <img src="${imageUrl}" alt="${item.name}" 
+                                <img src="${thumbnailUrl}" alt="${item.name}" 
                                     ${isCached ? '' : 'loading="lazy"'} 
                                     decoding="async" 
                                     data-loaded="${isCached}"

@@ -1995,6 +1995,7 @@
 
             try {
                 let imageUrl = document.getElementById('itemImage').value || '';
+                let thumbnailUrl = null;
                 let oldImageUrl = null;
                 
                 // Get old image URL if editing
@@ -2009,11 +2010,12 @@
                 if (uploadedImageData && uploadedImageData.startsWith('data:image')) {
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Upload image...';
                     
-                    const uploadResult = await HikariAPI.uploadImage(uploadedImageData, document.getElementById('itemName').value);
+                    const uploadResult = await HikariAPI.uploadImage(uploadedImageData, document.getElementById('itemName').value, 'menu');
                     
                     if (uploadResult.success) {
                         imageUrl = uploadResult.url;
-                        console.log('Image uploaded to R2:', imageUrl);
+                        thumbnailUrl = uploadResult.thumbnail || null; // Thumbnail for large images
+                        console.log('Image uploaded to R2:', imageUrl, thumbnailUrl ? `(thumb: ${thumbnailUrl})` : '');
                         
                         // Delete old image from R2 if it exists and is different
                         if (oldImageUrl && oldImageUrl !== imageUrl && oldImageUrl.includes('/assets/')) {
@@ -2036,6 +2038,7 @@
                     badge: document.getElementById('itemBadge').value,
                     description: document.getElementById('itemDescription').value,
                     image: imageUrl,
+                    thumbnail: thumbnailUrl, // Store thumbnail URL
                     display_order: 1,
                     available: 1
                 };
