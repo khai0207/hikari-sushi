@@ -599,6 +599,100 @@
                         </div>
                     </form>
                 </div>
+                
+                <!-- 2FA Security -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <h2>Authentification 2FA</h2>
+                            <p>Sécurisez votre compte avec une double authentification</p>
+                        </div>
+                    </div>
+                    <div class="settings-card-body">
+                        <!-- 2FA Status -->
+                        <div id="twoFAStatus" style="text-align: center; padding: 2rem;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--gold);"></i>
+                            <p style="margin-top: 1rem; color: var(--text-muted);">Chargement...</p>
+                        </div>
+                        
+                        <!-- 2FA Disabled State -->
+                        <div id="twoFADisabled" style="display: none; text-align: center; padding: 1rem;">
+                            <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                                <i class="fas fa-unlock" style="font-size: 2rem; color: var(--danger);"></i>
+                            </div>
+                            <h3 style="margin-bottom: 0.5rem;">2FA Désactivé</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Votre compte n'est pas protégé par une double authentification</p>
+                            <button type="button" id="btn2FASetup" class="btn-primary">
+                                <i class="fas fa-shield-alt"></i>
+                                Activer 2FA
+                            </button>
+                        </div>
+                        
+                        <!-- 2FA Enabled State -->
+                        <div id="twoFAEnabled" style="display: none; text-align: center; padding: 1rem;">
+                            <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(34, 197, 94, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                                <i class="fas fa-lock" style="font-size: 2rem; color: var(--success);"></i>
+                            </div>
+                            <h3 style="margin-bottom: 0.5rem; color: var(--success);">2FA Activé</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Votre compte est protégé par une double authentification</p>
+                            <button type="button" id="btn2FADisable" class="btn-primary" style="background: var(--danger);">
+                                <i class="fas fa-unlock"></i>
+                                Désactiver 2FA
+                            </button>
+                        </div>
+                        
+                        <!-- 2FA Setup Flow -->
+                        <div id="twoFASetupFlow" style="display: none;">
+                            <div style="text-align: center; margin-bottom: 2rem;">
+                                <p style="color: var(--text-muted); margin-bottom: 1rem;">Scannez ce QR code avec votre application d'authentification (Google Authenticator, Authy, etc.)</p>
+                                <div id="qrCodeContainer" style="background: white; padding: 1rem; border-radius: 12px; display: inline-block; margin-bottom: 1rem;">
+                                    <img id="qrCodeImage" src="" alt="QR Code" style="width: 200px; height: 200px;">
+                                </div>
+                                <p style="font-size: 12px; color: var(--text-muted);">Ou entrez ce code manuellement:</p>
+                                <code id="secretCode" style="display: block; background: var(--bg-dark); padding: 0.75rem 1rem; border-radius: 8px; font-family: monospace; letter-spacing: 0.1em; margin-top: 0.5rem; word-break: break-all;"></code>
+                            </div>
+                            <div class="form-group">
+                                <label>Code de vérification (6 chiffres)</label>
+                                <input type="text" id="setupCode" maxlength="6" placeholder="000000" style="text-align: center; letter-spacing: 0.3em; font-size: 1.2rem;">
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="button" id="btnCancelSetup" class="btn-primary" style="flex: 1; background: var(--bg-dark); border: 1px solid var(--border-color);">
+                                    Annuler
+                                </button>
+                                <button type="button" id="btnVerifySetup" class="btn-primary" style="flex: 1;">
+                                    <i class="fas fa-check"></i>
+                                    Vérifier & Activer
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 2FA Disable Flow -->
+                        <div id="twoFADisableFlow" style="display: none;">
+                            <div style="text-align: center; margin-bottom: 1.5rem;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--warning); margin-bottom: 1rem;"></i>
+                                <p style="color: var(--text-muted);">Pour désactiver 2FA, veuillez entrer votre mot de passe et le code actuel</p>
+                            </div>
+                            <div class="form-group">
+                                <label>Mot de passe</label>
+                                <input type="password" id="disablePassword" placeholder="Votre mot de passe">
+                            </div>
+                            <div class="form-group">
+                                <label>Code 2FA actuel</label>
+                                <input type="text" id="disableCode" maxlength="6" placeholder="000000" style="text-align: center; letter-spacing: 0.3em;">
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="button" id="btnCancelDisable" class="btn-primary" style="flex: 1; background: var(--bg-dark); border: 1px solid var(--border-color);">
+                                    Annuler
+                                </button>
+                                <button type="button" id="btnConfirmDisable" class="btn-primary" style="flex: 1; background: var(--danger);">
+                                    <i class="fas fa-unlock"></i>
+                                    Confirmer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -749,6 +843,132 @@
 
         // Initialize
         loadContent();
+        
+        // ===== 2FA MANAGEMENT =====
+        const twoFAStatus = document.getElementById('twoFAStatus');
+        const twoFADisabled = document.getElementById('twoFADisabled');
+        const twoFAEnabled = document.getElementById('twoFAEnabled');
+        const twoFASetupFlow = document.getElementById('twoFASetupFlow');
+        const twoFADisableFlow = document.getElementById('twoFADisableFlow');
+        
+        // Load 2FA status
+        async function load2FAStatus() {
+            try {
+                const result = await HikariAPI.get2FAStatus();
+                twoFAStatus.style.display = 'none';
+                
+                if (result.success && result.enabled) {
+                    twoFAEnabled.style.display = 'block';
+                    twoFADisabled.style.display = 'none';
+                } else {
+                    twoFADisabled.style.display = 'block';
+                    twoFAEnabled.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading 2FA status:', error);
+                twoFAStatus.innerHTML = '<p style="color: var(--danger);">Erreur de chargement</p>';
+            }
+        }
+        
+        // Start 2FA setup
+        document.getElementById('btn2FASetup').addEventListener('click', async () => {
+            try {
+                const result = await HikariAPI.setup2FA();
+                
+                if (result.success) {
+                    document.getElementById('qrCodeImage').src = result.qrCode;
+                    document.getElementById('secretCode').textContent = result.secret;
+                    
+                    twoFADisabled.style.display = 'none';
+                    twoFASetupFlow.style.display = 'block';
+                } else {
+                    showToast(result.error || 'Erreur lors de la configuration', 'error');
+                }
+            } catch (error) {
+                showToast('Erreur de connexion', 'error');
+            }
+        });
+        
+        // Cancel setup
+        document.getElementById('btnCancelSetup').addEventListener('click', () => {
+            twoFASetupFlow.style.display = 'none';
+            twoFADisabled.style.display = 'block';
+            document.getElementById('setupCode').value = '';
+        });
+        
+        // Verify and enable 2FA
+        document.getElementById('btnVerifySetup').addEventListener('click', async () => {
+            const code = document.getElementById('setupCode').value.trim();
+            
+            if (!code || code.length !== 6) {
+                showToast('Veuillez entrer un code à 6 chiffres', 'error');
+                return;
+            }
+            
+            try {
+                const result = await HikariAPI.verify2FASetup(code);
+                
+                if (result.success) {
+                    showToast('2FA activé avec succès!', 'success');
+                    twoFASetupFlow.style.display = 'none';
+                    twoFAEnabled.style.display = 'block';
+                    document.getElementById('setupCode').value = '';
+                } else {
+                    showToast(result.error || 'Code invalide', 'error');
+                }
+            } catch (error) {
+                showToast('Erreur de vérification', 'error');
+            }
+        });
+        
+        // Start 2FA disable
+        document.getElementById('btn2FADisable').addEventListener('click', () => {
+            twoFAEnabled.style.display = 'none';
+            twoFADisableFlow.style.display = 'block';
+        });
+        
+        // Cancel disable
+        document.getElementById('btnCancelDisable').addEventListener('click', () => {
+            twoFADisableFlow.style.display = 'none';
+            twoFAEnabled.style.display = 'block';
+            document.getElementById('disablePassword').value = '';
+            document.getElementById('disableCode').value = '';
+        });
+        
+        // Confirm disable 2FA
+        document.getElementById('btnConfirmDisable').addEventListener('click', async () => {
+            const password = document.getElementById('disablePassword').value;
+            const code = document.getElementById('disableCode').value.trim();
+            
+            if (!password) {
+                showToast('Veuillez entrer votre mot de passe', 'error');
+                return;
+            }
+            
+            if (!code || code.length !== 6) {
+                showToast('Veuillez entrer un code à 6 chiffres', 'error');
+                return;
+            }
+            
+            try {
+                const result = await HikariAPI.disable2FA(password, code);
+                
+                if (result.success) {
+                    showToast('2FA désactivé', 'success');
+                    twoFADisableFlow.style.display = 'none';
+                    twoFADisabled.style.display = 'block';
+                    document.getElementById('disablePassword').value = '';
+                    document.getElementById('disableCode').value = '';
+                } else {
+                    showToast(result.error || 'Erreur', 'error');
+                }
+            } catch (error) {
+                showToast('Erreur de connexion', 'error');
+            }
+        });
+        
+        // Load 2FA status on page load
+        load2FAStatus();
     </script>
 </body>
 </html>

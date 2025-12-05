@@ -269,6 +269,7 @@
                     <span id="errorText"></span>
                 </div>
 
+                <!-- Login Form -->
                 <form id="loginForm">
                     <div class="form-group">
                         <label>Adresse Email</label>
@@ -291,6 +292,32 @@
                         Se Connecter
                     </button>
                 </form>
+                
+                <!-- 2FA Form (hidden initially) -->
+                <form id="twoFAForm" style="display: none;">
+                    <div class="form-group" style="text-align: center; margin-bottom: 2rem;">
+                        <i class="fas fa-shield-alt" style="font-size: 3rem; color: var(--gold); margin-bottom: 1rem;"></i>
+                        <p style="color: var(--text-muted);">Entrez le code de votre application d'authentification</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Code à 6 chiffres</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="twoFACode" required placeholder="000000" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code" style="text-align: center; letter-spacing: 0.5em; font-size: 1.5rem;">
+                            <i class="fas fa-key"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="verifyBtn">
+                        <i class="fas fa-check"></i>
+                        Vérifier
+                    </button>
+                    
+                    <button type="button" class="btn-login" id="backBtn" style="background: var(--bg-dark); color: var(--text-light); margin-top: 1rem; border: 1px solid var(--border-color);">
+                        <i class="fas fa-arrow-left"></i>
+                        Retour
+                    </button>
+                </form>
             </div>
 
             <div class="login-footer">
@@ -309,10 +336,15 @@
             window.location.href = 'dashboard.html';
         }
 
-        const form = document.getElementById('loginForm');
+        const loginForm = document.getElementById('loginForm');
+        const twoFAForm = document.getElementById('twoFAForm');
         const errorMessage = document.getElementById('errorMessage');
         const errorText = document.getElementById('errorText');
         const loginBtn = document.getElementById('loginBtn');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const backBtn = document.getElementById('backBtn');
+        
+        let tempToken = null;
 
         function showError(message) {
             errorText.textContent = message;
@@ -322,8 +354,21 @@
         function hideError() {
             errorMessage.classList.remove('show');
         }
+        
+        function show2FAForm() {
+            loginForm.style.display = 'none';
+            twoFAForm.style.display = 'block';
+            document.getElementById('twoFACode').focus();
+        }
+        
+        function showLoginForm() {
+            twoFAForm.style.display = 'none';
+            loginForm.style.display = 'block';
+            tempToken = null;
+            hideError();
+        }
 
-        form.addEventListener('submit', async (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             hideError();
 
@@ -342,7 +387,14 @@
                 const result = await HikariAPI.login(email, password);
                 
                 if (result.success) {
-                    window.location.href = 'dashboard.html';
+                    if (result.requires2FA) {
+                        // 2FA is required
+                        tempToken = result.tempToken;
+                        show2FAForm();
+                    } else {
+                        // No 2FA, go to dashboard
+                        window.location.href = 'dashboard.html';
+                    }
                 } else {
                     showError(result.error || 'Email ou mot de passe incorrect');
                 }
@@ -354,6 +406,40 @@
             loginBtn.disabled = false;
             loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Se Connecter';
         });
+        
+        twoFAForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError();
+            
+            const code = document.getElementById('twoFACode').value.trim();
+            
+            if (!code || code.length !== 6) {
+                showError('Veuillez entrer un code à 6 chiffres');
+                return;
+            }
+            
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+            
+            try {
+                const result = await HikariAPI.verify2FA(tempToken, code);
+                
+                if (result.success) {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    showError(result.error || 'Code invalide');
+                    document.getElementById('twoFACode').value = '';
+                    document.getElementById('twoFACode').focus();
+                }
+            } catch (error) {
+                showError('Erreur de vérification. Veuillez réessayer.');
+            }
+            
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = '<i class="fas fa-check"></i> Vérifier';
+        });
+        
+        backBtn.addEventListener('click', showLoginForm);
     </script>
 </body>
 </html>

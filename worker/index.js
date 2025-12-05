@@ -56,6 +56,103 @@ function generateToken() {
     return crypto.randomUUID() + '-' + Date.now();
 }
 
+// ===== 2FA TOTP HELPERS =====
+// Base32 encoding/decoding for TOTP secrets
+const BASE32_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+
+function base32Encode(buffer) {
+    let bits = '';
+    for (const byte of buffer) {
+        bits += byte.toString(2).padStart(8, '0');
+    }
+    let result = '';
+    for (let i = 0; i < bits.length; i += 5) {
+        const chunk = bits.slice(i, i + 5).padEnd(5, '0');
+        result += BASE32_CHARS[parseInt(chunk, 2)];
+    }
+    return result;
+}
+
+function base32Decode(str) {
+    let bits = '';
+    for (const char of str.toUpperCase()) {
+        const val = BASE32_CHARS.indexOf(char);
+        if (val === -1) continue;
+        bits += val.toString(2).padStart(5, '0');
+    }
+    const bytes = [];
+    for (let i = 0; i + 8 <= bits.length; i += 8) {
+        bytes.push(parseInt(bits.slice(i, i + 8), 2));
+    }
+    return new Uint8Array(bytes);
+}
+
+// Generate random 2FA secret
+function generate2FASecret() {
+    const bytes = new Uint8Array(20);
+    crypto.getRandomValues(bytes);
+    return base32Encode(bytes);
+}
+
+// HMAC-SHA1 for TOTP
+async function hmacSha1(key, message) {
+    const cryptoKey = await crypto.subtle.importKey(
+        'raw', key, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']
+    );
+    const signature = await crypto.subtle.sign('HMAC', cryptoKey, message);
+    return new Uint8Array(signature);
+}
+
+// Generate TOTP code
+async function generateTOTP(secret, timeStep = 30, digits = 6) {
+    const time = Math.floor(Date.now() / 1000 / timeStep);
+    const timeBuffer = new ArrayBuffer(8);
+    const timeView = new DataView(timeBuffer);
+    timeView.setBigUint64(0, BigInt(time));
+    
+    const key = base32Decode(secret);
+    const hmac = await hmacSha1(key, new Uint8Array(timeBuffer));
+    
+    const offset = hmac[hmac.length - 1] & 0x0f;
+    const code = (
+        ((hmac[offset] & 0x7f) << 24) |
+        ((hmac[offset + 1] & 0xff) << 16) |
+        ((hmac[offset + 2] & 0xff) << 8) |
+        (hmac[offset + 3] & 0xff)
+    ) % Math.pow(10, digits);
+    
+    return code.toString().padStart(digits, '0');
+}
+
+// Verify TOTP code (allows 1 step before/after for clock drift)
+async function verifyTOTP(secret, code, window = 1) {
+    const timeStep = 30;
+    const currentTime = Math.floor(Date.now() / 1000 / timeStep);
+    
+    for (let i = -window; i <= window; i++) {
+        const time = currentTime + i;
+        const timeBuffer = new ArrayBuffer(8);
+        const timeView = new DataView(timeBuffer);
+        timeView.setBigUint64(0, BigInt(time));
+        
+        const key = base32Decode(secret);
+        const hmac = await hmacSha1(key, new Uint8Array(timeBuffer));
+        
+        const offset = hmac[hmac.length - 1] & 0x0f;
+        const generatedCode = (
+            ((hmac[offset] & 0x7f) << 24) |
+            ((hmac[offset + 1] & 0xff) << 16) |
+            ((hmac[offset + 2] & 0xff) << 8) |
+            (hmac[offset + 3] & 0xff)
+        ) % 1000000;
+        
+        if (generatedCode.toString().padStart(6, '0') === code) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Main request handler
 export default {
     async fetch(request, env, ctx) {
@@ -73,6 +170,9 @@ export default {
             if (path === '/api/auth/login' && method === 'POST') {
                 return await handleLogin(request, env);
             }
+            if (path === '/api/auth/verify-2fa' && method === 'POST') {
+                return await verify2FALogin(request, env);
+            }
             if (path === '/api/auth/logout' && method === 'POST') {
                 return await handleLogout(request, env);
             }
@@ -81,6 +181,20 @@ export default {
             }
             if (path === '/api/auth/create-admin' && method === 'POST') {
                 return await createAdmin(request, env);
+            }
+            
+            // 2FA Setup routes (requires auth)
+            if (path === '/api/auth/2fa/setup' && method === 'POST') {
+                return await setup2FA(request, env);
+            }
+            if (path === '/api/auth/2fa/verify' && method === 'POST') {
+                return await verify2FASetup(request, env);
+            }
+            if (path === '/api/auth/2fa/disable' && method === 'POST') {
+                return await disable2FA(request, env);
+            }
+            if (path === '/api/auth/2fa/status' && method === 'GET') {
+                return await get2FAStatus(request, env);
             }
 
             // ===== PUBLIC ROUTES =====
@@ -338,7 +452,25 @@ async function handleLogin(request, env) {
         return errorResponse('Invalid credentials', 401);
     }
 
-    // Create session
+    // Check if 2FA is enabled
+    if (user.totp_secret && user.totp_enabled) {
+        // Return a temporary token for 2FA verification
+        const tempToken = 'pending-2fa-' + generateToken();
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
+        
+        await env.hikari_db.prepare(
+            'INSERT INTO sessions (user_id, token, expires_at) VALUES (?, ?, ?)'
+        ).bind(user.id, tempToken, expiresAt).run();
+        
+        return jsonResponse({
+            success: true,
+            requires2FA: true,
+            tempToken,
+            message: 'Please enter your 2FA code'
+        });
+    }
+
+    // No 2FA - create full session
     const token = generateToken();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7 days
 
@@ -355,6 +487,59 @@ async function handleLogin(request, env) {
         success: true,
         token,
         user: { id: user.id, email: user.email, name: user.name }
+    });
+}
+
+// Verify 2FA code during login
+async function verify2FALogin(request, env) {
+    const { tempToken, code } = await request.json();
+    
+    if (!tempToken || !code) {
+        return errorResponse('Token and code required');
+    }
+    
+    // Verify temp token is valid pending-2fa token
+    if (!tempToken.startsWith('pending-2fa-')) {
+        return errorResponse('Invalid token', 401);
+    }
+    
+    const session = await env.hikari_db.prepare(`
+        SELECT s.*, u.id as user_id, u.email, u.name, u.totp_secret
+        FROM sessions s 
+        JOIN admin_users u ON s.user_id = u.id 
+        WHERE s.token = ? AND s.expires_at > datetime('now')
+    `).bind(tempToken).first();
+    
+    if (!session) {
+        return errorResponse('Session expired, please login again', 401);
+    }
+    
+    // Verify TOTP code
+    const isValid = await verifyTOTP(session.totp_secret, code);
+    if (!isValid) {
+        return errorResponse('Invalid 2FA code', 401);
+    }
+    
+    // Delete temp session
+    await env.hikari_db.prepare('DELETE FROM sessions WHERE token = ?').bind(tempToken).run();
+    
+    // Create full session
+    const token = generateToken();
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    
+    await env.hikari_db.prepare(
+        'INSERT INTO sessions (user_id, token, expires_at) VALUES (?, ?, ?)'
+    ).bind(session.user_id, token, expiresAt).run();
+    
+    // Update last login
+    await env.hikari_db.prepare(
+        'UPDATE admin_users SET last_login = CURRENT_TIMESTAMP WHERE id = ?'
+    ).bind(session.user_id).run();
+    
+    return jsonResponse({
+        success: true,
+        token,
+        user: { id: session.user_id, email: session.email, name: session.name }
     });
 }
 
@@ -420,6 +605,134 @@ async function createAdmin(request, env) {
     } catch (e) {
         return errorResponse('Email already exists', 400);
     }
+}
+
+// ===== 2FA SETUP HANDLERS =====
+
+// Get 2FA status for current user
+async function get2FAStatus(request, env) {
+    const auth = await checkAuth(request, env);
+    if (!auth.valid) {
+        return errorResponse('Unauthorized', 401);
+    }
+    
+    const user = await env.hikari_db.prepare(
+        'SELECT totp_enabled FROM admin_users WHERE id = ?'
+    ).bind(auth.user.id).first();
+    
+    return jsonResponse({
+        success: true,
+        enabled: user?.totp_enabled === 1
+    });
+}
+
+// Start 2FA setup - generate secret and QR data
+async function setup2FA(request, env) {
+    const auth = await checkAuth(request, env);
+    if (!auth.valid) {
+        return errorResponse('Unauthorized', 401);
+    }
+    
+    // Generate new secret
+    const secret = generate2FASecret();
+    
+    // Store pending secret (not enabled yet)
+    await env.hikari_db.prepare(
+        'UPDATE admin_users SET totp_secret = ?, totp_enabled = 0 WHERE id = ?'
+    ).bind(secret, auth.user.id).run();
+    
+    // Generate otpauth URL for QR code
+    const otpauthUrl = `otpauth://totp/HIKARI:${encodeURIComponent(auth.user.email)}?secret=${secret}&issuer=HIKARI&algorithm=SHA1&digits=6&period=30`;
+    
+    return jsonResponse({
+        success: true,
+        secret,
+        otpauthUrl,
+        qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(otpauthUrl)}`
+    });
+}
+
+// Verify 2FA setup with a code from authenticator app
+async function verify2FASetup(request, env) {
+    const auth = await checkAuth(request, env);
+    if (!auth.valid) {
+        return errorResponse('Unauthorized', 401);
+    }
+    
+    const { code } = await request.json();
+    if (!code) {
+        return errorResponse('Code required');
+    }
+    
+    // Get user's pending secret
+    const user = await env.hikari_db.prepare(
+        'SELECT totp_secret FROM admin_users WHERE id = ?'
+    ).bind(auth.user.id).first();
+    
+    if (!user?.totp_secret) {
+        return errorResponse('Please start 2FA setup first');
+    }
+    
+    // Verify code
+    const isValid = await verifyTOTP(user.totp_secret, code);
+    if (!isValid) {
+        return errorResponse('Invalid code. Please try again.');
+    }
+    
+    // Enable 2FA
+    await env.hikari_db.prepare(
+        'UPDATE admin_users SET totp_enabled = 1 WHERE id = ?'
+    ).bind(auth.user.id).run();
+    
+    return jsonResponse({
+        success: true,
+        message: '2FA enabled successfully'
+    });
+}
+
+// Disable 2FA
+async function disable2FA(request, env) {
+    const auth = await checkAuth(request, env);
+    if (!auth.valid) {
+        return errorResponse('Unauthorized', 401);
+    }
+    
+    const { code, password } = await request.json();
+    
+    // Require password verification
+    if (!password) {
+        return errorResponse('Password required');
+    }
+    
+    const passwordHash = await hashPassword(password);
+    const user = await env.hikari_db.prepare(
+        'SELECT * FROM admin_users WHERE id = ? AND password_hash = ?'
+    ).bind(auth.user.id, passwordHash).first();
+    
+    if (!user) {
+        return errorResponse('Invalid password');
+    }
+    
+    // If 2FA is enabled, also require current 2FA code
+    if (user.totp_enabled && user.totp_secret) {
+        if (!code) {
+            return errorResponse('2FA code required');
+        }
+        const isValid = await verifyTOTP(user.totp_secret, code);
+        if (!isValid) {
+            return errorResponse('Invalid 2FA code');
+        }
+    }
+    
+    // Disable 2FA
+    await env.hikari_db.prepare(
+        'UPDATE admin_users SET totp_secret = NULL, totp_enabled = 0 WHERE id = ?'
+    ).bind(auth.user.id).run();
+    
+    return jsonResponse({
+        success: true,
+        message: '2FA disabled'
+    });
 }
 
 // ===== CONTENT HANDLERS =====

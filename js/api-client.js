@@ -65,11 +65,37 @@ const HikariAuth = {
                 body: JSON.stringify({ email, password })
             });
             
+            // Check if 2FA is required
+            if (data.success && data.requires2FA) {
+                return { 
+                    success: true, 
+                    requires2FA: true, 
+                    tempToken: data.tempToken 
+                };
+            }
+            
             if (data.success && data.token) {
                 setToken(data.token);
                 return { success: true, user: data.user };
             }
             return { success: false, error: data.error || 'Login failed' };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    },
+    
+    async verify2FA(tempToken, code) {
+        try {
+            const data = await apiRequest('/api/auth/verify-2fa', {
+                method: 'POST',
+                body: JSON.stringify({ tempToken, code })
+            });
+            
+            if (data.success && data.token) {
+                setToken(data.token);
+                return { success: true, user: data.user };
+            }
+            return { success: false, error: data.error || 'Verification failed' };
         } catch (error) {
             return { success: false, error: error.message };
         }
@@ -111,6 +137,49 @@ const HikariAuth = {
             return false;
         }
         return true;
+    },
+    
+    // 2FA Methods
+    async get2FAStatus() {
+        try {
+            const data = await apiRequest('/api/auth/2fa/status');
+            return data;
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    },
+    
+    async setup2FA() {
+        try {
+            const data = await apiRequest('/api/auth/2fa/setup', { method: 'POST' });
+            return data;
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    },
+    
+    async verify2FASetup(code) {
+        try {
+            const data = await apiRequest('/api/auth/2fa/verify', {
+                method: 'POST',
+                body: JSON.stringify({ code })
+            });
+            return data;
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    },
+    
+    async disable2FA(password, code) {
+        try {
+            const data = await apiRequest('/api/auth/2fa/disable', {
+                method: 'POST',
+                body: JSON.stringify({ password, code })
+            });
+            return data;
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
     }
 };
 
