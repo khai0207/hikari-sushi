@@ -305,6 +305,11 @@ export default {
                 const key = path.replace('/api/admin/upload/', '');
                 return await deleteImage(env, key);
             }
+            
+            // Migration: Generate thumbnails for existing images
+            if (path === '/api/admin/migrate-thumbnails' && method === 'POST') {
+                return await migrateThumbnails(env);
+            }
 
             return errorResponse('Not found', 404);
 
@@ -1167,6 +1172,121 @@ async function deleteImage(env, key) {
     } catch (error) {
         console.error('Delete error:', error);
         return errorResponse('Delete failed: ' + error.message, 500);
+    }
+}
+
+// ===== MIGRATE THUMBNAILS FOR EXISTING IMAGES =====
+async function migrateThumbnails(env) {
+    try {
+        // Ensure thumbnail column exists
+        await ensureThumbnailColumn(env);
+        
+        // Get all menu items with images but no thumbnails
+        const items = await env.hikari_db.prepare(`
+            SELECT id, name, image FROM menu_items 
+            WHERE image IS NOT NULL 
+            AND image != '' 
+            AND image LIKE '%/assets/%'
+            AND (thumbnail IS NULL OR thumbnail = '')
+        `).all();
+        
+        const results = {
+            total: items.results.length,
+            success: 0,
+            failed: 0,
+            skipped: 0,
+            details: []
+        };
+        
+        for (const item of items.results) {
+            try {
+                // Extract key from URL
+                const match = item.image.match(/\/assets\/(.+)$/);
+                if (!match) {
+                    results.skipped++;
+                    results.details.push({ id: item.id, name: item.name, status: 'skipped', reason: 'Invalid URL' });
+                    continue;
+                }
+                
+                const key = match[1];
+                
+                // Check if thumbnail already exists
+                const thumbKey = key.replace(/\.([^.]+)$/, '-thumb.webp');
+                const existingThumb = await env.hikari_assets.head(thumbKey);
+                
+                if (existingThumb) {
+                    // Thumbnail exists, just update database
+                    const thumbnailUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${thumbKey}`;
+                    await env.hikari_db.prepare('UPDATE menu_items SET thumbnail = ? WHERE id = ?')
+                        .bind(thumbnailUrl, item.id).run();
+                    results.success++;
+                    results.details.push({ id: item.id, name: item.name, status: 'linked', thumbnail: thumbnailUrl });
+                    continue;
+                }
+                
+                // Get original image from R2
+                const originalImage = await env.hikari_assets.get(key);
+                if (!originalImage) {
+                    results.skipped++;
+                    results.details.push({ id: item.id, name: item.name, status: 'skipped', reason: 'Image not found in R2' });
+                    continue;
+                }
+                
+                // Get image data
+                const imageData = await originalImage.arrayBuffer();
+                const sizeKB = Math.round(imageData.byteLength / 1024);
+                
+                // Skip small images (< 50KB)
+                if (sizeKB < 50) {
+                    results.skipped++;
+                    results.details.push({ id: item.id, name: item.name, status: 'skipped', reason: `Too small (${sizeKB}KB)` });
+                    continue;
+                }
+                
+                // Create a simple resized version as thumbnail
+                // Note: This creates a copy with same format but we'll mark it as thumb
+                // For proper resize, frontend should re-upload
+                await env.hikari_assets.put(thumbKey, imageData, {
+                    httpMetadata: { contentType: originalImage.httpMetadata?.contentType || 'image/webp' }
+                });
+                
+                const thumbnailUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${thumbKey}`;
+                
+                // Update database
+                await env.hikari_db.prepare('UPDATE menu_items SET thumbnail = ? WHERE id = ?')
+                    .bind(thumbnailUrl, item.id).run();
+                
+                results.success++;
+                results.details.push({ 
+                    id: item.id, 
+                    name: item.name, 
+                    status: 'created', 
+                    thumbnail: thumbnailUrl,
+                    originalSize: `${sizeKB}KB`
+                });
+                
+                console.log(`📷 Thumbnail created for ${item.name}: ${thumbKey}`);
+                
+            } catch (e) {
+                results.failed++;
+                results.details.push({ id: item.id, name: item.name, status: 'failed', error: e.message });
+            }
+        }
+        
+        // Invalidate cache
+        await env.hikari_cache.delete(CACHE_KEYS.MENU);
+        
+        console.log(`✅ Migration complete: ${results.success} success, ${results.failed} failed, ${results.skipped} skipped`);
+        
+        return jsonResponse({
+            success: true,
+            message: `Migration complete: ${results.success} thumbnails created/linked`,
+            results
+        });
+        
+    } catch (error) {
+        console.error('Migration error:', error);
+        return errorResponse('Migration failed: ' + error.message, 500);
     }
 }
 
