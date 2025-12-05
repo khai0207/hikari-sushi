@@ -419,6 +419,14 @@ window.HikariAPI = {
     logout: HikariAuth.logout.bind(HikariAuth),
     isLoggedIn: HikariAuth.isLoggedIn.bind(HikariAuth),
     protectAdminPage: HikariAuth.protectPage.bind(HikariAuth),
+    
+    // 2FA methods
+    verify2FA: HikariAuth.verify2FA.bind(HikariAuth),
+    get2FAStatus: HikariAuth.get2FAStatus.bind(HikariAuth),
+    setup2FA: HikariAuth.setup2FA.bind(HikariAuth),
+    verify2FASetup: HikariAuth.verify2FASetup.bind(HikariAuth),
+    disable2FA: HikariAuth.disable2FA.bind(HikariAuth),
+    
     getCurrentUser: function() {
         const token = getToken();
         if (!token) return null;
