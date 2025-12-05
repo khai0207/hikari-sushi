@@ -688,8 +688,16 @@
                             <input type="text" id="about_title" placeholder="Notre Histoire">
                         </div>
                         <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="about_description" rows="4" placeholder="Depuis notre ouverture, HIKARI Sushi & Roll..."></textarea>
+                            <label>Paragraphe 1 (intro)</label>
+                            <textarea id="about_description" rows="3" placeholder="Chez HIKARI, nous vous transportons au cœur du Japon..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Paragraphe 2 (spécialités)</label>
+                            <textarea id="about_description2" rows="4" placeholder="Le restaurant se spécialise dans une sélection raffinée de sushis..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Paragraphe 3 (qualité)</label>
+                            <textarea id="about_description3" rows="4" placeholder="Chez HIKARI, la fraîcheur des produits..."></textarea>
                         </div>
                         <div class="form-group">
                             <label>Image</label>
@@ -1481,7 +1489,7 @@
 
         document.getElementById('aboutForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['about_subtitle', 'about_title', 'about_description', 'about_image']);
+            await saveContent(e.target, ['about_subtitle', 'about_title', 'about_description', 'about_description2', 'about_description3', 'about_image']);
         });
 
         document.getElementById('contactForm').addEventListener('submit', async (e) => {

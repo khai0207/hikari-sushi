@@ -649,10 +649,22 @@ async function loadDynamicContent() {
                     heroTitleLine.textContent = content.hero.title;
                 }
                 
-                // Typed words - update the words array
-                if (content.hero.typed_words && Array.isArray(content.hero.typed_words)) {
-                    words.length = 0;
-                    content.hero.typed_words.forEach(word => words.push(word));
+                // Typed words - update the words array (may be JSON string or array)
+                if (content.hero.typed_words) {
+                    let typedWords = content.hero.typed_words;
+                    // Parse if it's a JSON string
+                    if (typeof typedWords === 'string') {
+                        try {
+                            typedWords = JSON.parse(typedWords);
+                        } catch (e) {
+                            // If not valid JSON, split by comma
+                            typedWords = typedWords.split(',').map(w => w.trim());
+                        }
+                    }
+                    if (Array.isArray(typedWords) && typedWords.length > 0) {
+                        words.length = 0;
+                        typedWords.forEach(word => words.push(word));
+                    }
                 }
                 
                 // Subtitle
@@ -674,9 +686,19 @@ async function loadDynamicContent() {
                     aboutTitle.innerHTML = content.about.title.replace(/\n/g, '<br>');
                 }
                 
+                // About paragraph 1 (lead)
                 const aboutLead = document.querySelector('#about .about-text .lead');
                 if (aboutLead && content.about.description) {
                     aboutLead.textContent = content.about.description;
+                }
+                
+                // About paragraphs 2 and 3 (after lead)
+                const aboutParagraphs = document.querySelectorAll('#about .about-text > p:not(.lead)');
+                if (aboutParagraphs.length >= 1 && content.about.description2) {
+                    aboutParagraphs[0].textContent = content.about.description2;
+                }
+                if (aboutParagraphs.length >= 2 && content.about.description3) {
+                    aboutParagraphs[1].textContent = content.about.description3;
                 }
                 
                 // About image (resized for optimal display)
@@ -1019,13 +1041,13 @@ async function loadDynamicContent() {
                         if (name && content[key].name) name.textContent = content[key].name;
                         
                         const text = card.querySelector('.testimonial-text');
-                        if (text && content[key].text) text.textContent = `"${content[key].text}"`;
+                        if (text && content[key].text) text.textContent = content[key].text;
                         
                         // Rating stars
                         if (content[key].rating) {
                             const starsContainer = card.querySelector('.stars');
                             if (starsContainer) {
-                                const rating = parseFloat(content[key].rating) || 5;
+                                const rating = parseInt(content[key].rating) || 5;
                                 let starsHTML = '';
                                 for (let s = 1; s <= 5; s++) {
                                     if (s <= rating) {
