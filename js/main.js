@@ -78,10 +78,25 @@ async function preloadCriticalImages() {
 // Start preloading immediately
 const preloadPromise = preloadCriticalImages();
 
+// ===== ALWAYS START AT TOP ON PAGE LOAD =====
+// Reset scroll position and URL hash on page load/refresh
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
+
+// Clear hash from URL on page load
+if (window.location.hash) {
+    history.replaceState(null, null, window.location.pathname);
+}
+
 // ===== PRELOADER =====
 window.addEventListener('load', async () => {
     const preloader = document.querySelector('.preloader');
     document.body.classList.add('loading');
+    
+    // Ensure we're at the top
+    window.scrollTo(0, 0);
     
     // Wait for critical images (max 3 seconds)
     const timeout = new Promise(resolve => setTimeout(resolve, 3000));
@@ -364,19 +379,6 @@ const navObserver = new IntersectionObserver((entries) => {
 });
 
 sections.forEach(section => navObserver.observe(section));
-
-// Handle initial hash on page load
-window.addEventListener('load', () => {
-    const hash = window.location.hash;
-    if (hash) {
-        const targetSection = document.querySelector(hash);
-        if (targetSection) {
-            setTimeout(() => {
-                targetSection.scrollIntoView({ behavior: 'smooth' });
-            }, 500); // Wait for preloader
-        }
-    }
-});
 
 // ===== MENU TABS =====
 const tabBtns = document.querySelectorAll('.tab-btn');
