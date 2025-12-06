@@ -750,6 +750,47 @@ input, textarea, select {
 /* ===== ABOUT SECTION ===== */
 .about {
     background: var(--dark-light);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Bamboo leaves pattern - left side */
+.about::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 100%;
+    background: 
+        /* Bamboo stalks */
+        linear-gradient(90deg, transparent 48%, rgba(201, 169, 98, 0.03) 48%, rgba(201, 169, 98, 0.03) 52%, transparent 52%),
+        linear-gradient(90deg, transparent 78%, rgba(201, 169, 98, 0.02) 78%, rgba(201, 169, 98, 0.02) 82%, transparent 82%);
+    background-size: 100px 100%, 100px 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Japanese wave pattern - bottom */
+.about::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background: 
+        radial-gradient(ellipse 80px 40px at 40px 100%, transparent 36px, rgba(201, 169, 98, 0.04) 36px, rgba(201, 169, 98, 0.04) 40px, transparent 40px),
+        radial-gradient(ellipse 80px 40px at 120px 100%, transparent 36px, rgba(201, 169, 98, 0.04) 36px, rgba(201, 169, 98, 0.04) 40px, transparent 40px);
+    background-size: 160px 50px;
+    background-position: 0 bottom;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.about .container {
+    position: relative;
+    z-index: 1;
 }
 
 .about-content {
@@ -954,6 +995,63 @@ input, textarea, select {
 .services {
     background: var(--dark);
     overflow-x: hidden;
+    position: relative;
+}
+
+/* Chopsticks pattern - diagonal lines */
+.services::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Diagonal chopstick lines */
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 100px,
+            rgba(201, 169, 98, 0.015) 100px,
+            rgba(201, 169, 98, 0.015) 102px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 100px,
+            rgba(201, 169, 98, 0.015) 100px,
+            rgba(201, 169, 98, 0.015) 102px
+        );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Rice grain dots pattern */
+.services::after {
+    content: '';
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    width: calc(100% - 100px);
+    height: calc(100% - 100px);
+    background-image: 
+        radial-gradient(ellipse 3px 6px at center, rgba(201, 169, 98, 0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 3px 6px at center, rgba(201, 169, 98, 0.03) 0%, transparent 70%);
+    background-size: 80px 80px, 120px 120px;
+    background-position: 0 0, 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+    animation: floatRice 20s ease-in-out infinite;
+}
+
+@keyframes floatRice {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+.services .container {
+    position: relative;
+    z-index: 1;
 }
 
 .services-grid {
@@ -1177,6 +1275,60 @@ input, textarea, select {
     overflow: hidden;
 }
 
+/* Nori seaweed texture background */
+.menu::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Fine nori texture */
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 50, 30, 0.02) 2px,
+            rgba(0, 50, 30, 0.02) 4px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 50, 30, 0.02) 2px,
+            rgba(0, 50, 30, 0.02) 4px
+        );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Soy sauce drip circles */
+.menu::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Large soy drops */
+        radial-gradient(circle at 10% 20%, rgba(60, 40, 20, 0.08) 0%, transparent 15%),
+        radial-gradient(circle at 85% 15%, rgba(60, 40, 20, 0.06) 0%, transparent 12%),
+        radial-gradient(circle at 75% 75%, rgba(60, 40, 20, 0.07) 0%, transparent 18%),
+        radial-gradient(circle at 20% 80%, rgba(60, 40, 20, 0.05) 0%, transparent 10%),
+        /* Wasabi accent spots */
+        radial-gradient(circle at 50% 30%, rgba(80, 120, 60, 0.03) 0%, transparent 8%),
+        radial-gradient(circle at 30% 60%, rgba(80, 120, 60, 0.02) 0%, transparent 6%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.menu .container {
+    position: relative;
+    z-index: 1;
+}
+
 .menu-decoration {
     position: absolute;
     top: 0;
@@ -1184,12 +1336,16 @@ input, textarea, select {
     width: 100%;
     height: 100%;
     pointer-events: none;
+    z-index: 0;
 }
 
 .deco-circle {
     position: absolute;
     border: 1px solid rgba(201, 169, 98, 0.1);
     border-radius: 50%;
+    box-shadow: 
+        inset 0 0 30px rgba(201, 169, 98, 0.03),
+        0 0 30px rgba(201, 169, 98, 0.02);
 }
 
 .deco-1 {
@@ -1197,6 +1353,7 @@ input, textarea, select {
     height: 400px;
     top: -200px;
     right: -200px;
+    animation: rotateCircle 30s linear infinite;
 }
 
 .deco-2 {
@@ -1204,6 +1361,25 @@ input, textarea, select {
     height: 300px;
     bottom: -150px;
     left: -150px;
+    animation: rotateCircle 25s linear infinite reverse;
+}
+
+/* Additional sushi plate circles */
+.deco-circle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 70%;
+    border: 1px dashed rgba(201, 169, 98, 0.08);
+    border-radius: 50%;
+}
+
+@keyframes rotateCircle {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .menu-tabs {
@@ -1358,6 +1534,70 @@ input, textarea, select {
     background: linear-gradient(135deg, var(--secondary) 0%, var(--dark) 100%);
 }
 
+/* Zen garden sand lines pattern */
+.testimonials-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Curved zen garden lines */
+        repeating-radial-gradient(
+            ellipse 800px 200px at 0% 100%,
+            transparent 0px,
+            transparent 3px,
+            rgba(201, 169, 98, 0.03) 3px,
+            rgba(201, 169, 98, 0.03) 4px,
+            transparent 4px,
+            transparent 20px
+        ),
+        repeating-radial-gradient(
+            ellipse 600px 150px at 100% 0%,
+            transparent 0px,
+            transparent 3px,
+            rgba(201, 169, 98, 0.025) 3px,
+            rgba(201, 169, 98, 0.025) 4px,
+            transparent 4px,
+            transparent 25px
+        );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Zen stones - circular elements */
+.testimonials-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Large zen stone */
+        radial-gradient(ellipse 120px 80px at 15% 85%, rgba(201, 169, 98, 0.06) 0%, rgba(201, 169, 98, 0.02) 40%, transparent 70%),
+        /* Medium zen stone */
+        radial-gradient(ellipse 80px 60px at 85% 20%, rgba(201, 169, 98, 0.05) 0%, rgba(201, 169, 98, 0.015) 50%, transparent 70%),
+        /* Small zen stone */
+        radial-gradient(ellipse 50px 40px at 90% 75%, rgba(201, 169, 98, 0.04) 0%, transparent 60%),
+        /* Cherry blossom petals floating */
+        radial-gradient(ellipse 8px 12px at 25% 15%, rgba(255, 182, 193, 0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 10px 8px at 70% 40%, rgba(255, 182, 193, 0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 6px 10px at 45% 70%, rgba(255, 182, 193, 0.04) 0%, transparent 70%),
+        radial-gradient(ellipse 8px 6px at 80% 60%, rgba(255, 182, 193, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+    animation: floatPetals 15s ease-in-out infinite;
+}
+
+@keyframes floatPetals {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-5px) translateX(3px); }
+    50% { transform: translateY(-8px) translateX(-2px); }
+    75% { transform: translateY(-3px) translateX(5px); }
+}
+
 .testimonials .container {
     position: relative;
     z-index: 2;
@@ -1489,6 +1729,50 @@ input, textarea, select {
 .specialties {
     background: var(--dark);
     overflow-x: hidden;
+    position: relative;
+}
+
+/* Fish scale (uroko) pattern - traditional Japanese */
+.specialties::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 0% 50%, transparent 9px, rgba(201, 169, 98, 0.015) 10px, transparent 11px),
+        radial-gradient(circle at 100% 50%, transparent 9px, rgba(201, 169, 98, 0.015) 10px, transparent 11px);
+    background-size: 40px 20px;
+    background-position: 0 0, 20px 10px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.8;
+}
+
+/* Salmon/tuna gradient waves */
+.specialties::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Salmon pink wave - top right */
+        linear-gradient(135deg, transparent 0%, transparent 60%, rgba(250, 128, 114, 0.03) 70%, rgba(250, 128, 114, 0.05) 80%, transparent 90%),
+        /* Tuna red accent - bottom left */
+        linear-gradient(-45deg, transparent 0%, transparent 70%, rgba(178, 34, 34, 0.03) 80%, rgba(178, 34, 34, 0.04) 85%, transparent 95%),
+        /* Fresh fish silver shimmer */
+        radial-gradient(ellipse 300px 100px at 80% 20%, rgba(192, 192, 192, 0.02) 0%, transparent 50%),
+        radial-gradient(ellipse 200px 80px at 20% 80%, rgba(192, 192, 192, 0.015) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.specialties .container {
+    position: relative;
+    z-index: 1;
 }
 
 .specialties-grid {
@@ -1801,6 +2085,59 @@ input, textarea, select {
 .features {
     background: var(--dark-light);
     overflow-x: hidden;
+    position: relative;
+}
+
+/* Asanoha (hemp leaf) pattern - traditional Japanese geometric */
+.features::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Diamond grid base */
+        linear-gradient(45deg, transparent 48%, rgba(201, 169, 98, 0.02) 49%, rgba(201, 169, 98, 0.02) 51%, transparent 52%),
+        linear-gradient(-45deg, transparent 48%, rgba(201, 169, 98, 0.02) 49%, rgba(201, 169, 98, 0.02) 51%, transparent 52%),
+        /* Horizontal and vertical lines */
+        linear-gradient(0deg, transparent 49%, rgba(201, 169, 98, 0.015) 50%, transparent 51%),
+        linear-gradient(90deg, transparent 49%, rgba(201, 169, 98, 0.015) 50%, transparent 51%);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Steaming bowl effect - rising steam lines */
+.features::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: 
+        /* Steam wisps */
+        radial-gradient(ellipse 2px 80px at 20% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
+        radial-gradient(ellipse 2px 100px at 35% 100%, rgba(255, 255, 255, 0.015) 0%, transparent 100%),
+        radial-gradient(ellipse 2px 70px at 50% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
+        radial-gradient(ellipse 2px 90px at 65% 100%, rgba(255, 255, 255, 0.015) 0%, transparent 100%),
+        radial-gradient(ellipse 2px 85px at 80% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
+        /* Subtle glow from below */
+        linear-gradient(to top, rgba(201, 169, 98, 0.02) 0%, transparent 30%);
+    pointer-events: none;
+    z-index: 0;
+    animation: steamRise 8s ease-in-out infinite;
+}
+
+@keyframes steamRise {
+    0%, 100% { opacity: 0.6; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(-10px); }
+}
+
+.features .container {
+    position: relative;
+    z-index: 1;
 }
 
 .features-grid {
@@ -1984,6 +2321,68 @@ input, textarea, select {
 /* ===== CONTACT SECTION ===== */
 .contact {
     background: var(--dark);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Shoji screen grid pattern */
+.contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Horizontal lines */
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 99px,
+            rgba(201, 169, 98, 0.03) 99px,
+            rgba(201, 169, 98, 0.03) 100px
+        ),
+        /* Vertical lines */
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 99px,
+            rgba(201, 169, 98, 0.03) 99px,
+            rgba(201, 169, 98, 0.03) 100px
+        );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Location pin burst and decorative elements */
+.contact::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Glowing location point effect - center right */
+        radial-gradient(circle at 75% 40%, rgba(201, 169, 98, 0.08) 0%, rgba(201, 169, 98, 0.03) 20%, transparent 40%),
+        /* Compass rose hint - subtle */
+        conic-gradient(from 0deg at 90% 50%, 
+            transparent 0deg, rgba(201, 169, 98, 0.02) 5deg, transparent 10deg,
+            transparent 80deg, rgba(201, 169, 98, 0.02) 85deg, transparent 90deg,
+            transparent 170deg, rgba(201, 169, 98, 0.02) 175deg, transparent 180deg,
+            transparent 260deg, rgba(201, 169, 98, 0.02) 265deg, transparent 270deg,
+            transparent 350deg, rgba(201, 169, 98, 0.02) 355deg, transparent 360deg
+        ),
+        /* Road/path lines leading to location */
+        linear-gradient(135deg, transparent 0%, transparent 45%, rgba(201, 169, 98, 0.015) 48%, transparent 51%),
+        linear-gradient(45deg, transparent 0%, transparent 60%, rgba(201, 169, 98, 0.01) 63%, transparent 66%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.contact .container {
+    position: relative;
+    z-index: 1;
 }
 
 .contact-content {
@@ -2064,6 +2463,65 @@ input, textarea, select {
 /* ===== FOOTER ===== */
 .footer {
     background: var(--secondary);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Seigaiha (wave) pattern - traditional Japanese */
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Wave arcs row 1 */
+        radial-gradient(circle at 50% 100%, transparent 20px, rgba(201, 169, 98, 0.03) 21px, rgba(201, 169, 98, 0.03) 22px, transparent 23px),
+        radial-gradient(circle at 0% 100%, transparent 20px, rgba(201, 169, 98, 0.03) 21px, rgba(201, 169, 98, 0.03) 22px, transparent 23px),
+        radial-gradient(circle at 100% 100%, transparent 20px, rgba(201, 169, 98, 0.03) 21px, rgba(201, 169, 98, 0.03) 22px, transparent 23px);
+    background-size: 50px 25px;
+    background-position: 0 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Golden koi fish scale shimmer effect */
+.footer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Large golden glow - bottom */
+        radial-gradient(ellipse 60% 30% at 50% 120%, rgba(201, 169, 98, 0.08) 0%, transparent 50%),
+        /* Koi fish swimming path - subtle S curve */
+        radial-gradient(ellipse 100px 20px at 20% 30%, rgba(201, 169, 98, 0.02) 0%, transparent 50%),
+        radial-gradient(ellipse 80px 15px at 40% 35%, rgba(201, 169, 98, 0.015) 0%, transparent 50%),
+        radial-gradient(ellipse 60px 12px at 60% 28%, rgba(201, 169, 98, 0.02) 0%, transparent 50%),
+        /* Cherry blossom falling */
+        radial-gradient(circle 3px at 15% 20%, rgba(255, 182, 193, 0.08) 0%, transparent 70%),
+        radial-gradient(circle 4px at 85% 15%, rgba(255, 182, 193, 0.06) 0%, transparent 70%),
+        radial-gradient(circle 2px at 45% 45%, rgba(255, 182, 193, 0.05) 0%, transparent 70%),
+        radial-gradient(circle 3px at 70% 60%, rgba(255, 182, 193, 0.07) 0%, transparent 70%),
+        radial-gradient(circle 2px at 25% 70%, rgba(255, 182, 193, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: koiSwim 20s ease-in-out infinite;
+}
+
+@keyframes koiSwim {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(20px); }
+}
+
+.footer .container,
+.footer-top .container,
+.footer-bottom .container {
+    position: relative;
+    z-index: 1;
 }
 
 .footer-top {
@@ -3042,6 +3500,55 @@ input, textarea, select {
 /* ===== GALLERY SECTION ===== */
 .gallery {
     background: var(--dark-light);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Sumi-e ink brush stroke effect - top left */
+.gallery::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: -100px;
+    width: 500px;
+    height: 300px;
+    background: 
+        /* Main brush stroke */
+        radial-gradient(ellipse 400px 30px at 50% 50%, rgba(10, 10, 10, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 350px 25px at 45% 60%, rgba(10, 10, 10, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse 300px 20px at 55% 40%, rgba(10, 10, 10, 0.08) 0%, transparent 50%),
+        /* Ink splatter dots */
+        radial-gradient(circle 8px at 30% 70%, rgba(10, 10, 10, 0.12) 0%, transparent 50%),
+        radial-gradient(circle 5px at 70% 30%, rgba(10, 10, 10, 0.1) 0%, transparent 50%),
+        radial-gradient(circle 3px at 80% 60%, rgba(10, 10, 10, 0.08) 0%, transparent 50%);
+    transform: rotate(-15deg);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Sumi-e ink brush stroke - bottom right */
+.gallery::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    right: -50px;
+    width: 400px;
+    height: 250px;
+    background: 
+        /* Brush stroke */
+        radial-gradient(ellipse 300px 25px at 50% 50%, rgba(201, 169, 98, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 250px 20px at 55% 45%, rgba(201, 169, 98, 0.04) 0%, transparent 50%),
+        /* Gold ink splatter */
+        radial-gradient(circle 6px at 25% 65%, rgba(201, 169, 98, 0.08) 0%, transparent 50%),
+        radial-gradient(circle 4px at 75% 35%, rgba(201, 169, 98, 0.06) 0%, transparent 50%);
+    transform: rotate(10deg);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.gallery .container {
+    position: relative;
+    z-index: 1;
 }
 
 .gallery-grid {
