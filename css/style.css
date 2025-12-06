@@ -959,6 +959,7 @@ input, textarea, select {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
+    touch-action: pan-y;
 }
 
 .service-card {
@@ -972,6 +973,7 @@ input, textarea, select {
     overflow: hidden;
     contain: layout style;
     will-change: transform;
+    touch-action: pan-y;
 }
 
 .service-card::before {
@@ -1478,6 +1480,7 @@ input, textarea, select {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 30px;
+    touch-action: pan-y;
 }
 
 .specialty-card {
@@ -1486,6 +1489,7 @@ input, textarea, select {
     overflow: hidden;
     cursor: pointer;
     contain: layout style;
+    touch-action: pan-y;
 }
 
 .specialty-card.large {
