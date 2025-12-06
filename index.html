@@ -173,143 +173,8 @@
         </div>
     </section>
 
-    <!-- About Section - Notre Histoire -->
+    <!-- About Section -->
     <section class="about section" id="about">
-        <!-- 🎋 ABOUT DECORATIONS - Japanese Garden Theme -->
-        <div class="section-deco about-deco">
-            <!-- Seigaiha (Ocean Waves) Pattern - Top Right -->
-            <svg class="deco-seigaiha top-right" viewBox="0 0 400 200" preserveAspectRatio="xMaxYMin slice">
-                <defs>
-                    <pattern id="seigaiha-about" patternUnits="userSpaceOnUse" width="40" height="20">
-                        <path d="M20 0 A20 20 0 0 0 0 20" fill="none" stroke="#c9a962" stroke-width="0.8"/>
-                        <path d="M20 0 A20 20 0 0 1 40 20" fill="none" stroke="#c9a962" stroke-width="0.8"/>
-                    </pattern>
-                    <linearGradient id="seigaiha-fade-about" x1="100%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0.25"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
-                    </linearGradient>
-                    <mask id="seigaiha-mask-about"><rect width="400" height="200" fill="url(#seigaiha-fade-about)"/></mask>
-                </defs>
-                <rect width="400" height="200" fill="url(#seigaiha-about)" mask="url(#seigaiha-mask-about)"/>
-            </svg>
-            
-            <!-- Bamboo Grove - Left Side -->
-            <svg class="deco-bamboo left-side" viewBox="0 0 120 500">
-                <defs>
-                    <linearGradient id="bamboo-grad-about" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0"/>
-                        <stop offset="20%" stop-color="#c9a962" stop-opacity="0.15"/>
-                        <stop offset="80%" stop-color="#c9a962" stop-opacity="0.15"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-                <!-- Bamboo Stem 1 -->
-                <path d="M30 0 Q35 100 30 200 Q25 300 30 400 Q35 450 30 500" fill="none" stroke="url(#bamboo-grad-about)" stroke-width="4"/>
-                <ellipse cx="30" cy="100" rx="10" ry="3" fill="none" stroke="#c9a962" stroke-opacity="0.2"/>
-                <ellipse cx="30" cy="250" rx="10" ry="3" fill="none" stroke="#c9a962" stroke-opacity="0.2"/>
-                <ellipse cx="30" cy="400" rx="10" ry="3" fill="none" stroke="#c9a962" stroke-opacity="0.2"/>
-                <!-- Bamboo Leaves -->
-                <path d="M30 80 Q60 70 70 90 Q50 85 30 80" fill="#c9a962" fill-opacity="0.1"/>
-                <path d="M30 85 Q65 95 55 110 Q45 100 30 85" fill="#c9a962" fill-opacity="0.08"/>
-                <path d="M30 230 Q0 220 -10 240 Q10 235 30 230" fill="#c9a962" fill-opacity="0.1"/>
-                <!-- Bamboo Stem 2 -->
-                <path d="M70 50 Q75 150 70 250 Q65 350 70 450" fill="none" stroke="url(#bamboo-grad-about)" stroke-width="3" stroke-opacity="0.7"/>
-                <path d="M70 130 Q100 120 110 140 Q90 135 70 130" fill="#c9a962" fill-opacity="0.08"/>
-            </svg>
-            
-            <!-- Sakura Branch - Top Left -->
-            <svg class="deco-sakura-branch top-left" viewBox="0 0 300 200">
-                <defs>
-                    <radialGradient id="sakura-petal-grad">
-                        <stop offset="0%" stop-color="#dfc88a"/>
-                        <stop offset="100%" stop-color="#c9a962"/>
-                    </radialGradient>
-                </defs>
-                <!-- Branch -->
-                <path d="M0 100 Q80 90 150 70 Q200 55 280 30" fill="none" stroke="#c9a962" stroke-width="2" stroke-opacity="0.15"/>
-                <path d="M150 70 Q170 100 200 120" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.12"/>
-                <!-- Sakura Flowers -->
-                <g class="sakura-flower f1" transform="translate(100, 80)">
-                    <circle cx="0" cy="-8" r="4" fill="url(#sakura-petal-grad)" fill-opacity="0.2"/>
-                    <circle cx="7" cy="-3" r="4" fill="url(#sakura-petal-grad)" fill-opacity="0.2"/>
-                    <circle cx="5" cy="5" r="4" fill="url(#sakura-petal-grad)" fill-opacity="0.2"/>
-                    <circle cx="-5" cy="5" r="4" fill="url(#sakura-petal-grad)" fill-opacity="0.2"/>
-                    <circle cx="-7" cy="-3" r="4" fill="url(#sakura-petal-grad)" fill-opacity="0.2"/>
-                    <circle cx="0" cy="0" r="3" fill="#c9a962" fill-opacity="0.3"/>
-                </g>
-                <g class="sakura-flower f2" transform="translate(180, 55)">
-                    <circle cx="0" cy="-6" r="3" fill="url(#sakura-petal-grad)" fill-opacity="0.15"/>
-                    <circle cx="5" cy="-2" r="3" fill="url(#sakura-petal-grad)" fill-opacity="0.15"/>
-                    <circle cx="4" cy="4" r="3" fill="url(#sakura-petal-grad)" fill-opacity="0.15"/>
-                    <circle cx="-4" cy="4" r="3" fill="url(#sakura-petal-grad)" fill-opacity="0.15"/>
-                    <circle cx="-5" cy="-2" r="3" fill="url(#sakura-petal-grad)" fill-opacity="0.15"/>
-                    <circle cx="0" cy="0" r="2" fill="#c9a962" fill-opacity="0.25"/>
-                </g>
-                <g class="sakura-flower f3" transform="translate(240, 40)">
-                    <circle cx="0" cy="-5" r="2.5" fill="url(#sakura-petal-grad)" fill-opacity="0.12"/>
-                    <circle cx="4" cy="-2" r="2.5" fill="url(#sakura-petal-grad)" fill-opacity="0.12"/>
-                    <circle cx="3" cy="3" r="2.5" fill="url(#sakura-petal-grad)" fill-opacity="0.12"/>
-                    <circle cx="-3" cy="3" r="2.5" fill="url(#sakura-petal-grad)" fill-opacity="0.12"/>
-                    <circle cx="-4" cy="-2" r="2.5" fill="url(#sakura-petal-grad)" fill-opacity="0.12"/>
-                </g>
-            </svg>
-            
-            <!-- Floating Sakura Petals -->
-            <div class="floating-petals">
-                <div class="petal p1"></div>
-                <div class="petal p2"></div>
-                <div class="petal p3"></div>
-                <div class="petal p4"></div>
-                <div class="petal p5"></div>
-                <div class="petal p6"></div>
-                <div class="petal p7"></div>
-                <div class="petal p8"></div>
-            </div>
-            
-            <!-- Enso (Zen Circle) - Bottom Right -->
-            <svg class="deco-enso bottom-right" viewBox="0 0 200 200">
-                <defs>
-                    <linearGradient id="enso-grad-about" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0.3"/>
-                        <stop offset="50%" stop-color="#dfc88a" stop-opacity="0.15"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0.3"/>
-                    </linearGradient>
-                </defs>
-                <circle cx="100" cy="100" r="85" fill="none" stroke="url(#enso-grad-about)" stroke-width="2" stroke-dasharray="10 5" class="enso-outer"/>
-                <circle cx="100" cy="100" r="65" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.15" stroke-dasharray="5 10" class="enso-middle"/>
-                <circle cx="100" cy="100" r="45" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.1" class="enso-inner"/>
-            </svg>
-            
-            <!-- Koi Fish Silhouette -->
-            <svg class="deco-koi" viewBox="0 0 100 50">
-                <path d="M10 25 Q30 10 50 25 Q70 40 90 25 Q85 30 80 28 Q60 35 50 25 Q40 15 20 25 Q15 27 10 25" 
-                      fill="#c9a962" fill-opacity="0.08"/>
-                <circle cx="20" cy="23" r="2" fill="#c9a962" fill-opacity="0.15"/>
-            </svg>
-            
-            <!-- Lantern -->
-            <svg class="deco-lantern" viewBox="0 0 60 120">
-                <rect x="20" y="10" width="20" height="5" fill="#c9a962" fill-opacity="0.15"/>
-                <path d="M15 15 Q30 20 45 15 L45 80 Q30 85 15 80 Z" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.12"/>
-                <path d="M15 15 L15 80" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.1"/>
-                <path d="M45 15 L45 80" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.1"/>
-                <rect x="20" y="80" width="20" height="5" fill="#c9a962" fill-opacity="0.15"/>
-                <line x1="30" y1="85" x2="30" y2="100" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <!-- Glow -->
-                <ellipse cx="30" cy="50" rx="10" ry="20" fill="#c9a962" fill-opacity="0.05" class="lantern-glow"/>
-            </svg>
-            
-            <!-- Gold Dust Particles -->
-            <div class="gold-particles">
-                <span class="particle"></span>
-                <span class="particle"></span>
-                <span class="particle"></span>
-                <span class="particle"></span>
-                <span class="particle"></span>
-                <span class="particle"></span>
-            </div>
-        </div>
-        
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <span class="section-subtitle">
@@ -376,91 +241,8 @@
         </div>
     </section>
 
-    <!-- Services Section - Ce Que Nous Offrons -->
+    <!-- Services Section -->
     <section class="services section">
-        <!-- 🍣 SERVICES DECORATIONS - Sushi Kitchen Theme -->
-        <div class="section-deco services-deco">
-            <!-- Chopsticks Cross Pattern - Left -->
-            <svg class="deco-chopsticks left" viewBox="0 0 100 300">
-                <defs>
-                    <linearGradient id="chopstick-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0"/>
-                        <stop offset="30%" stop-color="#c9a962" stop-opacity="0.2"/>
-                        <stop offset="70%" stop-color="#c9a962" stop-opacity="0.2"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-                <line x1="30" y1="20" x2="50" y2="280" stroke="url(#chopstick-grad)" stroke-width="4" stroke-linecap="round"/>
-                <line x1="70" y1="20" x2="50" y2="280" stroke="url(#chopstick-grad)" stroke-width="4" stroke-linecap="round"/>
-                <!-- Decorative bands -->
-                <rect x="27" y="50" width="10" height="20" rx="2" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.2"/>
-                <rect x="63" y="50" width="10" height="20" rx="2" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.2"/>
-            </svg>
-            
-            <!-- Sushi Roll Rings - Right -->
-            <div class="deco-sushi-rings right">
-                <svg viewBox="0 0 150 150" class="ring r1">
-                    <circle cx="75" cy="75" r="65" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.15"/>
-                    <circle cx="75" cy="75" r="50" fill="none" stroke="#c9a962" stroke-width="1" stroke-dasharray="8 4" stroke-opacity="0.12"/>
-                    <circle cx="75" cy="75" r="35" fill="none" stroke="#c9a962" stroke-width="0.8" stroke-opacity="0.1"/>
-                    <circle cx="75" cy="75" r="20" fill="none" stroke="#c9a962" stroke-width="2" stroke-dasharray="2 4" stroke-opacity="0.15"/>
-                    <circle cx="75" cy="75" r="8" fill="#c9a962" fill-opacity="0.1"/>
-                </svg>
-                <svg viewBox="0 0 100 100" class="ring r2">
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                    <circle cx="50" cy="50" r="28" fill="none" stroke="#c9a962" stroke-width="0.8" stroke-dasharray="5 5" stroke-opacity="0.12"/>
-                    <circle cx="50" cy="50" r="12" fill="#c9a962" fill-opacity="0.08"/>
-                </svg>
-            </div>
-            
-            <!-- Nori (Seaweed) Texture Pattern - Bottom -->
-            <svg class="deco-nori-pattern bottom" viewBox="0 0 1200 80">
-                <defs>
-                    <pattern id="nori-texture" patternUnits="userSpaceOnUse" width="20" height="20">
-                        <rect width="20" height="20" fill="none"/>
-                        <circle cx="5" cy="5" r="0.5" fill="#c9a962" fill-opacity="0.1"/>
-                        <circle cx="15" cy="15" r="0.5" fill="#c9a962" fill-opacity="0.1"/>
-                        <circle cx="10" cy="10" r="0.3" fill="#c9a962" fill-opacity="0.08"/>
-                    </pattern>
-                    <linearGradient id="nori-fade" x1="0%" y1="100%" x2="0%" y2="0%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0.15"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-                <rect width="1200" height="80" fill="url(#nori-texture)"/>
-                <rect width="1200" height="80" fill="url(#nori-fade)"/>
-            </svg>
-            
-            <!-- Rice Grain Pattern - Scattered -->
-            <div class="deco-rice-grains">
-                <span class="grain g1"></span>
-                <span class="grain g2"></span>
-                <span class="grain g3"></span>
-                <span class="grain g4"></span>
-                <span class="grain g5"></span>
-                <span class="grain g6"></span>
-                <span class="grain g7"></span>
-                <span class="grain g8"></span>
-            </div>
-            
-            <!-- Wasabi Swirl - Corner -->
-            <svg class="deco-wasabi-swirl" viewBox="0 0 80 80">
-                <path d="M40 10 Q60 20 60 40 Q60 60 40 60 Q20 60 20 40 Q20 30 30 25 Q40 20 45 30 Q50 40 40 45 Q30 50 28 40" 
-                      fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.12" stroke-linecap="round"/>
-            </svg>
-            
-            <!-- Ginger Slices - Floating -->
-            <div class="deco-ginger-slices">
-                <svg viewBox="0 0 40 25" class="ginger g1">
-                    <ellipse cx="20" cy="12" rx="18" ry="10" fill="none" stroke="#c9a962" stroke-width="0.8" stroke-opacity="0.1"/>
-                    <path d="M5 12 Q20 8 35 12" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.08"/>
-                </svg>
-                <svg viewBox="0 0 30 18" class="ginger g2">
-                    <ellipse cx="15" cy="9" rx="13" ry="7" fill="#c9a962" fill-opacity="0.05"/>
-                </svg>
-            </div>
-        </div>
-        
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <span class="section-subtitle">
@@ -533,88 +315,12 @@
         </div>
     </section>
 
-    <!-- Menu Section - Menu Délicieux -->
+    <!-- Menu Section -->
     <section class="menu section" id="menu">
-        <!-- 📜 MENU DECORATIONS - Japanese Menu/Scroll Theme -->
-        <div class="section-deco menu-deco">
-            <!-- Traditional Scroll Corners -->
-            <svg class="deco-scroll-corner top-left" viewBox="0 0 100 100">
-                <path d="M0 0 L30 0 Q20 0 20 10 L20 30 Q20 20 10 20 L0 20 Q10 20 10 10 Q10 0 0 0" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.2"/>
-                <path d="M5 5 L25 5 L25 25" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.15"/>
-            </svg>
-            <svg class="deco-scroll-corner top-right" viewBox="0 0 100 100">
-                <path d="M100 0 L70 0 Q80 0 80 10 L80 30 Q80 20 90 20 L100 20 Q90 20 90 10 Q90 0 100 0" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.2"/>
-            </svg>
-            <svg class="deco-scroll-corner bottom-left" viewBox="0 0 100 100">
-                <path d="M0 100 L30 100 Q20 100 20 90 L20 70 Q20 80 10 80 L0 80 Q10 80 10 90 Q10 100 0 100" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.2"/>
-            </svg>
-            <svg class="deco-scroll-corner bottom-right" viewBox="0 0 100 100">
-                <path d="M100 100 L70 100 Q80 100 80 90 L80 70 Q80 80 90 80 L100 80 Q90 80 90 90 Q90 100 100 100" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.2"/>
-            </svg>
-            
-            <!-- Fish Scale Pattern (Uroko) - Sides -->
-            <svg class="deco-uroko left-side" viewBox="0 0 80 400">
-                <defs>
-                    <pattern id="fish-scale" patternUnits="userSpaceOnUse" width="20" height="20">
-                        <path d="M0 10 Q10 0 20 10 Q10 20 0 10" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.15"/>
-                    </pattern>
-                    <linearGradient id="uroko-fade" x1="100%" y1="0%" x2="0%" y2="0%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0.2"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
-                    </linearGradient>
-                    <mask id="uroko-mask"><rect width="80" height="400" fill="url(#uroko-fade)"/></mask>
-                </defs>
-                <rect width="80" height="400" fill="url(#fish-scale)" mask="url(#uroko-mask)"/>
-            </svg>
-            <svg class="deco-uroko right-side" viewBox="0 0 80 400">
-                <defs>
-                    <linearGradient id="uroko-fade-r" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0.2"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
-                    </linearGradient>
-                    <mask id="uroko-mask-r"><rect width="80" height="400" fill="url(#uroko-fade-r)"/></mask>
-                </defs>
-                <rect width="80" height="400" fill="url(#fish-scale)" mask="url(#uroko-mask-r)"/>
-            </svg>
-            
-            <!-- Decorative Fish (Tai/Sea Bream) -->
-            <svg class="deco-fish" viewBox="0 0 120 60">
-                <path d="M10 30 Q30 15 60 20 Q80 22 100 30 Q80 38 60 40 Q30 45 10 30" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <path d="M100 30 L115 20 L110 30 L115 40 Z" fill="#c9a962" fill-opacity="0.08"/>
-                <circle cx="25" cy="28" r="3" fill="#c9a962" fill-opacity="0.12"/>
-                <path d="M40 25 Q50 22 60 25" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.1"/>
-                <path d="M40 32 Q50 35 60 32" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.1"/>
-            </svg>
-            
-            <!-- Sake Cup & Bottle -->
-            <svg class="deco-sake" viewBox="0 0 80 100">
-                <!-- Bottle -->
-                <path d="M25 20 L25 10 Q30 5 35 10 L35 20 Q40 25 40 35 L40 85 Q40 90 35 90 L25 90 Q20 90 20 85 L20 35 Q20 25 25 20" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.12"/>
-                <rect x="24" y="50" width="12" height="15" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.1"/>
-                <!-- Cup -->
-                <path d="M55 70 L50 90 L70 90 L65 70" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <ellipse cx="60" cy="70" rx="8" ry="3" fill="none" stroke="#c9a962" stroke-width="0.8" stroke-opacity="0.12"/>
-            </svg>
-            
-            <!-- Floating Menu Items Silhouettes -->
-            <div class="deco-menu-items">
-                <svg viewBox="0 0 50 30" class="menu-sushi m1">
-                    <ellipse cx="25" cy="20" rx="22" ry="8" fill="#c9a962" fill-opacity="0.06"/>
-                    <ellipse cx="25" cy="15" rx="18" ry="12" fill="none" stroke="#c9a962" stroke-width="0.8" stroke-opacity="0.1"/>
-                </svg>
-                <svg viewBox="0 0 40 40" class="menu-maki m2">
-                    <circle cx="20" cy="20" r="16" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.08"/>
-                    <circle cx="20" cy="20" r="10" fill="#c9a962" fill-opacity="0.05"/>
-                </svg>
-            </div>
-            
-            <!-- Price Tag Decorations -->
-            <div class="deco-price-tags">
-                <span class="price-tag pt1">¥</span>
-                <span class="price-tag pt2">¥</span>
-            </div>
+        <div class="menu-decoration">
+            <div class="deco-circle deco-1"></div>
+            <div class="deco-circle deco-2"></div>
         </div>
-        
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <span class="section-subtitle">
@@ -690,59 +396,8 @@
         </div>
     </section>
 
-    <!-- Testimonials Section - Ce Que Disent Nos Clients -->
+    <!-- Testimonials Section -->
     <section class="testimonials section">
-        <!-- 💬 TESTIMONIALS DECORATIONS - Review/Rating Theme -->
-        <div class="section-deco testimonials-deco">
-            <!-- Large Quote Marks -->
-            <div class="deco-quote-marks">
-                <svg class="quote-mark left" viewBox="0 0 100 80">
-                    <path d="M30 0 Q0 0 0 30 Q0 60 30 60 L30 80 Q0 80 0 50 Q0 10 30 10 L40 10 Q50 10 50 30 Q50 50 30 50 Q20 50 20 40 L20 30 Q20 20 30 20 L40 20 Q40 40 30 40" fill="#c9a962" fill-opacity="0.08"/>
-                </svg>
-                <svg class="quote-mark right" viewBox="0 0 100 80">
-                    <path d="M70 80 Q100 80 100 50 Q100 20 70 20 L70 0 Q100 0 100 30 Q100 70 70 70 L60 70 Q50 70 50 50 Q50 30 70 30 Q80 30 80 40 L80 50 Q80 60 70 60 L60 60 Q60 40 70 40" fill="#c9a962" fill-opacity="0.08"/>
-                </svg>
-            </div>
-            
-            <!-- Floating Stars -->
-            <div class="deco-floating-stars">
-                <svg class="star s1" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#c9a962" fill-opacity="0.15"/></svg>
-                <svg class="star s2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#c9a962" fill-opacity="0.12"/></svg>
-                <svg class="star s3" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#c9a962" fill-opacity="0.1"/></svg>
-                <svg class="star s4" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#c9a962" fill-opacity="0.08"/></svg>
-                <svg class="star s5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#c9a962" fill-opacity="0.15"/></svg>
-            </div>
-            
-            <!-- Speech Bubble Outlines -->
-            <svg class="deco-speech-bubble left" viewBox="0 0 150 100">
-                <path d="M20 10 Q10 10 10 20 L10 60 Q10 70 20 70 L30 70 L25 85 L45 70 L130 70 Q140 70 140 60 L140 20 Q140 10 130 10 Z" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-            </svg>
-            <svg class="deco-speech-bubble right" viewBox="0 0 150 100">
-                <path d="M130 10 Q140 10 140 20 L140 60 Q140 70 130 70 L120 70 L125 85 L105 70 L20 70 Q10 70 10 60 L10 20 Q10 10 20 10 Z" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-            </svg>
-            
-            <!-- Heart Icons (for love/appreciation) -->
-            <div class="deco-hearts">
-                <svg class="heart h1" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#c9a962" fill-opacity="0.1"/></svg>
-                <svg class="heart h2" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#c9a962" fill-opacity="0.08"/></svg>
-            </div>
-            
-            <!-- Rating Bar Decoration -->
-            <svg class="deco-rating-bar" viewBox="0 0 200 20">
-                <rect x="0" y="8" width="200" height="4" rx="2" fill="#c9a962" fill-opacity="0.05"/>
-                <rect x="0" y="8" width="180" height="4" rx="2" fill="#c9a962" fill-opacity="0.15"/>
-                <text x="190" y="14" fill="#c9a962" fill-opacity="0.2" font-size="10">5★</text>
-            </svg>
-            
-            <!-- Sparkle Effects -->
-            <div class="deco-sparkles">
-                <span class="sparkle sp1">✦</span>
-                <span class="sparkle sp2">✧</span>
-                <span class="sparkle sp3">✦</span>
-                <span class="sparkle sp4">✧</span>
-            </div>
-        </div>
-        
         <div class="testimonials-bg"></div>
         <div class="container">
             <div class="section-header light" data-aos="fade-up">
@@ -832,81 +487,8 @@
         </div>
     </section>
 
-    <!-- Specialties Gallery - Nos Spécialités -->
+    <!-- Specialties Gallery -->
     <section class="specialties section" id="specialites">
-        <!-- 🏆 SPECIALTIES DECORATIONS - Premium/Award Theme -->
-        <div class="section-deco specialties-deco">
-            <!-- Golden Frame Corners -->
-            <div class="deco-golden-frames">
-                <svg class="frame-corner top-left" viewBox="0 0 80 80">
-                    <path d="M0 40 L0 10 Q0 0 10 0 L40 0" fill="none" stroke="#c9a962" stroke-width="2" stroke-opacity="0.2"/>
-                    <path d="M0 30 L0 15 Q0 5 15 5 L30 5" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.15"/>
-                    <circle cx="5" cy="5" r="3" fill="#c9a962" fill-opacity="0.2"/>
-                </svg>
-                <svg class="frame-corner top-right" viewBox="0 0 80 80">
-                    <path d="M80 40 L80 10 Q80 0 70 0 L40 0" fill="none" stroke="#c9a962" stroke-width="2" stroke-opacity="0.2"/>
-                    <path d="M80 30 L80 15 Q80 5 65 5 L50 5" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.15"/>
-                    <circle cx="75" cy="5" r="3" fill="#c9a962" fill-opacity="0.2"/>
-                </svg>
-                <svg class="frame-corner bottom-left" viewBox="0 0 80 80">
-                    <path d="M0 40 L0 70 Q0 80 10 80 L40 80" fill="none" stroke="#c9a962" stroke-width="2" stroke-opacity="0.2"/>
-                    <circle cx="5" cy="75" r="3" fill="#c9a962" fill-opacity="0.2"/>
-                </svg>
-                <svg class="frame-corner bottom-right" viewBox="0 0 80 80">
-                    <path d="M80 40 L80 70 Q80 80 70 80 L40 80" fill="none" stroke="#c9a962" stroke-width="2" stroke-opacity="0.2"/>
-                    <circle cx="75" cy="75" r="3" fill="#c9a962" fill-opacity="0.2"/>
-                </svg>
-            </div>
-            
-            <!-- Chef Hat Crown -->
-            <svg class="deco-chef-crown" viewBox="0 0 100 60">
-                <path d="M20 50 Q10 50 10 40 Q10 25 25 25 Q25 15 35 15 Q40 5 50 5 Q60 5 65 15 Q75 15 75 25 Q90 25 90 40 Q90 50 80 50 Z" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.12"/>
-                <path d="M30 50 L30 55 M50 50 L50 55 M70 50 L70 55" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-            </svg>
-            
-            <!-- Award Ribbons -->
-            <svg class="deco-ribbon left" viewBox="0 0 60 100">
-                <path d="M10 0 L10 60 L30 45 L50 60 L50 0" fill="#c9a962" fill-opacity="0.08"/>
-                <circle cx="30" cy="75" r="20" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.15"/>
-                <text x="30" y="80" text-anchor="middle" fill="#c9a962" fill-opacity="0.2" font-size="14">★</text>
-            </svg>
-            
-            <!-- Premium Badge -->
-            <svg class="deco-premium-badge" viewBox="0 0 100 100">
-                <polygon points="50,5 61,35 95,35 68,55 79,90 50,70 21,90 32,55 5,35 39,35" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <polygon points="50,15 58,35 80,35 62,48 70,70 50,55 30,70 38,48 20,35 42,35" fill="#c9a962" fill-opacity="0.05"/>
-            </svg>
-            
-            <!-- Laurel Wreath -->
-            <svg class="deco-laurel left" viewBox="0 0 50 120">
-                <path d="M40 10 Q30 20 35 35 Q25 30 30 45 Q20 42 25 58 Q15 55 20 72 Q10 70 15 88 Q8 88 10 100 L15 105" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.12"/>
-                <!-- Leaves -->
-                <ellipse cx="35" cy="25" rx="8" ry="4" transform="rotate(-30 35 25)" fill="#c9a962" fill-opacity="0.06"/>
-                <ellipse cx="28" cy="42" rx="7" ry="3.5" transform="rotate(-20 28 42)" fill="#c9a962" fill-opacity="0.06"/>
-                <ellipse cx="22" cy="60" rx="7" ry="3.5" transform="rotate(-10 22 60)" fill="#c9a962" fill-opacity="0.06"/>
-                <ellipse cx="16" cy="80" rx="6" ry="3" fill="#c9a962" fill-opacity="0.06"/>
-            </svg>
-            <svg class="deco-laurel right" viewBox="0 0 50 120">
-                <path d="M10 10 Q20 20 15 35 Q25 30 20 45 Q30 42 25 58 Q35 55 30 72 Q40 70 35 88 Q42 88 40 100 L35 105" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.12"/>
-                <ellipse cx="15" cy="25" rx="8" ry="4" transform="rotate(30 15 25)" fill="#c9a962" fill-opacity="0.06"/>
-                <ellipse cx="22" cy="42" rx="7" ry="3.5" transform="rotate(20 22 42)" fill="#c9a962" fill-opacity="0.06"/>
-                <ellipse cx="28" cy="60" rx="7" ry="3.5" transform="rotate(10 28 60)" fill="#c9a962" fill-opacity="0.06"/>
-                <ellipse cx="34" cy="80" rx="6" ry="3" fill="#c9a962" fill-opacity="0.06"/>
-            </svg>
-            
-            <!-- Spotlight Effect -->
-            <div class="deco-spotlight"></div>
-            
-            <!-- Confetti/Celebration -->
-            <div class="deco-confetti">
-                <span class="confetti c1"></span>
-                <span class="confetti c2"></span>
-                <span class="confetti c3"></span>
-                <span class="confetti c4"></span>
-                <span class="confetti c5"></span>
-            </div>
-        </div>
-        
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <span class="section-subtitle">
@@ -954,77 +536,8 @@
         </div>
     </section>
 
-    <!-- Photo Gallery Section - Notre Univers -->
+    <!-- Photo Gallery Section -->
     <section class="gallery section" id="gallery">
-        <!-- 📸 GALLERY DECORATIONS - Photography/Art Theme -->
-        <div class="section-deco gallery-deco">
-            <!-- Film Strip Border -->
-            <svg class="deco-film-strip left" viewBox="0 0 40 500">
-                <rect x="0" y="0" width="40" height="500" fill="#c9a962" fill-opacity="0.03"/>
-                <rect x="5" y="10" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="25" y="10" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="5" y="40" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="25" y="40" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="5" y="70" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="25" y="70" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="5" y="100" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="25" y="100" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <!-- Continue pattern -->
-                <rect x="5" y="130" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="25" y="130" width="10" height="15" rx="2" fill="#0a0a0a"/>
-            </svg>
-            <svg class="deco-film-strip right" viewBox="0 0 40 500">
-                <rect x="0" y="0" width="40" height="500" fill="#c9a962" fill-opacity="0.03"/>
-                <rect x="5" y="10" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="25" y="10" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="5" y="40" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="25" y="40" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="5" y="70" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="25" y="70" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="5" y="100" width="10" height="15" rx="2" fill="#0a0a0a"/>
-                <rect x="25" y="100" width="10" height="15" rx="2" fill="#0a0a0a"/>
-            </svg>
-            
-            <!-- Camera/Aperture Icon -->
-            <svg class="deco-aperture" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <circle cx="50" cy="50" r="35" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.15"/>
-                <!-- Aperture blades -->
-                <path d="M50 15 L65 40 L50 35 Z" fill="#c9a962" fill-opacity="0.05"/>
-                <path d="M80 30 L70 55 L55 45 Z" fill="#c9a962" fill-opacity="0.05"/>
-                <path d="M85 65 L60 65 L60 50 Z" fill="#c9a962" fill-opacity="0.05"/>
-                <path d="M65 90 L45 70 L55 60 Z" fill="#c9a962" fill-opacity="0.05"/>
-                <path d="M20 75 L40 55 L45 65 Z" fill="#c9a962" fill-opacity="0.05"/>
-                <path d="M15 40 L45 45 L35 55 Z" fill="#c9a962" fill-opacity="0.05"/>
-                <circle cx="50" cy="50" r="15" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.12"/>
-            </svg>
-            
-            <!-- Photo Corners -->
-            <div class="deco-photo-corners">
-                <span class="corner c-tl"></span>
-                <span class="corner c-tr"></span>
-                <span class="corner c-bl"></span>
-                <span class="corner c-br"></span>
-            </div>
-            
-            <!-- Polaroid Frame Decoration -->
-            <svg class="deco-polaroid" viewBox="0 0 80 100">
-                <rect x="5" y="5" width="70" height="90" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <rect x="10" y="10" width="60" height="60" fill="#c9a962" fill-opacity="0.03"/>
-                <line x1="15" y1="82" x2="65" y2="82" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.1"/>
-                <line x1="20" y1="88" x2="50" y2="88" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.08"/>
-            </svg>
-            
-            <!-- Light Leak Effects -->
-            <div class="deco-light-leaks">
-                <span class="leak l1"></span>
-                <span class="leak l2"></span>
-            </div>
-            
-            <!-- Grid Overlay -->
-            <div class="deco-grid-overlay"></div>
-        </div>
-        
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <span class="section-subtitle">
@@ -1085,87 +598,8 @@
         </div>
     </div>
 
-    <!-- Features Section - Nos Points Forts -->
+    <!-- Features Section -->
     <section class="features section">
-        <!-- 💪 FEATURES DECORATIONS - Strength/Quality Theme -->
-        <div class="section-deco features-deco">
-            <!-- Hexagonal Grid Pattern -->
-            <svg class="deco-hex-grid" viewBox="0 0 200 400">
-                <defs>
-                    <pattern id="hex-pattern" patternUnits="userSpaceOnUse" width="30" height="52">
-                        <polygon points="15,0 30,13 30,39 15,52 0,39 0,13" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-opacity="0.08"/>
-                    </pattern>
-                    <linearGradient id="hex-fade" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0.15"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
-                    </linearGradient>
-                    <mask id="hex-mask"><rect width="200" height="400" fill="url(#hex-fade)"/></mask>
-                </defs>
-                <rect width="200" height="400" fill="url(#hex-pattern)" mask="url(#hex-mask)"/>
-            </svg>
-            
-            <!-- Quality Shield -->
-            <svg class="deco-shield" viewBox="0 0 80 100">
-                <path d="M40 5 L75 15 L75 50 Q75 80 40 95 Q5 80 5 50 L5 15 Z" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.12"/>
-                <path d="M40 15 L65 23 L65 48 Q65 72 40 85 Q15 72 15 48 L15 23 Z" fill="none" stroke="#c9a962" stroke-width="0.8" stroke-opacity="0.08"/>
-                <text x="40" y="55" text-anchor="middle" fill="#c9a962" fill-opacity="0.15" font-size="20">✓</text>
-            </svg>
-            
-            <!-- Connection Lines (Network) -->
-            <svg class="deco-network" viewBox="0 0 400 200">
-                <defs>
-                    <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0"/>
-                        <stop offset="50%" stop-color="#c9a962" stop-opacity="0.15"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-                <!-- Connection points -->
-                <circle cx="50" cy="100" r="5" fill="#c9a962" fill-opacity="0.1"/>
-                <circle cx="150" cy="50" r="4" fill="#c9a962" fill-opacity="0.08"/>
-                <circle cx="200" cy="150" r="6" fill="#c9a962" fill-opacity="0.1"/>
-                <circle cx="300" cy="80" r="4" fill="#c9a962" fill-opacity="0.08"/>
-                <circle cx="350" cy="120" r="5" fill="#c9a962" fill-opacity="0.1"/>
-                <!-- Lines -->
-                <line x1="50" y1="100" x2="150" y2="50" stroke="url(#line-grad)" stroke-width="1"/>
-                <line x1="150" y1="50" x2="200" y2="150" stroke="url(#line-grad)" stroke-width="1"/>
-                <line x1="200" y1="150" x2="300" y2="80" stroke="url(#line-grad)" stroke-width="1"/>
-                <line x1="300" y1="80" x2="350" y2="120" stroke="url(#line-grad)" stroke-width="1"/>
-                <line x1="50" y1="100" x2="200" y2="150" stroke="url(#line-grad)" stroke-width="0.5"/>
-            </svg>
-            
-            <!-- Checkmark Badges -->
-            <div class="deco-checkmarks">
-                <svg class="check ch1" viewBox="0 0 40 40">
-                    <circle cx="20" cy="20" r="18" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                    <path d="M12 20 L17 25 L28 14" fill="none" stroke="#c9a962" stroke-width="2" stroke-opacity="0.15" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <svg class="check ch2" viewBox="0 0 40 40">
-                    <circle cx="20" cy="20" r="18" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.08"/>
-                    <path d="M12 20 L17 25 L28 14" fill="none" stroke="#c9a962" stroke-width="2" stroke-opacity="0.12" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            
-            <!-- Radiating Lines (Excellence) -->
-            <svg class="deco-radiate" viewBox="0 0 200 200">
-                <g transform="translate(100,100)">
-                    <line x1="0" y1="-80" x2="0" y2="-60" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                    <line x1="40" y1="-69" x2="30" y2="-52" stroke="#c9a962" stroke-width="1" stroke-opacity="0.08" transform="rotate(30)"/>
-                    <line x1="69" y1="-40" x2="52" y2="-30" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1" transform="rotate(60)"/>
-                    <line x1="80" y1="0" x2="60" y2="0" stroke="#c9a962" stroke-width="1" stroke-opacity="0.08"/>
-                    <line x1="69" y1="40" x2="52" y2="30" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                    <line x1="40" y1="69" x2="30" y2="52" stroke="#c9a962" stroke-width="1" stroke-opacity="0.08"/>
-                </g>
-            </svg>
-            
-            <!-- Pulse Rings -->
-            <div class="deco-pulse-rings">
-                <span class="pulse-ring pr1"></span>
-                <span class="pulse-ring pr2"></span>
-                <span class="pulse-ring pr3"></span>
-            </div>
-        </div>
-        
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <span class="section-subtitle">
@@ -1218,90 +652,8 @@
 
 
 
-    <!-- Contact Section - Comment Nous Trouver -->
+    <!-- Contact Section -->
     <section class="contact section" id="contact">
-        <!-- 📍 CONTACT DECORATIONS - Location/Navigation Theme -->
-        <div class="section-deco contact-deco">
-            <!-- Map Pin Markers -->
-            <svg class="deco-map-pin pin1" viewBox="0 0 40 60">
-                <path d="M20 0 C8 0 0 10 0 20 C0 35 20 55 20 55 C20 55 40 35 40 20 C40 10 32 0 20 0" fill="none" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.15"/>
-                <circle cx="20" cy="20" r="8" fill="#c9a962" fill-opacity="0.1"/>
-                <circle cx="20" cy="20" r="4" fill="#c9a962" fill-opacity="0.15"/>
-            </svg>
-            <svg class="deco-map-pin pin2" viewBox="0 0 40 60">
-                <path d="M20 0 C8 0 0 10 0 20 C0 35 20 55 20 55 C20 55 40 35 40 20 C40 10 32 0 20 0" fill="#c9a962" fill-opacity="0.05"/>
-                <circle cx="20" cy="20" r="6" fill="#c9a962" fill-opacity="0.1"/>
-            </svg>
-            
-            <!-- Compass Rose -->
-            <svg class="deco-compass" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <circle cx="50" cy="50" r="35" fill="none" stroke="#c9a962" stroke-width="0.5" stroke-dasharray="5 5" stroke-opacity="0.1"/>
-                <!-- Cardinal directions -->
-                <polygon points="50,10 45,30 50,25 55,30" fill="#c9a962" fill-opacity="0.15"/>
-                <polygon points="50,90 45,70 50,75 55,70" fill="#c9a962" fill-opacity="0.08"/>
-                <polygon points="10,50 30,45 25,50 30,55" fill="#c9a962" fill-opacity="0.1"/>
-                <polygon points="90,50 70,45 75,50 70,55" fill="#c9a962" fill-opacity="0.1"/>
-                <!-- Center -->
-                <circle cx="50" cy="50" r="5" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.15"/>
-                <!-- N/S/E/W letters -->
-                <text x="50" y="18" text-anchor="middle" fill="#c9a962" fill-opacity="0.12" font-size="8">N</text>
-                <text x="50" y="95" text-anchor="middle" fill="#c9a962" fill-opacity="0.08" font-size="8">S</text>
-            </svg>
-            
-            <!-- Route/Path Lines -->
-            <svg class="deco-route-lines" viewBox="0 0 400 200">
-                <defs>
-                    <linearGradient id="route-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0"/>
-                        <stop offset="50%" stop-color="#c9a962" stop-opacity="0.12"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-                <path d="M0 100 Q100 50 200 100 Q300 150 400 100" fill="none" stroke="url(#route-grad)" stroke-width="2" stroke-dasharray="10 5"/>
-                <path d="M0 120 Q100 70 200 120 Q300 170 400 120" fill="none" stroke="url(#route-grad)" stroke-width="1" stroke-dasharray="5 5"/>
-            </svg>
-            
-            <!-- Clock/Hours Icon -->
-            <svg class="deco-clock" viewBox="0 0 60 60">
-                <circle cx="30" cy="30" r="28" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <circle cx="30" cy="30" r="3" fill="#c9a962" fill-opacity="0.15"/>
-                <!-- Hour marks -->
-                <line x1="30" y1="5" x2="30" y2="10" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <line x1="30" y1="50" x2="30" y2="55" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <line x1="5" y1="30" x2="10" y2="30" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <line x1="50" y1="30" x2="55" y2="30" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                <!-- Hands -->
-                <line x1="30" y1="30" x2="30" y2="15" stroke="#c9a962" stroke-width="1.5" stroke-opacity="0.12" stroke-linecap="round"/>
-                <line x1="30" y1="30" x2="42" y2="30" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1" stroke-linecap="round"/>
-            </svg>
-            
-            <!-- Transport Icons -->
-            <div class="deco-transport">
-                <svg class="transport metro" viewBox="0 0 40 40">
-                    <rect x="8" y="5" width="24" height="30" rx="5" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                    <rect x="10" y="8" width="20" height="12" fill="#c9a962" fill-opacity="0.05"/>
-                    <circle cx="14" cy="28" r="3" fill="#c9a962" fill-opacity="0.1"/>
-                    <circle cx="26" cy="28" r="3" fill="#c9a962" fill-opacity="0.1"/>
-                </svg>
-                <svg class="transport bike" viewBox="0 0 50 30">
-                    <circle cx="10" cy="20" r="8" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                    <circle cx="40" cy="20" r="8" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                    <path d="M10 20 L20 8 L30 20 L40 20" fill="none" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                    <line x1="20" y1="8" x2="35" y2="8" stroke="#c9a962" stroke-width="1" stroke-opacity="0.1"/>
-                </svg>
-            </div>
-            
-            <!-- Dotted Path -->
-            <div class="deco-dotted-path">
-                <span class="dot d1"></span>
-                <span class="dot d2"></span>
-                <span class="dot d3"></span>
-                <span class="dot d4"></span>
-                <span class="dot d5"></span>
-            </div>
-        </div>
-        
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <span class="section-subtitle">
@@ -1372,69 +724,6 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <!-- 🏯 FOOTER DECORATIONS - Japanese Closing Theme -->
-        <div class="section-deco footer-deco">
-            <!-- Wave Separator (Nami) at Top -->
-            <svg class="deco-wave-separator" viewBox="0 0 1440 80" preserveAspectRatio="none">
-                <defs>
-                    <linearGradient id="wave-footer-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#c9a962" stop-opacity="0"/>
-                        <stop offset="30%" stop-color="#c9a962" stop-opacity="0.15"/>
-                        <stop offset="70%" stop-color="#c9a962" stop-opacity="0.15"/>
-                        <stop offset="100%" stop-color="#c9a962" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-                <path d="M0 40 Q180 0 360 40 Q540 80 720 40 Q900 0 1080 40 Q1260 80 1440 40" fill="none" stroke="url(#wave-footer-grad)" stroke-width="2"/>
-                <path d="M0 50 Q180 10 360 50 Q540 90 720 50 Q900 10 1080 50 Q1260 90 1440 50" fill="none" stroke="url(#wave-footer-grad)" stroke-width="1" stroke-opacity="0.5"/>
-            </svg>
-            
-            <!-- Torii Gate Silhouette -->
-            <svg class="deco-torii" viewBox="0 0 100 80">
-                <rect x="10" y="0" width="8" height="80" fill="#c9a962" fill-opacity="0.06"/>
-                <rect x="82" y="0" width="8" height="80" fill="#c9a962" fill-opacity="0.06"/>
-                <rect x="0" y="5" width="100" height="8" rx="2" fill="#c9a962" fill-opacity="0.08"/>
-                <rect x="5" y="15" width="90" height="5" fill="#c9a962" fill-opacity="0.06"/>
-                <rect x="25" y="30" width="50" height="4" fill="#c9a962" fill-opacity="0.05"/>
-            </svg>
-            
-            <!-- Floating Kanji Characters -->
-            <div class="deco-kanji-float">
-                <span class="kanji k1">光</span>
-                <span class="kanji k2">輝</span>
-                <span class="kanji k3">和</span>
-            </div>
-            
-            <!-- Corner Stamps (Hanko style) -->
-            <svg class="deco-hanko hanko-left" viewBox="0 0 50 50">
-                <rect x="5" y="5" width="40" height="40" fill="none" stroke="#c9a962" stroke-width="2" stroke-opacity="0.1"/>
-                <text x="25" y="32" text-anchor="middle" fill="#c9a962" fill-opacity="0.08" font-size="20" font-family="serif">寿</text>
-            </svg>
-            <svg class="deco-hanko hanko-right" viewBox="0 0 50 50">
-                <rect x="5" y="5" width="40" height="40" fill="none" stroke="#c9a962" stroke-width="2" stroke-opacity="0.1"/>
-                <text x="25" y="32" text-anchor="middle" fill="#c9a962" fill-opacity="0.08" font-size="20" font-family="serif">福</text>
-            </svg>
-            
-            <!-- Decorative Clouds (Kumo) -->
-            <svg class="deco-kumo kumo1" viewBox="0 0 100 40">
-                <ellipse cx="25" cy="25" rx="20" ry="12" fill="#c9a962" fill-opacity="0.04"/>
-                <ellipse cx="45" cy="20" rx="18" ry="10" fill="#c9a962" fill-opacity="0.05"/>
-                <ellipse cx="70" cy="25" rx="22" ry="12" fill="#c9a962" fill-opacity="0.04"/>
-            </svg>
-            <svg class="deco-kumo kumo2" viewBox="0 0 80 30">
-                <ellipse cx="20" cy="20" rx="15" ry="8" fill="#c9a962" fill-opacity="0.03"/>
-                <ellipse cx="40" cy="15" rx="18" ry="10" fill="#c9a962" fill-opacity="0.04"/>
-                <ellipse cx="60" cy="18" rx="15" ry="9" fill="#c9a962" fill-opacity="0.03"/>
-            </svg>
-            
-            <!-- Ambient Sparkles -->
-            <div class="deco-footer-sparkles">
-                <span class="sparkle fs1">✦</span>
-                <span class="sparkle fs2">✧</span>
-                <span class="sparkle fs3">✦</span>
-                <span class="sparkle fs4">✧</span>
-            </div>
-        </div>
-        
         <div class="footer-top">
             <div class="container">
                 <div class="footer-grid">
