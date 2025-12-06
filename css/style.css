@@ -750,47 +750,6 @@ input, textarea, select {
 /* ===== ABOUT SECTION ===== */
 .about {
     background: var(--dark-light);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Bamboo leaves pattern - left side */
-.about::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 400px;
-    height: 100%;
-    background: 
-        /* Bamboo stalks */
-        linear-gradient(90deg, transparent 48%, rgba(201, 169, 98, 0.03) 48%, rgba(201, 169, 98, 0.03) 52%, transparent 52%),
-        linear-gradient(90deg, transparent 78%, rgba(201, 169, 98, 0.02) 78%, rgba(201, 169, 98, 0.02) 82%, transparent 82%);
-    background-size: 100px 100%, 100px 100%;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Japanese wave pattern - bottom */
-.about::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 200px;
-    background: 
-        radial-gradient(ellipse 80px 40px at 40px 100%, transparent 36px, rgba(201, 169, 98, 0.04) 36px, rgba(201, 169, 98, 0.04) 40px, transparent 40px),
-        radial-gradient(ellipse 80px 40px at 120px 100%, transparent 36px, rgba(201, 169, 98, 0.04) 36px, rgba(201, 169, 98, 0.04) 40px, transparent 40px);
-    background-size: 160px 50px;
-    background-position: 0 bottom;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.about .container {
-    position: relative;
-    z-index: 1;
 }
 
 .about-content {
@@ -995,63 +954,6 @@ input, textarea, select {
 .services {
     background: var(--dark);
     overflow-x: hidden;
-    position: relative;
-}
-
-/* Chopsticks pattern - diagonal lines */
-.services::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Diagonal chopstick lines */
-        repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 100px,
-            rgba(201, 169, 98, 0.015) 100px,
-            rgba(201, 169, 98, 0.015) 102px
-        ),
-        repeating-linear-gradient(
-            -45deg,
-            transparent,
-            transparent 100px,
-            rgba(201, 169, 98, 0.015) 100px,
-            rgba(201, 169, 98, 0.015) 102px
-        );
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Rice grain dots pattern */
-.services::after {
-    content: '';
-    position: absolute;
-    top: 50px;
-    left: 50px;
-    width: calc(100% - 100px);
-    height: calc(100% - 100px);
-    background-image: 
-        radial-gradient(ellipse 3px 6px at center, rgba(201, 169, 98, 0.05) 0%, transparent 70%),
-        radial-gradient(ellipse 3px 6px at center, rgba(201, 169, 98, 0.03) 0%, transparent 70%);
-    background-size: 80px 80px, 120px 120px;
-    background-position: 0 0, 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-    animation: floatRice 20s ease-in-out infinite;
-}
-
-@keyframes floatRice {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(1deg); }
-}
-
-.services .container {
-    position: relative;
-    z-index: 1;
 }
 
 .services-grid {
@@ -1275,60 +1177,6 @@ input, textarea, select {
     overflow: hidden;
 }
 
-/* Nori seaweed texture background */
-.menu::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Fine nori texture */
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            rgba(0, 50, 30, 0.02) 2px,
-            rgba(0, 50, 30, 0.02) 4px
-        ),
-        repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 2px,
-            rgba(0, 50, 30, 0.02) 2px,
-            rgba(0, 50, 30, 0.02) 4px
-        );
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Soy sauce drip circles */
-.menu::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Large soy drops */
-        radial-gradient(circle at 10% 20%, rgba(60, 40, 20, 0.08) 0%, transparent 15%),
-        radial-gradient(circle at 85% 15%, rgba(60, 40, 20, 0.06) 0%, transparent 12%),
-        radial-gradient(circle at 75% 75%, rgba(60, 40, 20, 0.07) 0%, transparent 18%),
-        radial-gradient(circle at 20% 80%, rgba(60, 40, 20, 0.05) 0%, transparent 10%),
-        /* Wasabi accent spots */
-        radial-gradient(circle at 50% 30%, rgba(80, 120, 60, 0.03) 0%, transparent 8%),
-        radial-gradient(circle at 30% 60%, rgba(80, 120, 60, 0.02) 0%, transparent 6%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.menu .container {
-    position: relative;
-    z-index: 1;
-}
-
 .menu-decoration {
     position: absolute;
     top: 0;
@@ -1336,16 +1184,12 @@ input, textarea, select {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 0;
 }
 
 .deco-circle {
     position: absolute;
     border: 1px solid rgba(201, 169, 98, 0.1);
     border-radius: 50%;
-    box-shadow: 
-        inset 0 0 30px rgba(201, 169, 98, 0.03),
-        0 0 30px rgba(201, 169, 98, 0.02);
 }
 
 .deco-1 {
@@ -1353,7 +1197,6 @@ input, textarea, select {
     height: 400px;
     top: -200px;
     right: -200px;
-    animation: rotateCircle 30s linear infinite;
 }
 
 .deco-2 {
@@ -1361,25 +1204,6 @@ input, textarea, select {
     height: 300px;
     bottom: -150px;
     left: -150px;
-    animation: rotateCircle 25s linear infinite reverse;
-}
-
-/* Additional sushi plate circles */
-.deco-circle::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%;
-    height: 70%;
-    border: 1px dashed rgba(201, 169, 98, 0.08);
-    border-radius: 50%;
-}
-
-@keyframes rotateCircle {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
 }
 
 .menu-tabs {
@@ -1534,70 +1358,6 @@ input, textarea, select {
     background: linear-gradient(135deg, var(--secondary) 0%, var(--dark) 100%);
 }
 
-/* Zen garden sand lines pattern */
-.testimonials-bg::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Curved zen garden lines */
-        repeating-radial-gradient(
-            ellipse 800px 200px at 0% 100%,
-            transparent 0px,
-            transparent 3px,
-            rgba(201, 169, 98, 0.03) 3px,
-            rgba(201, 169, 98, 0.03) 4px,
-            transparent 4px,
-            transparent 20px
-        ),
-        repeating-radial-gradient(
-            ellipse 600px 150px at 100% 0%,
-            transparent 0px,
-            transparent 3px,
-            rgba(201, 169, 98, 0.025) 3px,
-            rgba(201, 169, 98, 0.025) 4px,
-            transparent 4px,
-            transparent 25px
-        );
-    pointer-events: none;
-    z-index: 1;
-}
-
-/* Zen stones - circular elements */
-.testimonials-bg::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Large zen stone */
-        radial-gradient(ellipse 120px 80px at 15% 85%, rgba(201, 169, 98, 0.06) 0%, rgba(201, 169, 98, 0.02) 40%, transparent 70%),
-        /* Medium zen stone */
-        radial-gradient(ellipse 80px 60px at 85% 20%, rgba(201, 169, 98, 0.05) 0%, rgba(201, 169, 98, 0.015) 50%, transparent 70%),
-        /* Small zen stone */
-        radial-gradient(ellipse 50px 40px at 90% 75%, rgba(201, 169, 98, 0.04) 0%, transparent 60%),
-        /* Cherry blossom petals floating */
-        radial-gradient(ellipse 8px 12px at 25% 15%, rgba(255, 182, 193, 0.06) 0%, transparent 70%),
-        radial-gradient(ellipse 10px 8px at 70% 40%, rgba(255, 182, 193, 0.05) 0%, transparent 70%),
-        radial-gradient(ellipse 6px 10px at 45% 70%, rgba(255, 182, 193, 0.04) 0%, transparent 70%),
-        radial-gradient(ellipse 8px 6px at 80% 60%, rgba(255, 182, 193, 0.05) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 1;
-    animation: floatPetals 15s ease-in-out infinite;
-}
-
-@keyframes floatPetals {
-    0%, 100% { transform: translateY(0) translateX(0); }
-    25% { transform: translateY(-5px) translateX(3px); }
-    50% { transform: translateY(-8px) translateX(-2px); }
-    75% { transform: translateY(-3px) translateX(5px); }
-}
-
 .testimonials .container {
     position: relative;
     z-index: 2;
@@ -1729,50 +1489,6 @@ input, textarea, select {
 .specialties {
     background: var(--dark);
     overflow-x: hidden;
-    position: relative;
-}
-
-/* Fish scale (uroko) pattern - traditional Japanese */
-.specialties::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 0% 50%, transparent 9px, rgba(201, 169, 98, 0.015) 10px, transparent 11px),
-        radial-gradient(circle at 100% 50%, transparent 9px, rgba(201, 169, 98, 0.015) 10px, transparent 11px);
-    background-size: 40px 20px;
-    background-position: 0 0, 20px 10px;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.8;
-}
-
-/* Salmon/tuna gradient waves */
-.specialties::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Salmon pink wave - top right */
-        linear-gradient(135deg, transparent 0%, transparent 60%, rgba(250, 128, 114, 0.03) 70%, rgba(250, 128, 114, 0.05) 80%, transparent 90%),
-        /* Tuna red accent - bottom left */
-        linear-gradient(-45deg, transparent 0%, transparent 70%, rgba(178, 34, 34, 0.03) 80%, rgba(178, 34, 34, 0.04) 85%, transparent 95%),
-        /* Fresh fish silver shimmer */
-        radial-gradient(ellipse 300px 100px at 80% 20%, rgba(192, 192, 192, 0.02) 0%, transparent 50%),
-        radial-gradient(ellipse 200px 80px at 20% 80%, rgba(192, 192, 192, 0.015) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.specialties .container {
-    position: relative;
-    z-index: 1;
 }
 
 .specialties-grid {
@@ -2085,59 +1801,6 @@ input, textarea, select {
 .features {
     background: var(--dark-light);
     overflow-x: hidden;
-    position: relative;
-}
-
-/* Asanoha (hemp leaf) pattern - traditional Japanese geometric */
-.features::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Diamond grid base */
-        linear-gradient(45deg, transparent 48%, rgba(201, 169, 98, 0.02) 49%, rgba(201, 169, 98, 0.02) 51%, transparent 52%),
-        linear-gradient(-45deg, transparent 48%, rgba(201, 169, 98, 0.02) 49%, rgba(201, 169, 98, 0.02) 51%, transparent 52%),
-        /* Horizontal and vertical lines */
-        linear-gradient(0deg, transparent 49%, rgba(201, 169, 98, 0.015) 50%, transparent 51%),
-        linear-gradient(90deg, transparent 49%, rgba(201, 169, 98, 0.015) 50%, transparent 51%);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Steaming bowl effect - rising steam lines */
-.features::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: 
-        /* Steam wisps */
-        radial-gradient(ellipse 2px 80px at 20% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
-        radial-gradient(ellipse 2px 100px at 35% 100%, rgba(255, 255, 255, 0.015) 0%, transparent 100%),
-        radial-gradient(ellipse 2px 70px at 50% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
-        radial-gradient(ellipse 2px 90px at 65% 100%, rgba(255, 255, 255, 0.015) 0%, transparent 100%),
-        radial-gradient(ellipse 2px 85px at 80% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
-        /* Subtle glow from below */
-        linear-gradient(to top, rgba(201, 169, 98, 0.02) 0%, transparent 30%);
-    pointer-events: none;
-    z-index: 0;
-    animation: steamRise 8s ease-in-out infinite;
-}
-
-@keyframes steamRise {
-    0%, 100% { opacity: 0.6; transform: translateY(0); }
-    50% { opacity: 1; transform: translateY(-10px); }
-}
-
-.features .container {
-    position: relative;
-    z-index: 1;
 }
 
 .features-grid {
@@ -2321,68 +1984,6 @@ input, textarea, select {
 /* ===== CONTACT SECTION ===== */
 .contact {
     background: var(--dark);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Shoji screen grid pattern */
-.contact::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Horizontal lines */
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 99px,
-            rgba(201, 169, 98, 0.03) 99px,
-            rgba(201, 169, 98, 0.03) 100px
-        ),
-        /* Vertical lines */
-        repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 99px,
-            rgba(201, 169, 98, 0.03) 99px,
-            rgba(201, 169, 98, 0.03) 100px
-        );
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Location pin burst and decorative elements */
-.contact::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Glowing location point effect - center right */
-        radial-gradient(circle at 75% 40%, rgba(201, 169, 98, 0.08) 0%, rgba(201, 169, 98, 0.03) 20%, transparent 40%),
-        /* Compass rose hint - subtle */
-        conic-gradient(from 0deg at 90% 50%, 
-            transparent 0deg, rgba(201, 169, 98, 0.02) 5deg, transparent 10deg,
-            transparent 80deg, rgba(201, 169, 98, 0.02) 85deg, transparent 90deg,
-            transparent 170deg, rgba(201, 169, 98, 0.02) 175deg, transparent 180deg,
-            transparent 260deg, rgba(201, 169, 98, 0.02) 265deg, transparent 270deg,
-            transparent 350deg, rgba(201, 169, 98, 0.02) 355deg, transparent 360deg
-        ),
-        /* Road/path lines leading to location */
-        linear-gradient(135deg, transparent 0%, transparent 45%, rgba(201, 169, 98, 0.015) 48%, transparent 51%),
-        linear-gradient(45deg, transparent 0%, transparent 60%, rgba(201, 169, 98, 0.01) 63%, transparent 66%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.contact .container {
-    position: relative;
-    z-index: 1;
 }
 
 .contact-content {
@@ -2463,65 +2064,6 @@ input, textarea, select {
 /* ===== FOOTER ===== */
 .footer {
     background: var(--secondary);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Seigaiha (wave) pattern - traditional Japanese */
-.footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Wave arcs row 1 */
-        radial-gradient(circle at 50% 100%, transparent 20px, rgba(201, 169, 98, 0.03) 21px, rgba(201, 169, 98, 0.03) 22px, transparent 23px),
-        radial-gradient(circle at 0% 100%, transparent 20px, rgba(201, 169, 98, 0.03) 21px, rgba(201, 169, 98, 0.03) 22px, transparent 23px),
-        radial-gradient(circle at 100% 100%, transparent 20px, rgba(201, 169, 98, 0.03) 21px, rgba(201, 169, 98, 0.03) 22px, transparent 23px);
-    background-size: 50px 25px;
-    background-position: 0 0;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Golden koi fish scale shimmer effect */
-.footer::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        /* Large golden glow - bottom */
-        radial-gradient(ellipse 60% 30% at 50% 120%, rgba(201, 169, 98, 0.08) 0%, transparent 50%),
-        /* Koi fish swimming path - subtle S curve */
-        radial-gradient(ellipse 100px 20px at 20% 30%, rgba(201, 169, 98, 0.02) 0%, transparent 50%),
-        radial-gradient(ellipse 80px 15px at 40% 35%, rgba(201, 169, 98, 0.015) 0%, transparent 50%),
-        radial-gradient(ellipse 60px 12px at 60% 28%, rgba(201, 169, 98, 0.02) 0%, transparent 50%),
-        /* Cherry blossom falling */
-        radial-gradient(circle 3px at 15% 20%, rgba(255, 182, 193, 0.08) 0%, transparent 70%),
-        radial-gradient(circle 4px at 85% 15%, rgba(255, 182, 193, 0.06) 0%, transparent 70%),
-        radial-gradient(circle 2px at 45% 45%, rgba(255, 182, 193, 0.05) 0%, transparent 70%),
-        radial-gradient(circle 3px at 70% 60%, rgba(255, 182, 193, 0.07) 0%, transparent 70%),
-        radial-gradient(circle 2px at 25% 70%, rgba(255, 182, 193, 0.04) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-    animation: koiSwim 20s ease-in-out infinite;
-}
-
-@keyframes koiSwim {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(20px); }
-}
-
-.footer .container,
-.footer-top .container,
-.footer-bottom .container {
-    position: relative;
-    z-index: 1;
 }
 
 .footer-top {
@@ -3500,55 +3042,6 @@ input, textarea, select {
 /* ===== GALLERY SECTION ===== */
 .gallery {
     background: var(--dark-light);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Sumi-e ink brush stroke effect - top left */
-.gallery::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: -100px;
-    width: 500px;
-    height: 300px;
-    background: 
-        /* Main brush stroke */
-        radial-gradient(ellipse 400px 30px at 50% 50%, rgba(10, 10, 10, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse 350px 25px at 45% 60%, rgba(10, 10, 10, 0.1) 0%, transparent 50%),
-        radial-gradient(ellipse 300px 20px at 55% 40%, rgba(10, 10, 10, 0.08) 0%, transparent 50%),
-        /* Ink splatter dots */
-        radial-gradient(circle 8px at 30% 70%, rgba(10, 10, 10, 0.12) 0%, transparent 50%),
-        radial-gradient(circle 5px at 70% 30%, rgba(10, 10, 10, 0.1) 0%, transparent 50%),
-        radial-gradient(circle 3px at 80% 60%, rgba(10, 10, 10, 0.08) 0%, transparent 50%);
-    transform: rotate(-15deg);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Sumi-e ink brush stroke - bottom right */
-.gallery::after {
-    content: '';
-    position: absolute;
-    bottom: -30px;
-    right: -50px;
-    width: 400px;
-    height: 250px;
-    background: 
-        /* Brush stroke */
-        radial-gradient(ellipse 300px 25px at 50% 50%, rgba(201, 169, 98, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse 250px 20px at 55% 45%, rgba(201, 169, 98, 0.04) 0%, transparent 50%),
-        /* Gold ink splatter */
-        radial-gradient(circle 6px at 25% 65%, rgba(201, 169, 98, 0.08) 0%, transparent 50%),
-        radial-gradient(circle 4px at 75% 35%, rgba(201, 169, 98, 0.06) 0%, transparent 50%);
-    transform: rotate(10deg);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.gallery .container {
-    position: relative;
-    z-index: 1;
 }
 
 .gallery-grid {
@@ -3717,4 +3210,815 @@ input, textarea, select {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-light);
+}
+
+/* ===================================================
+   SECTION DECORATIONS - Japanese Theme Elements
+   =================================================== */
+
+/* Base styles for all decorations */
+.section-deco {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.section {
+    position: relative;
+}
+
+/* ===== ABOUT SECTION DECORATIONS ===== */
+.about-deco .deco-seigaiha {
+    position: absolute;
+    top: 10%;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    opacity: 0.8;
+    animation: float-slow 15s ease-in-out infinite;
+}
+
+.about-deco .deco-bamboo {
+    position: absolute;
+    bottom: 5%;
+    left: 2%;
+    width: 120px;
+    height: 400px;
+    animation: sway-gentle 8s ease-in-out infinite;
+}
+
+.about-deco .deco-sakura-branch {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: 250px;
+    height: 200px;
+    animation: float-slow 12s ease-in-out infinite reverse;
+}
+
+.about-deco .deco-floating-petals {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.about-deco .petal {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: radial-gradient(ellipse at center, rgba(255, 183, 197, 0.3), transparent 70%);
+    border-radius: 50% 0 50% 0;
+    animation: fall-petal 20s linear infinite;
+}
+
+.about-deco .petal.p1 { left: 10%; animation-delay: 0s; animation-duration: 18s; }
+.about-deco .petal.p2 { left: 25%; animation-delay: 3s; animation-duration: 22s; }
+.about-deco .petal.p3 { left: 45%; animation-delay: 6s; animation-duration: 20s; }
+.about-deco .petal.p4 { left: 70%; animation-delay: 2s; animation-duration: 25s; }
+.about-deco .petal.p5 { left: 85%; animation-delay: 8s; animation-duration: 19s; }
+
+.about-deco .deco-enso {
+    position: absolute;
+    bottom: 15%;
+    right: 5%;
+    width: 150px;
+    height: 150px;
+    animation: rotate-slow 30s linear infinite;
+}
+
+.about-deco .deco-koi {
+    position: absolute;
+    bottom: 10%;
+    left: 30%;
+    width: 100px;
+    height: 50px;
+    animation: swim 12s ease-in-out infinite;
+}
+
+.about-deco .deco-lantern {
+    position: absolute;
+    top: 20%;
+    right: 10%;
+    width: 40px;
+    height: 80px;
+    animation: lantern-glow 3s ease-in-out infinite;
+}
+
+.about-deco .deco-particles .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: particle-float 8s ease-in-out infinite;
+}
+
+.about-deco .particle.pt1 { top: 20%; left: 15%; animation-delay: 0s; }
+.about-deco .particle.pt2 { top: 40%; left: 25%; animation-delay: 1s; }
+.about-deco .particle.pt3 { top: 60%; right: 20%; animation-delay: 2s; }
+.about-deco .particle.pt4 { top: 30%; right: 30%; animation-delay: 3s; }
+.about-deco .particle.pt5 { bottom: 25%; left: 40%; animation-delay: 1.5s; }
+
+/* ===== SERVICES SECTION DECORATIONS ===== */
+.services-deco .deco-chopsticks {
+    position: absolute;
+    top: 15%;
+    right: 8%;
+    width: 120px;
+    height: 150px;
+    animation: float-slow 10s ease-in-out infinite;
+}
+
+.services-deco .deco-sushi-rings {
+    position: absolute;
+    bottom: 10%;
+    left: 5%;
+    width: 180px;
+    height: 180px;
+    animation: pulse-gentle 5s ease-in-out infinite;
+}
+
+.services-deco .deco-nori-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+}
+
+.services-deco .deco-rice-grains {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 100px;
+    height: 80px;
+}
+
+.services-deco .rice-grain {
+    position: absolute;
+    width: 8px;
+    height: 4px;
+    background: rgba(201, 169, 98, 0.15);
+    border-radius: 50%;
+    animation: rice-float 6s ease-in-out infinite;
+}
+
+.services-deco .rice-grain.r1 { top: 0; left: 10%; animation-delay: 0s; }
+.services-deco .rice-grain.r2 { top: 30%; left: 40%; animation-delay: 0.5s; }
+.services-deco .rice-grain.r3 { top: 60%; left: 20%; animation-delay: 1s; }
+.services-deco .rice-grain.r4 { top: 40%; left: 70%; animation-delay: 1.5s; }
+.services-deco .rice-grain.r5 { top: 80%; left: 50%; animation-delay: 2s; }
+
+.services-deco .deco-wasabi {
+    position: absolute;
+    bottom: 20%;
+    right: 5%;
+    width: 60px;
+    height: 50px;
+    animation: float-slow 8s ease-in-out infinite reverse;
+}
+
+.services-deco .deco-ginger {
+    position: absolute;
+    top: 25%;
+    left: 45%;
+    width: 80px;
+    height: 40px;
+}
+
+/* ===== MENU SECTION DECORATIONS ===== */
+.menu-deco .deco-scroll-corner {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+}
+
+.menu-deco .deco-scroll-corner.top-left { top: 5%; left: 3%; }
+.menu-deco .deco-scroll-corner.top-right { top: 5%; right: 3%; transform: scaleX(-1); }
+.menu-deco .deco-scroll-corner.bottom-left { bottom: 5%; left: 3%; transform: scaleY(-1); }
+.menu-deco .deco-scroll-corner.bottom-right { bottom: 5%; right: 3%; transform: scale(-1); }
+
+.menu-deco .deco-uroko-pattern {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 150px;
+    height: 200px;
+    transform: translateY(-50%);
+    opacity: 0.5;
+}
+
+.menu-deco .deco-fish {
+    position: absolute;
+    bottom: 15%;
+    right: 10%;
+    width: 100px;
+    height: 60px;
+    animation: swim 15s ease-in-out infinite;
+}
+
+.menu-deco .deco-sake {
+    position: absolute;
+    top: 20%;
+    right: 5%;
+    width: 60px;
+    height: 80px;
+    animation: float-slow 10s ease-in-out infinite;
+}
+
+.menu-deco .deco-menu-items {
+    position: absolute;
+    bottom: 10%;
+    left: 5%;
+    width: 150px;
+    height: 100px;
+}
+
+.menu-deco .deco-price-tags {
+    position: absolute;
+    top: 30%;
+    left: 8%;
+    width: 100px;
+    height: 80px;
+}
+
+/* ===== TESTIMONIALS SECTION DECORATIONS ===== */
+.testimonials-deco .deco-quote {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    animation: pulse-gentle 4s ease-in-out infinite;
+}
+
+.testimonials-deco .deco-quote.quote-left { top: 10%; left: 5%; }
+.testimonials-deco .deco-quote.quote-right { bottom: 10%; right: 5%; transform: rotate(180deg); }
+
+.testimonials-deco .deco-floating-stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.testimonials-deco .star {
+    position: absolute;
+    font-size: 16px;
+    color: var(--primary);
+    animation: star-twinkle 3s ease-in-out infinite;
+}
+
+.testimonials-deco .star.s1 { top: 15%; left: 20%; animation-delay: 0s; }
+.testimonials-deco .star.s2 { top: 25%; right: 15%; animation-delay: 0.5s; }
+.testimonials-deco .star.s3 { bottom: 30%; left: 10%; animation-delay: 1s; }
+.testimonials-deco .star.s4 { bottom: 20%; right: 25%; animation-delay: 1.5s; }
+.testimonials-deco .star.s5 { top: 50%; left: 5%; animation-delay: 2s; }
+
+.testimonials-deco .deco-speech-bubbles {
+    position: absolute;
+    top: 20%;
+    right: 8%;
+    width: 100px;
+    height: 100px;
+}
+
+.testimonials-deco .deco-hearts {
+    position: absolute;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 60px;
+}
+
+.testimonials-deco .deco-rating-bars {
+    position: absolute;
+    bottom: 10%;
+    right: 5%;
+    width: 80px;
+    height: 60px;
+}
+
+.testimonials-deco .deco-sparkles .sparkle {
+    position: absolute;
+    color: var(--primary);
+    opacity: 0.2;
+    animation: sparkle-flash 2s ease-in-out infinite;
+}
+
+.testimonials-deco .sparkle.sp1 { top: 10%; left: 40%; font-size: 14px; animation-delay: 0s; }
+.testimonials-deco .sparkle.sp2 { top: 30%; right: 30%; font-size: 18px; animation-delay: 0.3s; }
+.testimonials-deco .sparkle.sp3 { bottom: 25%; left: 30%; font-size: 12px; animation-delay: 0.6s; }
+.testimonials-deco .sparkle.sp4 { bottom: 40%; right: 40%; font-size: 16px; animation-delay: 0.9s; }
+
+/* ===== SPECIALTIES SECTION DECORATIONS ===== */
+.specialties-deco .deco-gold-frame {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+}
+
+.specialties-deco .deco-gold-frame.frame-tl { top: 3%; left: 3%; }
+.specialties-deco .deco-gold-frame.frame-tr { top: 3%; right: 3%; transform: scaleX(-1); }
+.specialties-deco .deco-gold-frame.frame-bl { bottom: 3%; left: 3%; transform: scaleY(-1); }
+.specialties-deco .deco-gold-frame.frame-br { bottom: 3%; right: 3%; transform: scale(-1); }
+
+.specialties-deco .deco-chef-crown {
+    position: absolute;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 60px;
+    animation: float-slow 8s ease-in-out infinite;
+}
+
+.specialties-deco .deco-award-ribbons {
+    position: absolute;
+    top: 20%;
+    right: 5%;
+    width: 80px;
+    height: 120px;
+    animation: ribbon-wave 5s ease-in-out infinite;
+}
+
+.specialties-deco .deco-premium-badge {
+    position: absolute;
+    bottom: 15%;
+    left: 5%;
+    width: 100px;
+    height: 100px;
+    animation: rotate-slow 20s linear infinite;
+}
+
+.specialties-deco .deco-laurels {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 80px;
+}
+
+.specialties-deco .deco-spotlight {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 400px;
+    background: radial-gradient(ellipse at top, rgba(201, 169, 98, 0.05) 0%, transparent 70%);
+    animation: spotlight-pulse 5s ease-in-out infinite;
+}
+
+.specialties-deco .deco-confetti .confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    animation: confetti-fall 10s linear infinite;
+}
+
+.specialties-deco .confetti.c1 { left: 10%; background: rgba(201, 169, 98, 0.2); animation-delay: 0s; }
+.specialties-deco .confetti.c2 { left: 30%; background: rgba(201, 169, 98, 0.15); animation-delay: 2s; }
+.specialties-deco .confetti.c3 { left: 50%; background: rgba(201, 169, 98, 0.2); animation-delay: 4s; }
+.specialties-deco .confetti.c4 { left: 70%; background: rgba(201, 169, 98, 0.15); animation-delay: 1s; }
+.specialties-deco .confetti.c5 { left: 90%; background: rgba(201, 169, 98, 0.2); animation-delay: 3s; }
+
+/* ===== GALLERY SECTION DECORATIONS ===== */
+.gallery-deco .deco-film-strip {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+}
+
+.gallery-deco .deco-film-strip.film-top { top: 2%; }
+.gallery-deco .deco-film-strip.film-bottom { bottom: 2%; }
+
+.gallery-deco .deco-aperture {
+    position: absolute;
+    top: 15%;
+    left: 5%;
+    width: 100px;
+    height: 100px;
+    animation: aperture-rotate 20s linear infinite;
+}
+
+.gallery-deco .deco-photo-corners {
+    position: absolute;
+    bottom: 20%;
+    right: 5%;
+    width: 80px;
+    height: 80px;
+}
+
+.gallery-deco .deco-polaroid {
+    position: absolute;
+    top: 20%;
+    right: 8%;
+    width: 80px;
+    height: 100px;
+    animation: float-slow 12s ease-in-out infinite;
+}
+
+.gallery-deco .deco-light-leak {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    animation: light-leak 8s ease-in-out infinite;
+}
+
+.gallery-deco .deco-light-leak.leak1 { top: 10%; left: 10%; background: radial-gradient(circle, rgba(201, 169, 98, 0.08), transparent 70%); }
+.gallery-deco .deco-light-leak.leak2 { bottom: 10%; right: 10%; background: radial-gradient(circle, rgba(201, 169, 98, 0.06), transparent 70%); animation-delay: 4s; }
+
+.gallery-deco .deco-grid-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    opacity: 0.3;
+}
+
+/* ===== FEATURES SECTION DECORATIONS ===== */
+.features-deco .deco-hex-grid {
+    position: absolute;
+    top: 5%;
+    left: 3%;
+    width: 150px;
+    height: 150px;
+    opacity: 0.6;
+}
+
+.features-deco .deco-shield {
+    position: absolute;
+    top: 10%;
+    right: 5%;
+    width: 80px;
+    height: 100px;
+    animation: shield-glow 4s ease-in-out infinite;
+}
+
+.features-deco .deco-network-lines {
+    position: absolute;
+    bottom: 10%;
+    left: 5%;
+    width: 200px;
+    height: 150px;
+}
+
+.features-deco .deco-checkmarks {
+    position: absolute;
+    bottom: 15%;
+    right: 8%;
+    width: 100px;
+    height: 80px;
+}
+
+.features-deco .deco-radiate {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 400px;
+    opacity: 0.5;
+    animation: rotate-slow 60s linear infinite;
+}
+
+.features-deco .deco-pulse-rings {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 200px;
+}
+
+/* ===== CONTACT SECTION DECORATIONS ===== */
+.contact-deco .deco-map-pin {
+    position: absolute;
+    width: 50px;
+    height: 75px;
+    animation: pin-bounce 3s ease-in-out infinite;
+}
+
+.contact-deco .deco-map-pin.pin1 { top: 15%; left: 8%; animation-delay: 0s; }
+.contact-deco .deco-map-pin.pin2 { bottom: 20%; right: 5%; animation-delay: 1.5s; }
+
+.contact-deco .deco-compass {
+    position: absolute;
+    top: 10%;
+    right: 10%;
+    width: 120px;
+    height: 120px;
+    animation: compass-rotate 30s linear infinite;
+}
+
+.contact-deco .deco-route-lines {
+    position: absolute;
+    bottom: 5%;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    animation: route-draw 5s ease-in-out infinite;
+}
+
+.contact-deco .deco-clock {
+    position: absolute;
+    bottom: 25%;
+    left: 5%;
+    width: 80px;
+    height: 80px;
+}
+
+.contact-deco .deco-transport {
+    position: absolute;
+    top: 30%;
+    left: 10%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contact-deco .transport {
+    width: 50px;
+    height: 40px;
+}
+
+.contact-deco .deco-dotted-path {
+    position: absolute;
+    top: 40%;
+    right: 5%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.contact-deco .deco-dotted-path .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    opacity: 0.15;
+    animation: dot-pulse 2s ease-in-out infinite;
+}
+
+.contact-deco .dot.d1 { animation-delay: 0s; }
+.contact-deco .dot.d2 { animation-delay: 0.2s; }
+.contact-deco .dot.d3 { animation-delay: 0.4s; }
+.contact-deco .dot.d4 { animation-delay: 0.6s; }
+.contact-deco .dot.d5 { animation-delay: 0.8s; }
+
+/* ===== FOOTER DECORATIONS ===== */
+.footer {
+    position: relative;
+}
+
+.footer-deco .deco-wave-separator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    transform: translateY(-50%);
+}
+
+.footer-deco .deco-torii {
+    position: absolute;
+    bottom: 30%;
+    right: 5%;
+    width: 100px;
+    height: 80px;
+    opacity: 0.5;
+}
+
+.footer-deco .deco-kanji-float {
+    position: absolute;
+    top: 20%;
+    left: 0;
+    width: 100%;
+    height: 60%;
+}
+
+.footer-deco .kanji {
+    position: absolute;
+    font-size: 48px;
+    color: var(--primary);
+    opacity: 0.04;
+    font-family: serif;
+    animation: kanji-float 15s ease-in-out infinite;
+}
+
+.footer-deco .kanji.k1 { top: 10%; left: 10%; animation-delay: 0s; }
+.footer-deco .kanji.k2 { top: 40%; left: 50%; animation-delay: 5s; }
+.footer-deco .kanji.k3 { top: 20%; right: 15%; animation-delay: 10s; }
+
+.footer-deco .deco-hanko {
+    position: absolute;
+    bottom: 15%;
+    width: 50px;
+    height: 50px;
+}
+
+.footer-deco .hanko-left { left: 5%; }
+.footer-deco .hanko-right { right: 5%; }
+
+.footer-deco .deco-kumo {
+    position: absolute;
+    animation: cloud-drift 20s linear infinite;
+}
+
+.footer-deco .kumo1 { top: 15%; left: -100px; width: 100px; height: 40px; }
+.footer-deco .kumo2 { top: 35%; right: -80px; width: 80px; height: 30px; animation-direction: reverse; }
+
+.footer-deco .deco-footer-sparkles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.footer-deco .deco-footer-sparkles .sparkle {
+    position: absolute;
+    color: var(--primary);
+    opacity: 0.15;
+    animation: sparkle-flash 3s ease-in-out infinite;
+}
+
+.footer-deco .sparkle.fs1 { top: 20%; left: 20%; font-size: 12px; }
+.footer-deco .sparkle.fs2 { top: 40%; right: 25%; font-size: 14px; animation-delay: 0.5s; }
+.footer-deco .sparkle.fs3 { bottom: 30%; left: 35%; font-size: 10px; animation-delay: 1s; }
+.footer-deco .sparkle.fs4 { bottom: 25%; right: 40%; font-size: 12px; animation-delay: 1.5s; }
+
+/* ===== DECORATION ANIMATIONS ===== */
+@keyframes float-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes sway-gentle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(2deg); }
+    75% { transform: rotate(-2deg); }
+}
+
+@keyframes fall-petal {
+    0% { transform: translateY(-50px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.4; }
+    90% { opacity: 0.4; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes rotate-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes swim {
+    0%, 100% { transform: translateX(0) scaleX(1); }
+    50% { transform: translateX(50px) scaleX(1); }
+    51% { transform: translateX(50px) scaleX(-1); }
+    100% { transform: translateX(0) scaleX(-1); }
+}
+
+@keyframes lantern-glow {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+}
+
+@keyframes particle-float {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.1; }
+    50% { transform: translateY(-20px) scale(1.5); opacity: 0.2; }
+}
+
+@keyframes pulse-gentle {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+@keyframes rice-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(45deg); }
+}
+
+@keyframes star-twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.2); }
+}
+
+@keyframes sparkle-flash {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.3); }
+}
+
+@keyframes ribbon-wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(3deg); }
+    75% { transform: rotate(-3deg); }
+}
+
+@keyframes spotlight-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+}
+
+@keyframes confetti-fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.3; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes aperture-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes light-leak {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+@keyframes shield-glow {
+    0%, 100% { filter: drop-shadow(0 0 5px rgba(201, 169, 98, 0.1)); }
+    50% { filter: drop-shadow(0 0 15px rgba(201, 169, 98, 0.2)); }
+}
+
+@keyframes pin-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes compass-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes route-draw {
+    0%, 100% { stroke-dashoffset: 0; }
+    50% { stroke-dashoffset: 20; }
+}
+
+@keyframes dot-pulse {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.3); }
+}
+
+@keyframes kanji-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes cloud-drift {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(100vw + 200px)); }
+}
+
+/* ===== RESPONSIVE: Hide decorations on smaller screens ===== */
+@media (max-width: 992px) {
+    .section-deco {
+        opacity: 0.5;
+    }
+    
+    .deco-bamboo,
+    .deco-koi,
+    .deco-transport,
+    .deco-polaroid,
+    .deco-network-lines {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .section-deco {
+        opacity: 0.3;
+    }
+    
+    .deco-seigaiha,
+    .deco-sakura-branch,
+    .deco-enso,
+    .deco-chopsticks,
+    .deco-sake,
+    .deco-compass,
+    .deco-aperture,
+    .deco-torii {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-deco {
+        display: none;
+    }
 }
