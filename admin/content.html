@@ -774,6 +774,18 @@
                             <input type="hidden" id="signature_image">
                         </div>
                         <div class="form-group">
+                            <label>Image de fond (background)</label>
+                            <div class="image-upload-container">
+                                <input type="file" id="signature_background_file" accept="image/*" style="display:none">
+                                <div class="image-preview" id="signature_background_preview" style="height: 120px;">
+                                    <i class="fas fa-image"></i>
+                                    <span>Background de la section</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="signature_background">
+                            <small style="color: var(--text-muted);">Recommandé: 1920x1080px pour un bel effet</small>
+                        </div>
+                        <div class="form-group">
                             <label>Nom du plat</label>
                             <input type="text" id="signature_name" placeholder="HIKARI Roll">
                         </div>
@@ -1239,7 +1251,7 @@
         // Signature Form
         document.getElementById('signatureForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['signature_image', 'signature_name', 'signature_description', 'signature_old_price', 'signature_new_price']);
+            await saveContent(e.target, ['signature_image', 'signature_background', 'signature_name', 'signature_description', 'signature_old_price', 'signature_new_price']);
         });
 
         // Specialties Form
@@ -1298,6 +1310,7 @@
             'about_image': 'about',
             'about_image2': 'about-secondary',
             'signature_image': 'signature',
+            'signature_background': 'signature-bg',
             'specialty1_image': 'specialty-large',
             'specialty2_image': 'specialty',
             'specialty3_image': 'specialty',
@@ -1440,6 +1453,7 @@
         // Setup all image uploads with optimized content upload
         setupContentImageUpload('about_image2_preview', 'about_image2_file', 'about_image2');
         setupContentImageUpload('signature_image_preview', 'signature_image_file', 'signature_image');
+        setupContentImageUpload('signature_background_preview', 'signature_background_file', 'signature_background');
         setupContentImageUpload('specialty1_image_preview', 'specialty1_image_file', 'specialty1_image');
         setupContentImageUpload('specialty2_image_preview', 'specialty2_image_file', 'specialty2_image');
         setupContentImageUpload('specialty3_image_preview', 'specialty3_image_file', 'specialty3_image');
@@ -1470,7 +1484,7 @@
                 if (result.success && result.data) {
                     // First pass: collect all image URLs for preloading
                     const imageUrls = result.data
-                        .filter(item => item.key.includes('image') || item.key.startsWith('gallery'))
+                        .filter(item => item.key.includes('image') || item.key.startsWith('gallery') || item.key.includes('background'))
                         .map(item => item.value)
                         .filter(url => url);
                     

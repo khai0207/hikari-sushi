@@ -391,6 +391,7 @@ const CONTENT_IMAGE_SIZES = {
     'about': { width: 600, height: 500, quality: 0.85 },           // About main image
     'about-secondary': { width: 200, height: 200, quality: 0.85 }, // About secondary small image
     'signature': { width: 500, height: 500, quality: 0.85 },       // Signature dish
+    'signature-bg': { width: 1920, height: 1080, quality: 0.80 },  // Signature section background
     'specialty-large': { width: 600, height: 600, quality: 0.85 }, // Specialty 1 (large card)
     'specialty': { width: 400, height: 400, quality: 0.85 },       // Specialty 2, 3
     'reservation': { width: 600, height: 600, quality: 0.85 },     // Reservation section

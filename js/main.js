@@ -23,14 +23,15 @@ function isPreResizedContentImage(url) {
            url.includes('/assets/signature/') ||
            url.includes('/assets/specialties/') ||
            url.includes('/assets/reservation/') ||
-           url.includes('/assets/gallery/');
+           url.includes('/assets/gallery/') ||
+           url.includes('/assets/content/');
 }
 
-// Get image URL - use direct URL for pre-resized content, resize for others
-function getOptimizedImageUrl(url, width, height, quality = 85) {
+// Get image URL - use direct URL for pre-resized content or large images, resize for menu thumbnails
+function getOptimizedImageUrl(url, width, height, quality = 85, forceOriginal = false) {
     if (!url || url.startsWith('data:')) return url;
-    // Pre-resized content images - use directly
-    if (isPreResizedContentImage(url)) {
+    // Pre-resized content images or forced original - use directly
+    if (forceOriginal || isPreResizedContentImage(url)) {
         return url;
     }
     // Other images - add resize params
@@ -765,10 +766,10 @@ async function loadDynamicContent() {
                     aboutParagraphs[1].textContent = content.about.description3;
                 }
                 
-                // About image (use direct URL if pre-resized, otherwise resize)
+                // About image - use original quality (no resize to avoid blur)
                 const aboutMainImg = document.querySelector('.about-img-main img');
                 if (aboutMainImg && content.about.image) {
-                    aboutMainImg.src = getOptimizedImageUrl(content.about.image, IMAGE_SIZES.about.w, IMAGE_SIZES.about.h, IMAGE_SIZES.about.q);
+                    aboutMainImg.src = content.about.image; // Direct URL, no resize
                     aboutMainImg.classList.remove('img-skeleton');
                 }
             }
@@ -976,10 +977,10 @@ async function loadDynamicContent() {
             
             // ===== ABOUT EXTENDED (2nd image + experience badge) =====
             if (content.about) {
-                // Second image (use direct URL if pre-resized)
+                // Second image - use original quality
                 const aboutSecondImg = document.querySelector('.about-img-secondary img');
                 if (aboutSecondImg && content.about.image2) {
-                    aboutSecondImg.src = getOptimizedImageUrl(content.about.image2, IMAGE_SIZES.aboutSmall.w, IMAGE_SIZES.aboutSmall.h, IMAGE_SIZES.aboutSmall.q);
+                    aboutSecondImg.src = content.about.image2; // Direct URL, no resize
                     aboutSecondImg.classList.remove('img-skeleton');
                 }
                 
@@ -998,8 +999,16 @@ async function loadDynamicContent() {
             if (content.signature) {
                 const signatureImg = document.querySelector('.special-image img');
                 if (signatureImg && content.signature.image) {
-                    signatureImg.src = getOptimizedImageUrl(content.signature.image, IMAGE_SIZES.signature.w, IMAGE_SIZES.signature.h, IMAGE_SIZES.signature.q);
+                    signatureImg.src = content.signature.image; // Direct URL, no resize for quality
                     signatureImg.classList.remove('img-skeleton');
+                }
+                
+                // Background image for special section
+                if (content.signature.background) {
+                    const specialBg = document.querySelector('.special-bg');
+                    if (specialBg) {
+                        specialBg.style.backgroundImage = `url('${content.signature.background}')`;
+                    }
                 }
                 
                 const signatureName = document.querySelector('.special-title');
@@ -1029,13 +1038,11 @@ async function loadDynamicContent() {
                 const key = `specialty${i}`;
                 if (content[key]) {
                     const card = specialtyCards[i - 1];
-                    const isLarge = card?.classList.contains('large');
-                    const size = isLarge ? IMAGE_SIZES.specialtyLarge : IMAGE_SIZES.specialty;
                     
                     if (card) {
                         const img = card.querySelector('.specialty-image img');
                         if (img && content[key].image) {
-                            img.src = getOptimizedImageUrl(content[key].image, size.w, size.h, size.q);
+                            img.src = content[key].image; // Direct URL, no resize for quality
                             img.classList.remove('img-skeleton');
                         }
                         

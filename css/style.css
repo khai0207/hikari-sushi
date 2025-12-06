@@ -1350,6 +1350,8 @@ input, textarea, select {
 .testimonials-slider {
     position: relative;
     overflow: hidden;
+    max-width: 100%;
+    width: 100%;
 }
 
 .testimonial-track {
@@ -1367,6 +1369,8 @@ input, textarea, select {
     text-align: center;
     contain: layout style;
     flex-shrink: 0;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .quote-icon {
@@ -1385,6 +1389,8 @@ input, textarea, select {
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .testimonial-author {
