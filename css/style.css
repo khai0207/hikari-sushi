@@ -771,7 +771,7 @@ input, textarea, select {
 
 .about-img-main img {
     width: 100%;
-    height: 500px;
+    height: 600px;
     object-fit: cover;
     transition: var(--transition-medium);
     transform: translateZ(0);
@@ -2181,7 +2181,8 @@ input, textarea, select {
     color: var(--primary);
 }
 
-.hours-list li {
+.hours-list li,
+.hours-list-contact li {
     display: flex;
     justify-content: space-between;
     padding: 10px 0;
@@ -2189,12 +2190,20 @@ input, textarea, select {
     font-size: 14px;
 }
 
-.hours-list li span:first-child {
+.hours-list li span:first-child,
+.hours-list-contact li span:first-child {
     color: var(--gray-light);
 }
 
-.hours-list li span:last-child {
+.hours-list li span:last-child,
+.hours-list-contact li span:last-child {
     color: var(--primary);
+}
+
+.hours-list-contact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .footer-bottom {
