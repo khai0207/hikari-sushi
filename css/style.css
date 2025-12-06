@@ -953,6 +953,7 @@ input, textarea, select {
 /* ===== SERVICES SECTION ===== */
 .services {
     background: var(--dark);
+    overflow-x: hidden;
 }
 
 .services-grid {
@@ -960,6 +961,7 @@ input, textarea, select {
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
     touch-action: pan-y;
+    overflow: hidden;
 }
 
 .service-card {
@@ -1474,6 +1476,7 @@ input, textarea, select {
 /* ===== SPECIALTIES SECTION ===== */
 .specialties {
     background: var(--dark);
+    overflow-x: hidden;
 }
 
 .specialties-grid {
@@ -1481,6 +1484,7 @@ input, textarea, select {
     grid-template-columns: 1fr 1fr;
     gap: 30px;
     touch-action: pan-y;
+    overflow: hidden;
 }
 
 .specialty-card {
@@ -2430,6 +2434,21 @@ input, textarea, select {
     
     body {
         padding-top: 70px;
+    }
+    
+    /* Disable hover effects on touch devices */
+    .service-card:hover,
+    .specialty-card:hover {
+        transform: none;
+    }
+    
+    .service-card:hover::before {
+        transform: scaleX(0);
+    }
+    
+    .service-card,
+    .specialty-card {
+        will-change: auto;
     }
     
     .top-bar {
