@@ -1151,6 +1151,7 @@ input, textarea, select {
     font-size: 30px;
     color: var(--gray);
     text-decoration: line-through;
+    opacity: 1;
 }
 
 .new-price {
