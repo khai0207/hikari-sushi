@@ -1788,12 +1788,15 @@ input, textarea, select {
 /* ===== FEATURES SECTION ===== */
 .features {
     background: var(--dark-light);
+    overflow-x: hidden;
 }
 
 .features-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 30px;
+    touch-action: pan-y;
+    overflow: hidden;
 }
 
 .feature-card {
@@ -1805,6 +1808,7 @@ input, textarea, select {
     transition: var(--transition-medium);
     contain: layout style;
     will-change: transform;
+    touch-action: pan-y;
 }
 
 .feature-card:hover {
@@ -2438,7 +2442,8 @@ input, textarea, select {
     
     /* Disable hover effects on touch devices */
     .service-card:hover,
-    .specialty-card:hover {
+    .specialty-card:hover,
+    .feature-card:hover {
         transform: none;
     }
     
@@ -2446,8 +2451,13 @@ input, textarea, select {
         transform: scaleX(0);
     }
     
+    .feature-card:hover .feature-icon {
+        transform: none;
+    }
+    
     .service-card,
-    .specialty-card {
+    .specialty-card,
+    .feature-card {
         will-change: auto;
     }
     
