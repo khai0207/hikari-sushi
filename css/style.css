@@ -750,6 +750,35 @@ input, textarea, select {
 /* ===== ABOUT SECTION ===== */
 .about {
     background: var(--dark-light);
+    position: relative;
+    overflow: hidden;
+}
+
+.about::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath fill='none' stroke='%23c9a962' stroke-width='0.3' opacity='0.1' d='M0 25 Q25 0 50 25 T100 25 M0 50 Q25 25 50 50 T100 50'/%3E%3C/svg%3E");
+    background-size: 120px 60px;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.about::after {
+    content: '光';
+    position: absolute;
+    top: 10%;
+    right: 5%;
+    font-size: 250px;
+    font-family: serif;
+    color: var(--primary);
+    opacity: 0.03;
+    pointer-events: none;
+    line-height: 1;
 }
 
 .about-content {
@@ -954,6 +983,39 @@ input, textarea, select {
 .services {
     background: var(--dark);
     overflow-x: hidden;
+    position: relative;
+}
+
+.services::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(201, 169, 98, 0.03) 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, rgba(201, 169, 98, 0.03) 0%, transparent 25%),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 50px,
+            rgba(201, 169, 98, 0.02) 50px,
+            rgba(201, 169, 98, 0.02) 51px
+        );
+    pointer-events: none;
+}
+
+.services::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0.3;
 }
 
 .services-grid {
@@ -1177,6 +1239,19 @@ input, textarea, select {
     overflow: hidden;
 }
 
+.menu::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath fill='none' stroke='%23c9a962' stroke-width='0.3' opacity='0.15' d='M30 0L60 30L30 60L0 30Z M30 15L45 30L30 45L15 30Z'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
 .menu-decoration {
     position: absolute;
     top: 0;
@@ -1190,6 +1265,7 @@ input, textarea, select {
     position: absolute;
     border: 1px solid rgba(201, 169, 98, 0.1);
     border-radius: 50%;
+    box-shadow: 0 0 40px rgba(201, 169, 98, 0.05);
 }
 
 .deco-1 {
@@ -1197,6 +1273,7 @@ input, textarea, select {
     height: 400px;
     top: -200px;
     right: -200px;
+    animation: rotate 60s linear infinite;
 }
 
 .deco-2 {
@@ -1204,6 +1281,19 @@ input, textarea, select {
     height: 300px;
     bottom: -150px;
     left: -150px;
+    animation: rotate 45s linear infinite reverse;
+}
+
+.deco-circle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+    border: 1px solid rgba(201, 169, 98, 0.08);
+    border-radius: 50%;
 }
 
 .menu-tabs {
@@ -1358,6 +1448,34 @@ input, textarea, select {
     background: linear-gradient(135deg, var(--secondary) 0%, var(--dark) 100%);
 }
 
+.testimonials-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23c9a962' opacity='0.05'%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3Ccircle cx='40' cy='32' r='2'/%3E%3Ccircle cx='48' cy='36' r='2'/%3E%3Ccircle cx='46' cy='44' r='2'/%3E%3Ccircle cx='34' cy='44' r='2'/%3E%3Ccircle cx='32' cy='36' r='2'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 80px 80px;
+    animation: float-bg 20s ease-in-out infinite;
+}
+
+.testimonials-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: radial-gradient(ellipse at top right, rgba(201, 169, 98, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+@keyframes float-bg {
+    0%, 100% { background-position: 0 0; }
+    50% { background-position: 20px 20px; }
+}
+
 .testimonials .container {
     position: relative;
     z-index: 2;
@@ -1485,10 +1603,116 @@ input, textarea, select {
     transform: scale(1.2);
 }
 
+/* ===== GALLERY SECTION ===== */
+.gallery {
+    background: var(--dark-light);
+    position: relative;
+    overflow: hidden;
+}
+
+.gallery::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'%3E%3Cpath fill='none' stroke='%23c9a962' stroke-width='0.5' opacity='0.06' d='M0 50 Q50 0 100 50 T200 50 M0 70 Q50 20 100 70 T200 70 M0 90 Q50 40 100 90 T200 90'/%3E%3C/svg%3E");
+    background-size: 200px 100px;
+    background-position: bottom;
+    pointer-events: none;
+}
+
+.gallery::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201, 169, 98, 0.2), transparent);
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 3/2;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-medium);
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 15, 15, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition-fast);
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-overlay i {
+    color: var(--primary);
+    font-size: 30px;
+}
+
 /* ===== SPECIALTIES SECTION ===== */
 .specialties {
     background: var(--dark);
     overflow-x: hidden;
+    position: relative;
+}
+
+.specialties::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath fill='none' stroke='%23c9a962' stroke-width='0.4' opacity='0.08' d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66Z M28 100L0 84L0 50L28 34L56 50L56 84L28 100Z'/%3E%3C/svg%3E");
+    background-size: 56px 100px;
+    pointer-events: none;
+}
+
+.specialties::after {
+    content: '鮨';
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    font-size: 200px;
+    font-family: serif;
+    color: var(--primary);
+    opacity: 0.02;
+    pointer-events: none;
+    line-height: 1;
 }
 
 .specialties-grid {
@@ -1801,6 +2025,36 @@ input, textarea, select {
 .features {
     background: var(--dark-light);
     overflow-x: hidden;
+    position: relative;
+}
+
+.features::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 0% 0%, rgba(201, 169, 98, 0.05) 0%, transparent 30%),
+        radial-gradient(circle at 100% 100%, rgba(201, 169, 98, 0.05) 0%, transparent 30%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect fill='none' stroke='%23c9a962' stroke-width='0.3' opacity='0.1' x='5' y='5' width='30' height='30' rx='2'/%3E%3Crect fill='none' stroke='%23c9a962' stroke-width='0.2' opacity='0.08' x='10' y='10' width='20' height='20' rx='1'/%3E%3C/svg%3E");
+    background-size: 100% 100%, 100% 100%, 40px 40px;
+    pointer-events: none;
+}
+
+.features::after {
+    content: '匠';
+    position: absolute;
+    top: 50%;
+    right: 10%;
+    transform: translateY(-50%);
+    font-size: 300px;
+    font-family: serif;
+    color: var(--primary);
+    opacity: 0.02;
+    pointer-events: none;
+    line-height: 1;
 }
 
 .features-grid {
@@ -1984,6 +2238,35 @@ input, textarea, select {
 /* ===== CONTACT SECTION ===== */
 .contact {
     background: var(--dark);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    width: 400px;
+    height: 400px;
+    transform: translateY(-50%);
+    border: 2px solid rgba(201, 169, 98, 0.05);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.contact::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(180deg, transparent 0%, rgba(201, 169, 98, 0.02) 50%, transparent 100%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle fill='none' stroke='%23c9a962' stroke-width='0.5' opacity='0.05' cx='50' cy='50' r='40'/%3E%3Ccircle fill='none' stroke='%23c9a962' stroke-width='0.3' opacity='0.03' cx='50' cy='50' r='30'/%3E%3C/svg%3E");
+    background-size: 100% 100%, 100px 100px;
+    pointer-events: none;
 }
 
 .contact-content {
@@ -2064,11 +2347,40 @@ input, textarea, select {
 /* ===== FOOTER ===== */
 .footer {
     background: var(--secondary);
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath fill='none' stroke='%23c9a962' stroke-width='0.3' opacity='0.05' d='M0 25 Q25 0 50 25 T100 25'/%3E%3C/svg%3E");
+    background-size: 150px 75px;
+    background-position: bottom;
+    pointer-events: none;
+}
+
+.footer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0.5;
 }
 
 .footer-top {
     padding: 80px 0;
     border-bottom: 1px solid rgba(201, 169, 98, 0.1);
+    position: relative;
+    z-index: 1;
 }
 
 .footer-grid {
@@ -2450,6 +2762,27 @@ input, textarea, select {
     
     body {
         padding-top: 70px;
+    }
+    
+    /* Hide decorative kanji on mobile */
+    .about::after,
+    .specialties::after,
+    .features::after,
+    .contact::before {
+        display: none;
+    }
+    
+    /* Reduce pattern opacity on mobile */
+    .about::before,
+    .services::before,
+    .menu::before,
+    .testimonials-bg::before,
+    .specialties::before,
+    .gallery::before,
+    .features::before,
+    .contact::after,
+    .footer::before {
+        opacity: 0.5;
     }
     
     /* Disable hover effects on touch devices */
