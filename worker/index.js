@@ -26,6 +26,18 @@ const CACHE_KEYS = {
     LAST_UPDATE: 'cache:last_update'
 };
 
+// Image size configurations for different content types
+// These are the DISPLAY sizes - images will be saved at these exact dimensions
+const IMAGE_SIZES = {
+    'about': { width: 600, height: 500, quality: 85 },           // About main image (aspect ~1.2:1)
+    'about-secondary': { width: 200, height: 200, quality: 85 }, // About secondary small image
+    'signature': { width: 500, height: 500, quality: 85 },       // Signature dish (circular display)
+    'specialty-large': { width: 600, height: 600, quality: 85 }, // Specialty 1 (large card)
+    'specialty': { width: 400, height: 400, quality: 85 },       // Specialty 2, 3 (normal cards)
+    'reservation': { width: 600, height: 600, quality: 85 },     // Reservation section
+    'gallery': { width: 600, height: 400, quality: 85 },         // Gallery images (3:2 ratio)
+};
+
 // Helper: JSON response with caching
 function jsonResponse(data, status = 200, cache = false) {
     return new Response(JSON.stringify(data), {
@@ -298,6 +310,16 @@ export default {
             // Image Upload to R2
             if (path === '/api/admin/upload' && method === 'POST') {
                 return await uploadImage(request, env);
+            }
+            
+            // Content Image Upload to R2 (pre-resized for specific content types)
+            if (path === '/api/admin/upload-content' && method === 'POST') {
+                return await uploadContentImage(request, env);
+            }
+            
+            // Get image size configuration
+            if (path === '/api/admin/image-sizes' && method === 'GET') {
+                return jsonResponse({ success: true, sizes: IMAGE_SIZES });
             }
 
             // Delete image from R2
@@ -808,9 +830,10 @@ async function updateContent(request, env) {
 async function getMenuItems(request, env, useCache = false) {
     const url = new URL(request.url);
     const category = url.searchParams.get('category');
+    const forceRefresh = url.searchParams.get('refresh') === '1';
     
     // Try to get from KV cache first (for public requests without category filter)
-    if (useCache && (!category || category === 'all')) {
+    if (useCache && !forceRefresh && (!category || category === 'all')) {
         try {
             const cached = await env.hikari_cache.get(CACHE_KEYS.MENU);
             if (cached) {
@@ -820,6 +843,12 @@ async function getMenuItems(request, env, useCache = false) {
         } catch (e) {
             console.log('Cache miss, falling back to D1');
         }
+    }
+    
+    // If force refresh, also update cache
+    if (forceRefresh) {
+        console.log('🔄 Force refresh requested');
+        await refreshCacheInternal(env);
     }
     
     let query = 'SELECT * FROM menu_items WHERE is_active = 1';
@@ -1092,6 +1121,7 @@ async function uploadImage(request, env) {
             const file = formData.get('image');
             const type = formData.get('type');
             const thumbFile = formData.get('thumbnail');
+            const customFolder = formData.get('folder'); // For migration tool
             
             if (!file) {
                 return errorResponse('No image provided');
@@ -1104,6 +1134,26 @@ async function uploadImage(request, env) {
             
             if (thumbFile) {
                 thumbnailData = new Uint8Array(await thumbFile.arrayBuffer());
+            }
+            
+            // If custom folder specified (for migration), upload directly to that folder
+            if (customFolder) {
+                const cleanFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '');
+                const customKey = `${customFolder}/${cleanFileName}`;
+                
+                await env.hikari_assets.put(customKey, imageData, {
+                    httpMetadata: { contentType: mimeType || 'image/webp' }
+                });
+                
+                const customUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${customKey}`;
+                console.log(`🖼️ Image uploaded to custom folder: ${customKey} (${Math.round(imageData.byteLength / 1024)}KB)`);
+                
+                return jsonResponse({
+                    success: true,
+                    url: customUrl,
+                    key: customKey,
+                    size: imageData.byteLength
+                });
             }
         } else {
             return errorResponse('Unsupported content type');
@@ -1173,6 +1223,84 @@ async function deleteImage(env, key) {
     } catch (error) {
         console.error('Delete error:', error);
         return errorResponse('Delete failed: ' + error.message, 500);
+    }
+}
+
+// ===== UPLOAD CONTENT IMAGE (PRE-RESIZED) =====
+// Images are resized on frontend to exact display dimensions before upload
+// This saves storage and ensures optimal delivery
+async function uploadContentImage(request, env) {
+    try {
+        const { image, contentType, filename } = await request.json();
+        
+        if (!image) {
+            return errorResponse('No image provided');
+        }
+        
+        // Validate content type
+        const validTypes = Object.keys(IMAGE_SIZES);
+        if (contentType && !validTypes.includes(contentType)) {
+            return errorResponse(`Invalid content type. Valid types: ${validTypes.join(', ')}`);
+        }
+        
+        // Parse base64 image
+        const matches = image.match(/^data:(.+);base64,(.+)$/);
+        if (!matches) {
+            return errorResponse('Invalid image format');
+        }
+        
+        const mimeType = matches[1];
+        const base64Data = matches[2];
+        const imageData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+        
+        // Determine folder based on content type
+        let folder = 'content';
+        if (contentType) {
+            if (contentType.startsWith('about')) {
+                folder = 'about';
+            } else if (contentType === 'signature') {
+                folder = 'signature';
+            } else if (contentType.startsWith('specialty')) {
+                folder = 'specialties';
+            } else if (contentType === 'reservation') {
+                folder = 'reservation';
+            } else if (contentType === 'gallery') {
+                folder = 'gallery';
+            }
+        }
+        
+        // Generate unique key
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(7);
+        const cleanFilename = (filename || 'image').replace(/[^a-zA-Z0-9.-]/g, '');
+        const key = `${folder}/${timestamp}-${random}-${cleanFilename}.webp`;
+        
+        // Upload to R2
+        await env.hikari_assets.put(key, imageData, {
+            httpMetadata: { contentType: 'image/webp' }
+        });
+        
+        const publicUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${key}`;
+        const sizeKB = Math.round(imageData.byteLength / 1024);
+        
+        console.log(`🖼️ Content image uploaded: ${key} (${sizeKB}KB) - Type: ${contentType || 'unknown'}`);
+        
+        // Get expected dimensions for logging
+        const expectedSize = contentType ? IMAGE_SIZES[contentType] : null;
+        
+        return jsonResponse({
+            success: true,
+            url: publicUrl,
+            key: key,
+            folder: folder,
+            contentType: contentType,
+            size: imageData.byteLength,
+            sizeKB: sizeKB,
+            expectedDimensions: expectedSize ? `${expectedSize.width}x${expectedSize.height}` : null
+        });
+    } catch (error) {
+        console.error('Content upload error:', error);
+        return errorResponse('Upload failed: ' + error.message, 500);
     }
 }
 
@@ -1277,8 +1405,9 @@ async function migrateThumbnails(env) {
             }
         }
         
-        // Invalidate cache
-        await env.hikari_cache.delete(CACHE_KEYS.MENU);
+        // Refresh cache completely (not just delete)
+        await refreshCacheInternal(env);
+        console.log('🔄 Cache refreshed after migration');
         
         console.log(`✅ Migration complete: ${results.success} success, ${results.failed} failed, ${results.skipped} skipped`);
         

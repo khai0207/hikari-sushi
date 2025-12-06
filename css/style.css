@@ -1365,8 +1365,8 @@ input, textarea, select {
     border: 1px solid rgba(201, 169, 98, 0.2);
     border-radius: 15px;
     text-align: center;
-    margin: 0 15px;
     contain: layout style;
+    flex-shrink: 0;
 }
 
 .quote-icon {
@@ -2856,12 +2856,30 @@ input, textarea, select {
     
     .special-price {
         flex-direction: column;
-        gap: 8px;
-        align-items: flex-start;
+        gap: 10px;
+        align-items: center;
+        padding: 18px 25px;
+        border-radius: 25px;
+    }
+    
+    .old-price {
+        font-size: 15px;
+    }
+    
+    .new-price {
+        font-size: 38px;
     }
     
     .special-title {
         font-size: 32px;
+    }
+    
+    .testimonial-card {
+        padding: 30px 20px;
+    }
+    
+    .testimonial-text {
+        font-size: 16px;
     }
     
     .reservation-form-wrapper {

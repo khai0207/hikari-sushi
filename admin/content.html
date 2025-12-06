@@ -1293,13 +1293,34 @@
             }
         }
 
-        // Generic image upload handler - NOW UPLOADS TO R2 AND DELETES OLD
-        function setupImageUpload(previewId, fileId, hiddenId) {
+        // Map field IDs to content types for optimized sizing
+        const FIELD_TO_CONTENT_TYPE = {
+            'about_image': 'about',
+            'about_image2': 'about-secondary',
+            'signature_image': 'signature',
+            'specialty1_image': 'specialty-large',
+            'specialty2_image': 'specialty',
+            'specialty3_image': 'specialty',
+            'reservation_image': 'reservation',
+            'gallery1': 'gallery',
+            'gallery2': 'gallery',
+            'gallery3': 'gallery',
+            'gallery4': 'gallery',
+            'gallery5': 'gallery',
+            'gallery6': 'gallery',
+        };
+
+        // Generic image upload handler with automatic resize based on content type
+        function setupContentImageUpload(previewId, fileId, hiddenId) {
             const preview = document.getElementById(previewId);
             const fileInput = document.getElementById(fileId);
             const hidden = document.getElementById(hiddenId);
             
             if (!preview || !fileInput || !hidden) return;
+            
+            // Get content type for this field
+            const contentType = FIELD_TO_CONTENT_TYPE[hiddenId];
+            const sizeInfo = contentType ? HikariAPI.getContentImageSize(contentType) : null;
             
             preview.addEventListener('click', () => fileInput.click());
             
@@ -1316,24 +1337,35 @@
                     // Store old URL for deletion
                     const oldUrl = hidden.value;
                     
-                    // Show loading state
-                    preview.innerHTML = '<div style="padding:20px;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Upload...</div>';
+                    // Show loading state with size info
+                    let loadingText = 'Resize & Upload...';
+                    if (sizeInfo) {
+                        loadingText = `Resize (${sizeInfo.width}x${sizeInfo.height}) & Upload...`;
+                    }
+                    preview.innerHTML = `<div style="padding:20px;text-align:center;"><i class="fas fa-spinner fa-spin"></i><br>${loadingText}</div>`;
                     
-                    // Read as base64 for upload
-                    const base64 = await readFileAsBase64(file);
+                    let uploadResult;
                     
-                    // Upload to R2
-                    const uploadResult = await HikariAPI.uploadImage(base64, hiddenId + '_' + Date.now());
+                    if (contentType) {
+                        // Use optimized content upload with auto-resize
+                        uploadResult = await HikariAPI.uploadContentImage(file, contentType, hiddenId);
+                    } else {
+                        // Fallback to regular upload
+                        const base64 = await readFileAsBase64(file);
+                        uploadResult = await HikariAPI.uploadImage(base64, hiddenId + '_' + Date.now());
+                    }
                     
                     if (uploadResult.success) {
                         // Delete old image from R2 if exists
                         await deleteOldImageFromR2(oldUrl);
                         
-                        // Store R2 URL instead of base64
+                        // Store R2 URL
                         hidden.value = uploadResult.url;
                         preview.innerHTML = `<img src="${uploadResult.url}" alt="Preview">`;
                         preview.classList.add('has-image');
-                        showToast('Image uploadée!', 'success');
+                        
+                        const sizeKB = uploadResult.sizeKB || Math.round((uploadResult.size || 0) / 1024);
+                        showToast(`Image uploadée! (${sizeKB}KB)`, 'success');
                     } else {
                         throw new Error(uploadResult.error || 'Upload failed');
                     }
@@ -1355,7 +1387,7 @@
             });
         }
 
-        // About Image Upload - NOW UPLOADS TO R2 AND DELETES OLD
+        // About Image Upload - USES OPTIMIZED CONTENT UPLOAD WITH AUTO-RESIZE
         const aboutImagePreview = document.getElementById('about_image_preview');
         const aboutImageFile = document.getElementById('about_image_file');
         const aboutImageHidden = document.getElementById('about_image');
@@ -1375,13 +1407,15 @@
                 // Store old URL for deletion
                 const oldUrl = aboutImageHidden.value;
                 
-                // Show loading state
-                aboutImagePreview.innerHTML = '<div style="padding:20px;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Upload...</div>';
+                // Get size info
+                const sizeInfo = HikariAPI.getContentImageSize('about');
+                const loadingText = sizeInfo 
+                    ? `Resize (${sizeInfo.width}x${sizeInfo.height}) & Upload...`
+                    : 'Upload...';
+                aboutImagePreview.innerHTML = `<div style="padding:20px;text-align:center;"><i class="fas fa-spinner fa-spin"></i><br>${loadingText}</div>`;
                 
-                const base64 = await readFileAsBase64(file);
-                
-                // Upload to R2
-                const uploadResult = await HikariAPI.uploadImage(base64, 'about_image_' + Date.now());
+                // Upload with auto-resize to about dimensions (600x500)
+                const uploadResult = await HikariAPI.uploadContentImage(file, 'about', 'about_image');
                 
                 if (uploadResult.success) {
                     // Delete old image from R2 if exists
@@ -1390,7 +1424,9 @@
                     aboutImageHidden.value = uploadResult.url;
                     aboutImagePreview.innerHTML = `<img src="${uploadResult.url}" alt="Preview">`;
                     aboutImagePreview.classList.add('has-image');
-                    showToast('Image uploadée!', 'success');
+                    
+                    const sizeKB = uploadResult.sizeKB || Math.round((uploadResult.size || 0) / 1024);
+                    showToast(`Image uploadée! (${sizeKB}KB)`, 'success');
                 } else {
                     throw new Error(uploadResult.error || 'Upload failed');
                 }
@@ -1401,19 +1437,19 @@
             }
         });
 
-        // Setup all image uploads
-        setupImageUpload('about_image2_preview', 'about_image2_file', 'about_image2');
-        setupImageUpload('signature_image_preview', 'signature_image_file', 'signature_image');
-        setupImageUpload('specialty1_image_preview', 'specialty1_image_file', 'specialty1_image');
-        setupImageUpload('specialty2_image_preview', 'specialty2_image_file', 'specialty2_image');
-        setupImageUpload('specialty3_image_preview', 'specialty3_image_file', 'specialty3_image');
-        setupImageUpload('reservation_image_preview', 'reservation_image_file', 'reservation_image');
-        setupImageUpload('gallery1_preview', 'gallery1_file', 'gallery1');
-        setupImageUpload('gallery2_preview', 'gallery2_file', 'gallery2');
-        setupImageUpload('gallery3_preview', 'gallery3_file', 'gallery3');
-        setupImageUpload('gallery4_preview', 'gallery4_file', 'gallery4');
-        setupImageUpload('gallery5_preview', 'gallery5_file', 'gallery5');
-        setupImageUpload('gallery6_preview', 'gallery6_file', 'gallery6');
+        // Setup all image uploads with optimized content upload
+        setupContentImageUpload('about_image2_preview', 'about_image2_file', 'about_image2');
+        setupContentImageUpload('signature_image_preview', 'signature_image_file', 'signature_image');
+        setupContentImageUpload('specialty1_image_preview', 'specialty1_image_file', 'specialty1_image');
+        setupContentImageUpload('specialty2_image_preview', 'specialty2_image_file', 'specialty2_image');
+        setupContentImageUpload('specialty3_image_preview', 'specialty3_image_file', 'specialty3_image');
+        setupContentImageUpload('reservation_image_preview', 'reservation_image_file', 'reservation_image');
+        setupContentImageUpload('gallery1_preview', 'gallery1_file', 'gallery1');
+        setupContentImageUpload('gallery2_preview', 'gallery2_file', 'gallery2');
+        setupContentImageUpload('gallery3_preview', 'gallery3_file', 'gallery3');
+        setupContentImageUpload('gallery4_preview', 'gallery4_file', 'gallery4');
+        setupContentImageUpload('gallery5_preview', 'gallery5_file', 'gallery5');
+        setupContentImageUpload('gallery6_preview', 'gallery6_file', 'gallery6');
 
         // Update loadContent to handle all image previews
         function updateImagePreview(key, value) {

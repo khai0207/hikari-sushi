@@ -15,6 +15,28 @@ function getResizedImageUrl(url, width, height, quality = 85) {
     return url;
 }
 
+// For content images that are pre-resized during upload
+// These folders contain optimized images: about/, signature/, specialties/, reservation/, gallery/
+function isPreResizedContentImage(url) {
+    if (!url || !url.includes('hikari-sushi-api')) return false;
+    return url.includes('/assets/about/') ||
+           url.includes('/assets/signature/') ||
+           url.includes('/assets/specialties/') ||
+           url.includes('/assets/reservation/') ||
+           url.includes('/assets/gallery/');
+}
+
+// Get image URL - use direct URL for pre-resized content, resize for others
+function getOptimizedImageUrl(url, width, height, quality = 85) {
+    if (!url || url.startsWith('data:')) return url;
+    // Pre-resized content images - use directly
+    if (isPreResizedContentImage(url)) {
+        return url;
+    }
+    // Other images - add resize params
+    return getResizedImageUrl(url, width, height, quality);
+}
+
 // Predefined sizes for different contexts (before 2x scaling in worker)
 const IMAGE_SIZES = {
     menuCard: { w: 300, h: 300, q: 85 },      // Menu item thumbnails
@@ -743,10 +765,10 @@ async function loadDynamicContent() {
                     aboutParagraphs[1].textContent = content.about.description3;
                 }
                 
-                // About image (resized for optimal display)
+                // About image (use direct URL if pre-resized, otherwise resize)
                 const aboutMainImg = document.querySelector('.about-img-main img');
                 if (aboutMainImg && content.about.image) {
-                    aboutMainImg.src = getResizedImageUrl(content.about.image, IMAGE_SIZES.about.w, IMAGE_SIZES.about.h, IMAGE_SIZES.about.q);
+                    aboutMainImg.src = getOptimizedImageUrl(content.about.image, IMAGE_SIZES.about.w, IMAGE_SIZES.about.h, IMAGE_SIZES.about.q);
                     aboutMainImg.classList.remove('img-skeleton');
                 }
             }
@@ -954,10 +976,10 @@ async function loadDynamicContent() {
             
             // ===== ABOUT EXTENDED (2nd image + experience badge) =====
             if (content.about) {
-                // Second image (resized)
+                // Second image (use direct URL if pre-resized)
                 const aboutSecondImg = document.querySelector('.about-img-secondary img');
                 if (aboutSecondImg && content.about.image2) {
-                    aboutSecondImg.src = getResizedImageUrl(content.about.image2, IMAGE_SIZES.aboutSmall.w, IMAGE_SIZES.aboutSmall.h, IMAGE_SIZES.aboutSmall.q);
+                    aboutSecondImg.src = getOptimizedImageUrl(content.about.image2, IMAGE_SIZES.aboutSmall.w, IMAGE_SIZES.aboutSmall.h, IMAGE_SIZES.aboutSmall.q);
                     aboutSecondImg.classList.remove('img-skeleton');
                 }
                 
@@ -976,7 +998,7 @@ async function loadDynamicContent() {
             if (content.signature) {
                 const signatureImg = document.querySelector('.special-image img');
                 if (signatureImg && content.signature.image) {
-                    signatureImg.src = getResizedImageUrl(content.signature.image, IMAGE_SIZES.signature.w, IMAGE_SIZES.signature.h, IMAGE_SIZES.signature.q);
+                    signatureImg.src = getOptimizedImageUrl(content.signature.image, IMAGE_SIZES.signature.w, IMAGE_SIZES.signature.h, IMAGE_SIZES.signature.q);
                     signatureImg.classList.remove('img-skeleton');
                 }
                 
@@ -1013,7 +1035,7 @@ async function loadDynamicContent() {
                     if (card) {
                         const img = card.querySelector('.specialty-image img');
                         if (img && content[key].image) {
-                            img.src = getResizedImageUrl(content[key].image, size.w, size.h, size.q);
+                            img.src = getOptimizedImageUrl(content[key].image, size.w, size.h, size.q);
                             img.classList.remove('img-skeleton');
                         }
                         
@@ -1041,15 +1063,15 @@ async function loadDynamicContent() {
                         imageUrl = content[key][key];
                     }
                     
-                    // Resize gallery images
-                    const resizedUrl = getResizedImageUrl(imageUrl, IMAGE_SIZES.gallery.w, IMAGE_SIZES.gallery.h, IMAGE_SIZES.gallery.q);
-                    if (imageUrl) galleryUrls.push(resizedUrl);
+                    // Use optimized URL (direct for pre-resized, resize params for legacy)
+                    const optimizedUrl = getOptimizedImageUrl(imageUrl, IMAGE_SIZES.gallery.w, IMAGE_SIZES.gallery.h, IMAGE_SIZES.gallery.q);
+                    if (imageUrl) galleryUrls.push(optimizedUrl);
                     
                     const item = galleryItems[i - 1];
                     if (item && imageUrl) {
                         const img = item.querySelector('img');
                         if (img) {
-                            img.src = resizedUrl;
+                            img.src = optimizedUrl;
                             img.classList.remove('img-skeleton');
                         }
                     }
@@ -1111,10 +1133,10 @@ async function loadDynamicContent() {
             
             // ===== RESERVATION SECTION =====
             if (content.reservation) {
-                // Image
+                // Image (use direct URL if pre-resized)
                 const reservationImg = document.querySelector('.reservation-image img');
                 if (reservationImg && content.reservation.image) {
-                    reservationImg.src = getResizedImageUrl(content.reservation.image, IMAGE_SIZES.reservation.w, IMAGE_SIZES.reservation.h, IMAGE_SIZES.reservation.q);
+                    reservationImg.src = getOptimizedImageUrl(content.reservation.image, IMAGE_SIZES.reservation.w, IMAGE_SIZES.reservation.h, IMAGE_SIZES.reservation.q);
                     reservationImg.classList.remove('img-skeleton');
                 }
                 

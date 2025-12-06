@@ -1754,7 +1754,18 @@
             const fragment = document.createDocumentFragment();
             
             filtered.forEach(item => {
-                const cachedImage = imageCache.get(item.image) || item.image || defaultImg;
+                // Use thumbnail if available, otherwise fallback to full image with resize
+                let imageUrl = item.thumbnail || item.image || defaultImg;
+                
+                // If no thumbnail but has original image, add width param for on-the-fly resize
+                if (!item.thumbnail && item.image && item.image.includes('/assets/')) {
+                    imageUrl = `${item.image}?width=800`;
+                }
+                
+                const cachedImage = imageCache.get(imageUrl) || imageUrl;
+                
+                // Prepare fallback: if thumbnail fails, try original image, then default
+                const fallbackImg = item.thumbnail && item.image ? item.image : defaultImg;
                 
                 const card = document.createElement('div');
                 card.className = 'menu-card';
@@ -1763,7 +1774,7 @@
                     <div class="menu-card-image">
                         <img src="${cachedImage}" 
                              alt="${item.name}"
-                             onerror="this.src='${defaultImg}'">
+                             onerror="if(this.src !== '${fallbackImg}') this.src='${fallbackImg}'; else this.src='${defaultImg}';">
                         ${item.badge ? `<span class="menu-card-badge">${item.badge}</span>` : ''}
                     </div>
                     <div class="menu-card-content">
@@ -1862,8 +1873,8 @@
             setupImageUpload();
         }
 
-        // Generate thumbnail from image (400x400, webp, quality 0.75)
-        async function generateThumbnail(imageDataUrl, maxSize = 400, quality = 0.75) {
+        // Generate thumbnail from image (500x500, webp, quality 0.88 for ~30KB)
+        async function generateThumbnail(imageDataUrl, maxSize = 800, quality = 0.85) {
             return new Promise((resolve) => {
                 const img = new Image();
                 img.onload = () => {
@@ -2089,34 +2100,29 @@
                     // Calculate original size
                     const originalSizeKB = Math.round(uploadedImageData.length * 0.75 / 1024); // base64 is ~33% larger
                     
-                    // Optimize image (resize to max 800px, convert to webp, strip metadata)
-                    const optimizedImage = await optimizeImage(uploadedImageData, 800, 0.85);
-                    const optimizedSizeKB = Math.round(optimizedImage.length * 0.75 / 1024);
+                    // Generate thumbnail (resize to max 800px, webp, quality 0.85) - this will be saved to menu-thumbnails
+                    const thumbnailImage = await optimizeImage(uploadedImageData, 800, 0.85);
+                    const thumbnailSizeKB = Math.round(thumbnailImage.length * 0.75 / 1024);
                     
-                    // Generate thumbnail (400px, webp, quality 0.75) for images > 50KB
-                    let thumbnailImage = null;
-                    if (optimizedSizeKB > 50) {
-                        thumbnailImage = await generateThumbnail(uploadedImageData, 400, 0.75);
-                        const thumbSizeKB = Math.round(thumbnailImage.length * 0.75 / 1024);
-                        console.log(`📷 Thumbnail generated: ${thumbSizeKB}KB`);
-                    }
-                    
-                    console.log(`🖼️ Image optimized: ${originalSizeKB}KB -> ${optimizedSizeKB}KB`);
+                    console.log(`🖼️ Original: ${originalSizeKB}KB, Thumbnail: ${thumbnailSizeKB}KB (800px, 0.85 quality)`);
                     
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Upload...';
                     
-                    const uploadResult = await HikariAPI.uploadImage(optimizedImage, document.getElementById('itemName').value, 'menu', thumbnailImage);
+                    // Upload: original image to menu/, thumbnail (800px) to menu-thumbnails/
+                    const uploadResult = await HikariAPI.uploadImage(uploadedImageData, document.getElementById('itemName').value, 'menu', thumbnailImage);
                     
                     if (uploadResult.success) {
                         imageUrl = uploadResult.url;
                         thumbnailUrl = uploadResult.thumbnail || null;
-                        console.log('Image uploaded to R2:', imageUrl, thumbnailUrl ? `(thumb: ${thumbnailUrl})` : '');
+                        console.log('✅ Image uploaded to R2:');
+                        console.log('  - Original (menu/):', imageUrl);
+                        console.log('  - Thumbnail (menu-thumbnails/):', thumbnailUrl);
                         
                         // Delete old image from R2 if it exists and is different
                         if (oldImageUrl && oldImageUrl !== imageUrl && oldImageUrl.includes('/assets/')) {
                             const oldKey = oldImageUrl.split('/assets/')[1];
                             if (oldKey) {
-                                console.log('Deleting old image:', oldKey);
+                                console.log('🗑️ Deleting old image:', oldKey);
                                 await HikariAPI.deleteImage(oldKey);
                             }
                         }
@@ -2148,7 +2154,8 @@
                 if (result.success) {
                     showToast(editingId ? 'Plat modifié!' : 'Plat ajouté!');
                     closeModal();
-                    loadMenuItems();
+                    // Wait a bit for R2 to propagate the uploaded images
+                    setTimeout(() => loadMenuItems(), 500);
                 } else {
                     showToast('Erreur: ' + result.error, 'error');
                 }

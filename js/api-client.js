@@ -385,6 +385,120 @@ const HikariStats = {
 };
 
 // ===== UPLOAD API =====
+
+// Image size configurations for different content types (must match worker)
+const CONTENT_IMAGE_SIZES = {
+    'about': { width: 600, height: 500, quality: 0.85 },           // About main image
+    'about-secondary': { width: 200, height: 200, quality: 0.85 }, // About secondary small image
+    'signature': { width: 500, height: 500, quality: 0.85 },       // Signature dish
+    'specialty-large': { width: 600, height: 600, quality: 0.85 }, // Specialty 1 (large card)
+    'specialty': { width: 400, height: 400, quality: 0.85 },       // Specialty 2, 3
+    'reservation': { width: 600, height: 600, quality: 0.85 },     // Reservation section
+    'gallery': { width: 600, height: 400, quality: 0.85 },         // Gallery images
+};
+
+// Resize image on canvas to target dimensions
+async function resizeImageToSize(file, targetWidth, targetHeight, quality = 0.85) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            img.onload = () => {
+                // Create canvas with target size
+                const canvas = document.createElement('canvas');
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                const ctx = canvas.getContext('2d');
+                
+                // Calculate scaling to cover (may crop)
+                const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
+                const scaledWidth = img.width * scale;
+                const scaledHeight = img.height * scale;
+                
+                // Center the image (crop if needed)
+                const offsetX = (targetWidth - scaledWidth) / 2;
+                const offsetY = (targetHeight - scaledHeight) / 2;
+                
+                // Enable high quality rendering
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                
+                // Draw white background (in case of transparency)
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fillRect(0, 0, targetWidth, targetHeight);
+                
+                // Draw image
+                ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+                
+                // Export as WebP
+                const resizedBase64 = canvas.toDataURL('image/webp', quality);
+                resolve(resizedBase64);
+            };
+            
+            img.onerror = () => reject(new Error('Failed to load image'));
+            img.src = e.target.result;
+        };
+        
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+    });
+}
+
+// Upload content image with automatic resize based on content type
+async function uploadContentImage(file, contentType, filename = null) {
+    try {
+        const token = getToken();
+        
+        // Get size config for this content type
+        const sizeConfig = CONTENT_IMAGE_SIZES[contentType];
+        if (!sizeConfig) {
+            throw new Error(`Unknown content type: ${contentType}. Valid types: ${Object.keys(CONTENT_IMAGE_SIZES).join(', ')}`);
+        }
+        
+        // Resize image to exact display dimensions
+        const resizedBase64 = await resizeImageToSize(
+            file, 
+            sizeConfig.width, 
+            sizeConfig.height, 
+            sizeConfig.quality
+        );
+        
+        // Upload resized image
+        const response = await fetch(`${API_BASE}/api/admin/upload-content`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            body: JSON.stringify({
+                image: resizedBase64,
+                contentType: contentType,
+                filename: filename || file.name
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Upload failed');
+        }
+        
+        return result;
+    } catch (error) {
+        console.error('Content upload error:', error);
+        return {
+            success: false,
+            error: error.message || 'Upload failed'
+        };
+    }
+}
+
+// Get image size config
+function getContentImageSize(contentType) {
+    return CONTENT_IMAGE_SIZES[contentType] || null;
+}
+
 async function uploadImage(imageData, filename = 'image', type = 'menu', thumbnailData = null) {
     try {
         const token = getToken();
@@ -475,6 +589,9 @@ window.HikariAPI = {
     
     // Upload functions
     uploadImage: uploadImage,
+    uploadContentImage: uploadContentImage,
+    getContentImageSize: getContentImageSize,
+    CONTENT_IMAGE_SIZES: CONTENT_IMAGE_SIZES,
     deleteImage: deleteImageFromR2
 };
 

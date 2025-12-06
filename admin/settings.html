@@ -708,15 +708,22 @@
                     <div class="settings-content">
                         <div style="padding: 1rem; background: var(--bg-dark); border-radius: 8px; margin-bottom: 1rem;">
                             <h3 style="margin-bottom: 0.5rem; color: var(--gold);">
-                                <i class="fas fa-images"></i> Générer Thumbnails
+                                <i class="fas fa-compress-arrows-alt"></i> Recréer Thumbnails (Resize)
                             </h3>
                             <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 1rem;">
-                                Créer des miniatures pour toutes les images de menu existantes. Cela améliore la vitesse de chargement.
+                                Télécharge chaque image, la redimensionne côté navigateur (400px), puis reupload comme thumbnail.
+                                <br><strong style="color: var(--warning);">⚠️ Cela peut prendre quelques minutes selon le nombre d'images.</strong>
                             </p>
+                            <div id="migrationProgress" style="display: none; margin-bottom: 1rem;">
+                                <div style="background: var(--bg-card); border-radius: 8px; height: 24px; overflow: hidden; margin-bottom: 0.5rem;">
+                                    <div id="progressBar" style="height: 100%; background: linear-gradient(90deg, var(--gold), #ffd54f); width: 0%; transition: width 0.3s;"></div>
+                                </div>
+                                <p id="progressText" style="color: var(--text-muted); font-size: 13px; text-align: center;">0 / 0</p>
+                            </div>
                             <div id="migrationResult" style="display: none; margin-bottom: 1rem; padding: 1rem; border-radius: 8px; font-size: 14px;"></div>
                             <button type="button" id="btnMigrateThumbnails" class="btn-primary">
                                 <i class="fas fa-magic"></i>
-                                Générer Thumbnails
+                                Recréer Thumbnails
                             </button>
                         </div>
                     </div>
@@ -996,64 +1003,246 @@
         });
         
         // ===== MIGRATION TOOLS =====
+        
+        // Helper function to resize image on canvas
+        async function resizeImageToThumbnail(imageUrl, maxSize = 800, quality = 0.85) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let { width, height } = img;
+                    
+                    // Calculate new dimensions
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height = Math.round((height * maxSize) / width);
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width = Math.round((width * maxSize) / height);
+                            height = maxSize;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Convert to webp
+                    canvas.toBlob(blob => {
+                        if (blob) {
+                            resolve(blob);
+                        } else {
+                            reject(new Error('Failed to create blob'));
+                        }
+                    }, 'image/webp', quality);
+                };
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = imageUrl;
+            });
+        }
+        
         document.getElementById('btnMigrateThumbnails').addEventListener('click', async () => {
             const btn = document.getElementById('btnMigrateThumbnails');
             const resultDiv = document.getElementById('migrationResult');
+            const progressDiv = document.getElementById('migrationProgress');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
             
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Migration en cours...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Chargement...';
             resultDiv.style.display = 'none';
             
             try {
                 const token = sessionStorage.getItem('hikari_auth_token');
-                const response = await fetch('https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/api/admin/migrate-thumbnails', {
+                const API_URL = 'https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev';
+                
+                // 1. Get all menu items
+                const menuResponse = await fetch(`${API_URL}/api/menu`);
+                const menuData = await menuResponse.json();
+                
+                if (!menuData.success || !menuData.items) {
+                    throw new Error('Failed to fetch menu items');
+                }
+                
+                // Filter items with images
+                const itemsWithImages = menuData.items.filter(item => 
+                    item.image && item.image.includes('/assets/')
+                );
+                
+                console.log('Menu items total:', menuData.items.length);
+                console.log('Items with images:', itemsWithImages.length);
+                console.log('Sample:', itemsWithImages.slice(0, 3));
+                
+                if (itemsWithImages.length === 0) {
+                    resultDiv.style.display = 'block';
+                    resultDiv.style.background = 'rgba(255, 193, 7, 0.1)';
+                    resultDiv.style.border = '1px solid var(--warning)';
+                    resultDiv.innerHTML = '<i class="fas fa-info-circle"></i> Aucune image à migrer';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-magic"></i> Recréer Thumbnails';
+                    return;
+                }
+                
+                // Show progress
+                progressDiv.style.display = 'block';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Migration en cours...';
+                
+                const results = {
+                    total: itemsWithImages.length,
+                    success: 0,
+                    failed: 0,
+                    skipped: 0,
+                    details: []
+                };
+                
+                // 2. Process each image
+                for (let i = 0; i < itemsWithImages.length; i++) {
+                    const item = itemsWithImages[i];
+                    progressBar.style.width = `${((i + 1) / itemsWithImages.length) * 100}%`;
+                    progressText.textContent = `${i + 1} / ${itemsWithImages.length} - ${item.name}`;
+                    
+                    try {
+                        // Download original image
+                        const imageResponse = await fetch(item.image);
+                        if (!imageResponse.ok) {
+                            results.skipped++;
+                            results.details.push({ name: item.name, status: 'skipped', reason: 'Image not found' });
+                            continue;
+                        }
+                        
+                        const originalBlob = await imageResponse.blob();
+                        const originalSizeKB = Math.round(originalBlob.size / 1024);
+                        
+                        // Skip if too small (< 30KB - probably already a thumbnail)
+                        if (originalSizeKB < 30) {
+                            results.skipped++;
+                            results.details.push({ name: item.name, status: 'skipped', reason: `Too small (${originalSizeKB}KB)` });
+                            continue;
+                        }
+                        
+                        // Resize image to thumbnail (500px, quality 0.88 for ~30KB output)
+                        const thumbnailBlob = await resizeImageToThumbnail(item.image, 800, 0.85);
+                        const thumbSizeKB = Math.round(thumbnailBlob.size / 1024);
+                        
+                        // Extract filename from original URL
+                        const urlMatch = item.image.match(/\/assets\/menu\/(.+)$/);
+                        if (!urlMatch) {
+                            results.failed++;
+                            results.details.push({ name: item.name, status: 'failed', reason: 'Invalid URL format' });
+                            continue;
+                        }
+                        
+                        const originalFilename = urlMatch[1];
+                        const thumbFilename = originalFilename.replace(/\.[^.]+$/, '.webp');
+                        
+                        // Upload thumbnail
+                        const formData = new FormData();
+                        formData.append('image', thumbnailBlob, thumbFilename);
+                        formData.append('folder', 'menu-thumbnails');
+                        formData.append('skipOptimize', 'true'); // Already optimized
+                        
+                        const uploadResponse = await fetch(`${API_URL}/api/admin/upload`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: formData
+                        });
+                        
+                        const uploadResult = await uploadResponse.json();
+                        
+                        if (uploadResult.success && uploadResult.url) {
+                            // Update menu item with thumbnail URL
+                            await fetch(`${API_URL}/api/admin/menu/${item.id}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    ...item,
+                                    thumbnail: uploadResult.url
+                                })
+                            });
+                            
+                            results.success++;
+                            results.details.push({ 
+                                name: item.name, 
+                                status: 'success', 
+                                original: `${originalSizeKB}KB`,
+                                thumb: `${thumbSizeKB}KB`
+                            });
+                        } else {
+                            results.failed++;
+                            results.details.push({ name: item.name, status: 'failed', reason: uploadResult.error || 'Upload failed' });
+                        }
+                        
+                    } catch (e) {
+                        results.failed++;
+                        results.details.push({ name: item.name, status: 'failed', reason: e.message });
+                    }
+                    
+                    // Small delay to not overwhelm the server
+                    await new Promise(r => setTimeout(r, 200));
+                }
+                
+                // 3. Refresh cache (use secret key endpoint)
+                await fetch(`${API_URL}/api/refresh-cache`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ secret: 'hikari-cache-2024' })
                 });
                 
-                const result = await response.json();
+                // Show results
+                progressDiv.style.display = 'none';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = 'rgba(76, 175, 80, 0.1)';
+                resultDiv.style.border = '1px solid var(--success)';
                 
-                if (result.success) {
-                    resultDiv.style.display = 'block';
-                    resultDiv.style.background = 'rgba(76, 175, 80, 0.1)';
-                    resultDiv.style.border = '1px solid var(--success)';
-                    resultDiv.innerHTML = `
-                        <div style="color: var(--success); font-weight: 600; margin-bottom: 0.5rem;">
-                            <i class="fas fa-check-circle"></i> Migration terminée!
-                        </div>
-                        <div style="color: var(--text-muted);">
-                            <p>✅ Succès: ${result.results.success}</p>
-                            <p>⏭️ Ignorés: ${result.results.skipped}</p>
-                            <p>❌ Échecs: ${result.results.failed}</p>
-                        </div>
-                    `;
-                    showToast(`${result.results.success} thumbnails créés`, 'success');
-                } else {
-                    resultDiv.style.display = 'block';
-                    resultDiv.style.background = 'rgba(244, 67, 54, 0.1)';
-                    resultDiv.style.border = '1px solid var(--danger)';
-                    resultDiv.innerHTML = `
-                        <div style="color: var(--danger);">
-                            <i class="fas fa-times-circle"></i> Erreur: ${result.error}
-                        </div>
-                    `;
-                    showToast('Migration échouée', 'error');
-                }
+                const savedKB = results.details
+                    .filter(d => d.status === 'success')
+                    .reduce((acc, d) => {
+                        const orig = parseInt(d.original) || 0;
+                        const thumb = parseInt(d.thumb) || 0;
+                        return acc + (orig - thumb);
+                    }, 0);
+                
+                resultDiv.innerHTML = `
+                    <div style="color: var(--success); font-weight: 600; margin-bottom: 0.5rem;">
+                        <i class="fas fa-check-circle"></i> Migration terminée!
+                    </div>
+                    <div style="color: var(--text-muted);">
+                        <p>✅ Succès: ${results.success}</p>
+                        <p>⏭️ Ignorés: ${results.skipped}</p>
+                        <p>❌ Échecs: ${results.failed}</p>
+                        <p>💾 Espace économisé: ~${savedKB}KB</p>
+                    </div>
+                `;
+                showToast(`${results.success} thumbnails recréés`, 'success');
+                
             } catch (error) {
+                progressDiv.style.display = 'none';
                 resultDiv.style.display = 'block';
                 resultDiv.style.background = 'rgba(244, 67, 54, 0.1)';
                 resultDiv.style.border = '1px solid var(--danger)';
                 resultDiv.innerHTML = `
                     <div style="color: var(--danger);">
-                        <i class="fas fa-times-circle"></i> Erreur de connexion: ${error.message}
+                        <i class="fas fa-times-circle"></i> Erreur: ${error.message}
                     </div>
                 `;
-                showToast('Erreur de connexion', 'error');
+                showToast('Migration échouée', 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-magic"></i> Générer Thumbnails';
+                btn.innerHTML = '<i class="fas fa-magic"></i> Recréer Thumbnails';
             }
         });
         
