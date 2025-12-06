@@ -27,16 +27,17 @@ const CACHE_KEYS = {
 };
 
 // Image size configurations for different content types
-// These are the DISPLAY sizes - images will be saved at these exact dimensions
+// Only gallery images are resized - others are uploaded at original quality
 const IMAGE_SIZES = {
-    'about': { width: 600, height: 500, quality: 85 },           // About main image (aspect ~1.2:1)
-    'about-secondary': { width: 200, height: 200, quality: 85 }, // About secondary small image
-    'signature': { width: 500, height: 500, quality: 85 },       // Signature dish (circular display)
-    'signature-bg': { width: 1920, height: 1080, quality: 80 },  // Signature section background
-    'specialty-large': { width: 600, height: 600, quality: 85 }, // Specialty 1 (large card)
-    'specialty': { width: 400, height: 400, quality: 85 },       // Specialty 2, 3 (normal cards)
-    'reservation': { width: 600, height: 600, quality: 85 },     // Reservation section
-    'gallery': { width: 600, height: 400, quality: 85 },         // Gallery images (3:2 ratio)
+    'about': { width: null, height: null, quality: 85 },           // About main image - original
+    'about-secondary': { width: null, height: null, quality: 85 }, // About secondary - original
+    'signature': { width: null, height: null, quality: 85 },       // Signature dish - original
+    'signature-bg': { width: null, height: null, quality: 80 },    // Signature section background - original
+    'specialty-large': { width: null, height: null, quality: 85 }, // Specialty 1 - original
+    'specialty': { width: null, height: null, quality: 85 },       // Specialty 2, 3 - original
+    'reservation': { width: null, height: null, quality: 85 },     // Reservation section - original
+    'reservation-bg': { width: null, height: null, quality: 80 },  // Reservation section background - original
+    'gallery': { width: 600, height: 400, quality: 85 },           // Gallery images - resize to 600x400
 };
 
 // Helper: JSON response with caching
@@ -1259,11 +1260,11 @@ async function uploadContentImage(request, env) {
         if (contentType) {
             if (contentType.startsWith('about')) {
                 folder = 'about';
-            } else if (contentType === 'signature') {
+            } else if (contentType === 'signature' || contentType === 'signature-bg') {
                 folder = 'signature';
             } else if (contentType.startsWith('specialty')) {
                 folder = 'specialties';
-            } else if (contentType === 'reservation') {
+            } else if (contentType === 'reservation' || contentType === 'reservation-bg') {
                 folder = 'reservation';
             } else if (contentType === 'gallery') {
                 folder = 'gallery';

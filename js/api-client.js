@@ -386,16 +386,13 @@ const HikariStats = {
 
 // ===== UPLOAD API =====
 
-// Image size configurations for different content types (must match worker)
+// Image size configurations for different content types
+// Only gallery images are resized - others use original quality for better display
 const CONTENT_IMAGE_SIZES = {
-    'about': { width: 600, height: 500, quality: 0.85 },           // About main image
-    'about-secondary': { width: 200, height: 200, quality: 0.85 }, // About secondary small image
-    'signature': { width: 500, height: 500, quality: 0.85 },       // Signature dish
-    'signature-bg': { width: 1920, height: 1080, quality: 0.80 },  // Signature section background
-    'specialty-large': { width: 600, height: 600, quality: 0.85 }, // Specialty 1 (large card)
-    'specialty': { width: 400, height: 400, quality: 0.85 },       // Specialty 2, 3
-    'reservation': { width: 600, height: 600, quality: 0.85 },     // Reservation section
-    'gallery': { width: 600, height: 400, quality: 0.85 },         // Gallery images
+    'gallery': { width: 600, height: 400, quality: 0.85 },         // Gallery images - small thumbnails
+    // The following are NOT resized - upload original quality:
+    // 'about', 'about-secondary', 'signature', 'signature-bg', 
+    // 'specialty-large', 'specialty', 'reservation', 'reservation-bg'
 };
 
 // Resize image on canvas to target dimensions
@@ -446,26 +443,36 @@ async function resizeImageToSize(file, targetWidth, targetHeight, quality = 0.85
     });
 }
 
-// Upload content image with automatic resize based on content type
+// Upload content image - only resize for gallery, others keep original quality
 async function uploadContentImage(file, contentType, filename = null) {
     try {
         const token = getToken();
         
-        // Get size config for this content type
+        // Get size config for this content type (only gallery has resize config)
         const sizeConfig = CONTENT_IMAGE_SIZES[contentType];
-        if (!sizeConfig) {
-            throw new Error(`Unknown content type: ${contentType}. Valid types: ${Object.keys(CONTENT_IMAGE_SIZES).join(', ')}`);
+        
+        let imageData;
+        
+        if (sizeConfig) {
+            // Resize image to exact display dimensions (only for gallery)
+            imageData = await resizeImageToSize(
+                file, 
+                sizeConfig.width, 
+                sizeConfig.height, 
+                sizeConfig.quality
+            );
+        } else {
+            // For about, signature, specialty, reservation - upload original quality
+            // Just convert to base64 without resize
+            imageData = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
         }
         
-        // Resize image to exact display dimensions
-        const resizedBase64 = await resizeImageToSize(
-            file, 
-            sizeConfig.width, 
-            sizeConfig.height, 
-            sizeConfig.quality
-        );
-        
-        // Upload resized image
+        // Upload image
         const response = await fetch(`${API_BASE}/api/admin/upload-content`, {
             method: 'POST',
             headers: {
@@ -473,7 +480,7 @@ async function uploadContentImage(file, contentType, filename = null) {
                 ...(token && { 'Authorization': `Bearer ${token}` })
             },
             body: JSON.stringify({
-                image: resizedBase64,
+                image: imageData,
                 contentType: contentType,
                 filename: filename || file.name
             })

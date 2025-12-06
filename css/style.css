@@ -1362,6 +1362,8 @@ input, textarea, select {
 
 .testimonial-card {
     min-width: 100%;
+    max-width: 100%;
+    width: 100%;
     padding: 50px;
     background: rgba(201, 169, 98, 0.05);
     border: 1px solid rgba(201, 169, 98, 0.2);
@@ -1386,11 +1388,16 @@ input, textarea, select {
     color: var(--gray-light);
     line-height: 1.8;
     margin-bottom: 30px;
-    max-width: 700px;
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    padding: 0 10px;
+    box-sizing: border-box;
 }
 
 .testimonial-author {

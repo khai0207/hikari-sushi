@@ -1140,11 +1140,19 @@ async function loadDynamicContent() {
             
             // ===== RESERVATION SECTION =====
             if (content.reservation) {
-                // Image (use direct URL if pre-resized)
+                // Image (use direct URL - original quality)
                 const reservationImg = document.querySelector('.reservation-image img');
                 if (reservationImg && content.reservation.image) {
-                    reservationImg.src = getOptimizedImageUrl(content.reservation.image, IMAGE_SIZES.reservation.w, IMAGE_SIZES.reservation.h, IMAGE_SIZES.reservation.q);
+                    reservationImg.src = content.reservation.image; // Direct URL, no resize
                     reservationImg.classList.remove('img-skeleton');
+                }
+                
+                // Background image for reservation section
+                if (content.reservation.background) {
+                    const reservationBg = document.querySelector('.reservation-bg');
+                    if (reservationBg) {
+                        reservationBg.style.backgroundImage = `url('${content.reservation.background}')`;
+                    }
                 }
                 
                 // Badge text
