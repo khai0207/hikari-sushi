@@ -750,6 +750,70 @@ input, textarea, select {
 /* ===== ABOUT SECTION ===== */
 .about {
     background: var(--dark-light);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Sakura Falling Animation - Notre Histoire */
+.about::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(ellipse 8px 12px at 10% 20%, rgba(255, 182, 193, 0.6) 0%, transparent 70%),
+        radial-gradient(ellipse 6px 10px at 25% 35%, rgba(255, 192, 203, 0.5) 0%, transparent 70%),
+        radial-gradient(ellipse 10px 14px at 40% 15%, rgba(255, 182, 193, 0.4) 0%, transparent 70%),
+        radial-gradient(ellipse 7px 11px at 55% 45%, rgba(255, 192, 203, 0.5) 0%, transparent 70%),
+        radial-gradient(ellipse 9px 13px at 70% 25%, rgba(255, 182, 193, 0.6) 0%, transparent 70%),
+        radial-gradient(ellipse 5px 9px at 85% 55%, rgba(255, 192, 203, 0.4) 0%, transparent 70%),
+        radial-gradient(ellipse 8px 12px at 15% 65%, rgba(255, 182, 193, 0.5) 0%, transparent 70%),
+        radial-gradient(ellipse 6px 10px at 30% 80%, rgba(255, 192, 203, 0.4) 0%, transparent 70%),
+        radial-gradient(ellipse 7px 11px at 60% 70%, rgba(255, 182, 193, 0.5) 0%, transparent 70%),
+        radial-gradient(ellipse 9px 13px at 80% 85%, rgba(255, 192, 203, 0.4) 0%, transparent 70%),
+        radial-gradient(ellipse 5px 8px at 95% 40%, rgba(255, 182, 193, 0.3) 0%, transparent 70%),
+        radial-gradient(ellipse 8px 12px at 5% 90%, rgba(255, 192, 203, 0.5) 0%, transparent 70%);
+    animation: sakuraFall 20s linear infinite;
+    pointer-events: none;
+    opacity: 0.7;
+    z-index: 0;
+}
+
+.about::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(ellipse 6px 10px at 20% 30%, rgba(255, 182, 193, 0.5) 0%, transparent 70%),
+        radial-gradient(ellipse 8px 12px at 45% 50%, rgba(255, 192, 203, 0.4) 0%, transparent 70%),
+        radial-gradient(ellipse 5px 9px at 65% 20%, rgba(255, 182, 193, 0.6) 0%, transparent 70%),
+        radial-gradient(ellipse 7px 11px at 90% 60%, rgba(255, 192, 203, 0.5) 0%, transparent 70%),
+        radial-gradient(ellipse 9px 13px at 35% 75%, rgba(255, 182, 193, 0.4) 0%, transparent 70%),
+        radial-gradient(ellipse 6px 10px at 75% 40%, rgba(255, 192, 203, 0.5) 0%, transparent 70%);
+    animation: sakuraFall 25s linear infinite;
+    animation-delay: -10s;
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+@keyframes sakuraFall {
+    0% {
+        transform: translateY(-100%) rotate(0deg);
+    }
+    100% {
+        transform: translateY(200%) rotate(360deg);
+    }
+}
+
+.about .container {
+    position: relative;
+    z-index: 1;
 }
 
 .about-content {
@@ -953,7 +1017,57 @@ input, textarea, select {
 /* ===== SERVICES SECTION ===== */
 .services {
     background: var(--dark);
-    overflow-x: hidden;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Japanese Wave Pattern (Seigaiha) - Ce Que Nous Offrons */
+.services::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300%;
+    height: 100%;
+    background-image: 
+        radial-gradient(ellipse 60px 30px at 30px 100%, transparent 25px, rgba(201, 169, 98, 0.08) 26px, rgba(201, 169, 98, 0.08) 28px, transparent 29px),
+        radial-gradient(ellipse 60px 30px at 90px 100%, transparent 25px, rgba(201, 169, 98, 0.06) 26px, rgba(201, 169, 98, 0.06) 28px, transparent 29px);
+    background-size: 120px 60px;
+    animation: seigaihaWave 8s linear infinite;
+    pointer-events: none;
+    opacity: 0.8;
+    z-index: 0;
+}
+
+.services::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 300%;
+    height: 100%;
+    background-image: 
+        radial-gradient(ellipse 80px 40px at 40px 0%, transparent 35px, rgba(201, 169, 98, 0.05) 36px, rgba(201, 169, 98, 0.05) 38px, transparent 39px),
+        radial-gradient(ellipse 80px 40px at 120px 0%, transparent 35px, rgba(201, 169, 98, 0.04) 36px, rgba(201, 169, 98, 0.04) 38px, transparent 39px);
+    background-size: 160px 80px;
+    animation: seigaihaWave 12s linear infinite reverse;
+    pointer-events: none;
+    opacity: 0.6;
+    z-index: 0;
+}
+
+@keyframes seigaihaWave {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-120px);
+    }
+}
+
+.services .container {
+    position: relative;
+    z-index: 1;
 }
 
 .services-grid {
@@ -1177,6 +1291,64 @@ input, textarea, select {
     overflow: hidden;
 }
 
+/* Steam Rising Animation - Menu Délicieux */
+.menu::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(ellipse 100px 200px at 10% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse 80px 180px at 25% 100%, rgba(201, 169, 98, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse 120px 220px at 40% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse 90px 190px at 55% 100%, rgba(201, 169, 98, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse 110px 210px at 70% 100%, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse 70px 170px at 85% 100%, rgba(201, 169, 98, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse 100px 200px at 95% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+    animation: steamRise 10s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.menu::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    left: 0;
+    width: 100%;
+    height: 120%;
+    background-image:
+        radial-gradient(ellipse 60px 150px at 5% 100%, rgba(201, 169, 98, 0.02) 0%, transparent 50%),
+        radial-gradient(ellipse 80px 160px at 20% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse 70px 140px at 35% 100%, rgba(201, 169, 98, 0.02) 0%, transparent 50%),
+        radial-gradient(ellipse 90px 170px at 50% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse 75px 155px at 65% 100%, rgba(201, 169, 98, 0.02) 0%, transparent 50%),
+        radial-gradient(ellipse 85px 165px at 80% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse 65px 145px at 92% 100%, rgba(201, 169, 98, 0.02) 0%, transparent 50%);
+    animation: steamRise 14s ease-in-out infinite;
+    animation-delay: -5s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes steamRise {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.4;
+    }
+    50% {
+        transform: translateY(-30%) scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.menu .container {
+    position: relative;
+    z-index: 1;
+}
+
 .menu-decoration {
     position: absolute;
     top: 0;
@@ -1358,6 +1530,49 @@ input, textarea, select {
     background: linear-gradient(135deg, var(--secondary) 0%, var(--dark) 100%);
 }
 
+/* Mt. Fuji Clouds Animation - Ce Que Disent Nos Clients */
+.testimonials-bg::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background: 
+        linear-gradient(135deg, transparent 40%, rgba(201, 169, 98, 0.05) 50%, transparent 60%),
+        linear-gradient(to top, rgba(28, 28, 28, 0.9) 0%, transparent 100%);
+    clip-path: polygon(0 100%, 50% 20%, 100% 100%);
+    opacity: 0.5;
+    z-index: 0;
+}
+
+.testimonials-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300%;
+    height: 100%;
+    background-image:
+        radial-gradient(ellipse 200px 80px at 100px 30%, rgba(255, 255, 255, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 300px 100px at 400px 50%, rgba(201, 169, 98, 0.03) 0%, transparent 60%),
+        radial-gradient(ellipse 250px 90px at 700px 20%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+        radial-gradient(ellipse 180px 70px at 1000px 40%, rgba(201, 169, 98, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 220px 85px at 1300px 25%, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+    animation: cloudsDrift 60s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes cloudsDrift {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-33.33%);
+    }
+}
+
 .testimonials .container {
     position: relative;
     z-index: 2;
@@ -1488,7 +1703,84 @@ input, textarea, select {
 /* ===== SPECIALTIES SECTION ===== */
 .specialties {
     background: var(--dark);
-    overflow-x: hidden;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Koi Fish Swimming Animation - Nos Spécialités */
+.specialties::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        /* Koi fish shapes using gradients */
+        radial-gradient(ellipse 30px 15px at 20% 30%, rgba(201, 169, 98, 0.15) 0%, transparent 70%),
+        radial-gradient(ellipse 25px 12px at 21% 30%, rgba(196, 30, 58, 0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 20px 8px at 18% 31%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+        
+        radial-gradient(ellipse 35px 18px at 70% 60%, rgba(201, 169, 98, 0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 28px 14px at 71% 60%, rgba(196, 30, 58, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 22px 10px at 68% 61%, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
+        
+        radial-gradient(ellipse 28px 14px at 45% 80%, rgba(201, 169, 98, 0.1) 0%, transparent 70%),
+        radial-gradient(ellipse 22px 11px at 46% 80%, rgba(255, 200, 150, 0.08) 0%, transparent 60%);
+    animation: koiSwim 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.specialties::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        /* Water ripples */
+        radial-gradient(circle at 15% 25%, rgba(201, 169, 98, 0.03) 0%, transparent 5%),
+        radial-gradient(circle at 15% 25%, rgba(201, 169, 98, 0.02) 5%, transparent 10%),
+        radial-gradient(circle at 60% 55%, rgba(201, 169, 98, 0.03) 0%, transparent 5%),
+        radial-gradient(circle at 60% 55%, rgba(201, 169, 98, 0.02) 5%, transparent 10%),
+        radial-gradient(circle at 80% 75%, rgba(201, 169, 98, 0.03) 0%, transparent 5%),
+        radial-gradient(circle at 80% 75%, rgba(201, 169, 98, 0.02) 5%, transparent 10%);
+    animation: waterRipple 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes koiSwim {
+    0%, 100% {
+        transform: translateX(0) translateY(0);
+    }
+    25% {
+        transform: translateX(5%) translateY(-2%);
+    }
+    50% {
+        transform: translateX(0) translateY(2%);
+    }
+    75% {
+        transform: translateX(-5%) translateY(-1%);
+    }
+}
+
+@keyframes waterRipple {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.2;
+    }
+}
+
+.specialties .container {
+    position: relative;
+    z-index: 1;
 }
 
 .specialties-grid {
@@ -1800,7 +2092,89 @@ input, textarea, select {
 /* ===== FEATURES SECTION ===== */
 .features {
     background: var(--dark-light);
-    overflow-x: hidden;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Bamboo Swaying Animation - Nos Points Forts */
+.features::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        /* Bamboo stalks left side */
+        linear-gradient(0deg, rgba(86, 125, 70, 0.08) 0%, rgba(86, 125, 70, 0.04) 50%, transparent 100%) no-repeat 3% 0%,
+        linear-gradient(0deg, rgba(86, 125, 70, 0.06) 0%, rgba(86, 125, 70, 0.03) 60%, transparent 100%) no-repeat 5% 0%,
+        linear-gradient(0deg, rgba(86, 125, 70, 0.07) 0%, rgba(86, 125, 70, 0.035) 55%, transparent 100%) no-repeat 7% 0%,
+        
+        /* Bamboo stalks right side */
+        linear-gradient(0deg, rgba(86, 125, 70, 0.08) 0%, rgba(86, 125, 70, 0.04) 50%, transparent 100%) no-repeat 93% 0%,
+        linear-gradient(0deg, rgba(86, 125, 70, 0.06) 0%, rgba(86, 125, 70, 0.03) 60%, transparent 100%) no-repeat 95% 0%,
+        linear-gradient(0deg, rgba(86, 125, 70, 0.07) 0%, rgba(86, 125, 70, 0.035) 55%, transparent 100%) no-repeat 97% 0%;
+    background-size: 8px 100%, 6px 100%, 10px 100%, 8px 100%, 6px 100%, 10px 100%;
+    animation: bambooSway 8s ease-in-out infinite;
+    transform-origin: bottom center;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.features::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        /* Bamboo leaves */
+        radial-gradient(ellipse 40px 8px at 4% 30%, rgba(86, 125, 70, 0.1) 0%, transparent 70%),
+        radial-gradient(ellipse 35px 7px at 6% 45%, rgba(86, 125, 70, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 30px 6px at 8% 25%, rgba(86, 125, 70, 0.09) 0%, transparent 70%),
+        
+        radial-gradient(ellipse 40px 8px at 94% 35%, rgba(86, 125, 70, 0.1) 0%, transparent 70%),
+        radial-gradient(ellipse 35px 7px at 96% 50%, rgba(86, 125, 70, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 30px 6px at 92% 20%, rgba(86, 125, 70, 0.09) 0%, transparent 70%),
+        
+        /* Subtle wind particles */
+        radial-gradient(circle at 20% 40%, rgba(201, 169, 98, 0.03) 0%, transparent 3%),
+        radial-gradient(circle at 50% 60%, rgba(201, 169, 98, 0.02) 0%, transparent 2%),
+        radial-gradient(circle at 80% 35%, rgba(201, 169, 98, 0.03) 0%, transparent 3%);
+    animation: leavesSway 6s ease-in-out infinite;
+    animation-delay: -2s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes bambooSway {
+    0%, 100% {
+        transform: skewX(0deg);
+    }
+    25% {
+        transform: skewX(1deg);
+    }
+    75% {
+        transform: skewX(-1deg);
+    }
+}
+
+@keyframes leavesSway {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    33% {
+        transform: translateX(10px) rotate(2deg);
+    }
+    66% {
+        transform: translateX(-5px) rotate(-1deg);
+    }
+}
+
+.features .container {
+    position: relative;
+    z-index: 1;
 }
 
 .features-grid {
@@ -1984,6 +2358,63 @@ input, textarea, select {
 /* ===== CONTACT SECTION ===== */
 .contact {
     background: var(--dark);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Japanese Mist/Fog Animation - Comment Nous Trouver */
+.contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-image:
+        /* Layered mist effect */
+        radial-gradient(ellipse 400px 150px at 10% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 180px at 30% 90%, rgba(201, 169, 98, 0.02) 0%, transparent 60%),
+        radial-gradient(ellipse 350px 130px at 50% 85%, rgba(255, 255, 255, 0.025) 0%, transparent 60%),
+        radial-gradient(ellipse 450px 160px at 70% 95%, rgba(201, 169, 98, 0.02) 0%, transparent 60%),
+        radial-gradient(ellipse 380px 140px at 90% 88%, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+    animation: mistDrift 30s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.contact::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-image:
+        /* Upper mist layer */
+        radial-gradient(ellipse 300px 100px at 20% 10%, rgba(255, 255, 255, 0.02) 0%, transparent 60%),
+        radial-gradient(ellipse 400px 120px at 45% 5%, rgba(201, 169, 98, 0.015) 0%, transparent 60%),
+        radial-gradient(ellipse 350px 110px at 75% 15%, rgba(255, 255, 255, 0.02) 0%, transparent 60%),
+        
+        /* Mountain silhouette hint */
+        linear-gradient(to top, transparent 70%, rgba(201, 169, 98, 0.02) 85%, transparent 100%);
+    animation: mistDrift 45s linear infinite reverse;
+    animation-delay: -15s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes mistDrift {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.contact .container {
+    position: relative;
+    z-index: 1;
 }
 
 .contact-content {
@@ -2064,6 +2495,96 @@ input, textarea, select {
 /* ===== FOOTER ===== */
 .footer {
     background: var(--secondary);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Japanese Night Sky with Stars Animation - Footer */
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        /* Twinkling stars */
+        radial-gradient(circle at 5% 10%, rgba(255, 255, 255, 0.4) 0%, transparent 1px),
+        radial-gradient(circle at 15% 25%, rgba(201, 169, 98, 0.5) 0%, transparent 1.5px),
+        radial-gradient(circle at 25% 8%, rgba(255, 255, 255, 0.3) 0%, transparent 1px),
+        radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 1px),
+        radial-gradient(circle at 45% 15%, rgba(201, 169, 98, 0.4) 0%, transparent 1.5px),
+        radial-gradient(circle at 55% 35%, rgba(255, 255, 255, 0.3) 0%, transparent 1px),
+        radial-gradient(circle at 65% 5%, rgba(255, 255, 255, 0.5) 0%, transparent 1px),
+        radial-gradient(circle at 75% 20%, rgba(201, 169, 98, 0.4) 0%, transparent 1.5px),
+        radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.3) 0%, transparent 1px),
+        radial-gradient(circle at 95% 28%, rgba(255, 255, 255, 0.4) 0%, transparent 1px),
+        radial-gradient(circle at 10% 45%, rgba(201, 169, 98, 0.3) 0%, transparent 1px),
+        radial-gradient(circle at 30% 55%, rgba(255, 255, 255, 0.4) 0%, transparent 1px),
+        radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.3) 0%, transparent 1.5px),
+        radial-gradient(circle at 70% 52%, rgba(201, 169, 98, 0.5) 0%, transparent 1px),
+        radial-gradient(circle at 90% 42%, rgba(255, 255, 255, 0.4) 0%, transparent 1px),
+        radial-gradient(circle at 20% 70%, rgba(255, 255, 255, 0.3) 0%, transparent 1px),
+        radial-gradient(circle at 40% 65%, rgba(201, 169, 98, 0.4) 0%, transparent 1.5px),
+        radial-gradient(circle at 60% 75%, rgba(255, 255, 255, 0.5) 0%, transparent 1px),
+        radial-gradient(circle at 80% 68%, rgba(255, 255, 255, 0.3) 0%, transparent 1px);
+    animation: starsTwinkle 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.footer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        /* Moon glow */
+        radial-gradient(circle at 90% 15%, rgba(201, 169, 98, 0.15) 0%, rgba(201, 169, 98, 0.05) 10%, transparent 25%),
+        radial-gradient(circle at 90% 15%, rgba(255, 255, 255, 0.1) 0%, transparent 8%),
+        
+        /* Shooting star trail */
+        linear-gradient(135deg, transparent 45%, rgba(201, 169, 98, 0.1) 48%, rgba(255, 255, 255, 0.2) 50%, transparent 52%) no-repeat;
+    background-size: 100% 100%, 100% 100%, 200px 2px;
+    background-position: 0 0, 0 0, -200px 30%;
+    animation: shootingStar 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes starsTwinkle {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    25% {
+        opacity: 0.9;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    75% {
+        opacity: 0.8;
+    }
+}
+
+@keyframes shootingStar {
+    0%, 90%, 100% {
+        background-position: 0 0, 0 0, -200px 30%;
+        opacity: 1;
+    }
+    95% {
+        background-position: 0 0, 0 0, 120% 30%;
+        opacity: 0.8;
+    }
+}
+
+.footer .container,
+.footer-top,
+.footer-bottom {
+    position: relative;
+    z-index: 1;
 }
 
 .footer-top {
@@ -3042,6 +3563,83 @@ input, textarea, select {
 /* ===== GALLERY SECTION ===== */
 .gallery {
     background: var(--dark-light);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Japanese Lantern Glow Animation - Notre Univers */
+.gallery::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        /* Lantern glows */
+        radial-gradient(ellipse 80px 120px at 5% 20%, rgba(201, 169, 98, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60px 100px at 5% 18%, rgba(255, 150, 100, 0.05) 0%, transparent 50%),
+        
+        radial-gradient(ellipse 100px 150px at 95% 25%, rgba(201, 169, 98, 0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 80px 120px at 95% 23%, rgba(255, 150, 100, 0.06) 0%, transparent 50%),
+        
+        radial-gradient(ellipse 70px 110px at 15% 75%, rgba(201, 169, 98, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 55px 90px at 15% 73%, rgba(255, 150, 100, 0.04) 0%, transparent 50%),
+        
+        radial-gradient(ellipse 90px 140px at 85% 80%, rgba(201, 169, 98, 0.09) 0%, transparent 60%),
+        radial-gradient(ellipse 70px 110px at 85% 78%, rgba(255, 150, 100, 0.05) 0%, transparent 50%),
+        
+        radial-gradient(ellipse 75px 115px at 50% 10%, rgba(201, 169, 98, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60px 95px at 50% 8%, rgba(255, 150, 100, 0.04) 0%, transparent 50%);
+    animation: lanternGlow 6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.gallery::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        /* Hanging strings for lanterns */
+        linear-gradient(180deg, rgba(201, 169, 98, 0.1) 0%, transparent 15%) no-repeat 5% 0%,
+        linear-gradient(180deg, rgba(201, 169, 98, 0.12) 0%, transparent 20%) no-repeat 95% 0%,
+        linear-gradient(180deg, rgba(201, 169, 98, 0.08) 0%, transparent 10%) no-repeat 50% 0%;
+    background-size: 2px 100px, 2px 120px, 2px 80px;
+    animation: lanternSway 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes lanternGlow {
+    0%, 100% {
+        opacity: 0.7;
+        filter: brightness(1);
+    }
+    50% {
+        opacity: 1;
+        filter: brightness(1.2);
+    }
+}
+
+@keyframes lanternSway {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(0.5deg);
+    }
+    75% {
+        transform: rotate(-0.5deg);
+    }
+}
+
+.gallery .container {
+    position: relative;
+    z-index: 1;
 }
 
 .gallery-grid {
