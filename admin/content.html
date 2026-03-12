@@ -757,10 +757,6 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Ancien prix (barré)</label>
-                                <input type="text" id="signature_old_price" placeholder="25.00€">
-                            </div>
-                            <div class="form-group">
                                 <label>Nouveau prix</label>
                                 <input type="text" id="signature_new_price" placeholder="18.50€">
                             </div>
@@ -1044,7 +1040,7 @@
         // Signature Form
         document.getElementById('signatureForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await saveContent(e.target, ['signature_image', 'signature_background', 'signature_name', 'signature_description', 'signature_old_price', 'signature_new_price']);
+            await saveContent(e.target, ['signature_image', 'signature_background', 'signature_name', 'signature_description', 'signature_new_price']);
         });
 
         // Specialties Form
