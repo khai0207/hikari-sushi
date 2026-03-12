@@ -975,25 +975,7 @@ async function loadDynamicContent() {
                 }
             }
             
-            // ===== ABOUT EXTENDED (2nd image + experience badge) =====
-            if (content.about) {
-                // Second image - use original quality
-                const aboutSecondImg = document.querySelector('.about-img-secondary img');
-                if (aboutSecondImg && content.about.image2) {
-                    aboutSecondImg.src = content.about.image2; // Direct URL, no resize
-                    aboutSecondImg.classList.remove('img-skeleton');
-                }
-                
-                // Experience badge
-                if (content.about.experience_number) {
-                    const expNumber = document.querySelector('.experience-badge .number');
-                    if (expNumber) expNumber.textContent = content.about.experience_number;
-                }
-                if (content.about.experience_text) {
-                    const expText = document.querySelector('.experience-badge .text');
-                    if (expText) expText.innerHTML = content.about.experience_text.replace(' ', '<br>');
-                }
-            }
+
             
             // ===== PLAT SIGNATURE =====
             if (content.signature) {

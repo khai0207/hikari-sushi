@@ -712,45 +712,7 @@
                     </div>
                 </form>
 
-                <!-- About Section Extended - 2nd image + badge -->
-                <form id="aboutExtendedForm" class="content-card">
-                    <div class="content-card-header">
-                        <i class="fas fa-image"></i>
-                        <div>
-                            <h2>Notre Histoire - Images & Badge</h2>
-                            <p>Image secondaire et badge expérience</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="form-group">
-                            <label>Image secondaire (petite)</label>
-                            <div class="image-upload-container">
-                                <input type="file" id="about_image2_file" accept="image/*" style="display:none">
-                                <div class="image-preview" id="about_image2_preview">
-                                    <i class="fas fa-image"></i>
-                                    <span>Cliquez pour télécharger</span>
-                                </div>
-                            </div>
-                            <input type="hidden" id="about_image2">
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Nombre années expérience</label>
-                                <input type="text" id="about_experience_number" placeholder="10+">
-                            </div>
-                            <div class="form-group">
-                                <label>Texte badge</label>
-                                <input type="text" id="about_experience_text" placeholder="Années d'Expérience">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
+
 
                 <!-- Plat Signature Section -->
                 <form id="signatureForm" class="content-card">
@@ -1254,11 +1216,6 @@
             await saveContent(e.target, ['about_subtitle', 'about_title', 'about_description', 'about_description2', 'about_description3', 'about_image']);
         });
 
-        // About Extended Form
-        document.getElementById('aboutExtendedForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await saveContent(e.target, ['about_image2', 'about_experience_number', 'about_experience_text']);
-        });
 
         // Signature Form
         document.getElementById('signatureForm').addEventListener('submit', async (e) => {

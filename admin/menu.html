@@ -803,6 +803,7 @@
             gap: 8px;
         }
 
+        /* Update for SortableJS */
         .category-tag {
             display: flex;
             align-items: center;
@@ -812,6 +813,41 @@
             border: 1px solid rgba(201, 169, 98, 0.3);
             border-radius: 20px;
             font-size: 13px;
+            color: var(--gold);
+            cursor: grab; /* Show grab cursor */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .category-tag:active {
+            cursor: grabbing;
+        }
+
+        /* Dragging state */
+        .sortable-ghost {
+            opacity: 0.4;
+            background: rgba(201, 169, 98, 0.05);
+            border-style: dashed;
+        }
+
+        .sortable-drag {
+            background: var(--gold);
+            color: #000;
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .sortable-drag .delete-cat {
+            color: rgba(0,0,0,0.6);
+        }
+        
+        .drag-handle {
+            color: rgba(201, 169, 98, 0.5);
+            margin-right: 2px;
+            cursor: grab;
+        }
+        
+        .category-tag:hover .drag-handle {
             color: var(--gold);
         }
 
@@ -1114,10 +1150,8 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="../index.html" class="sidebar-logo">
@@ -1163,7 +1197,6 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <header class="admin-header">
             <div class="header-left">
@@ -1179,13 +1212,14 @@
         </header>
 
         <div class="content-area">
-            <!-- Category Manager -->
             <div class="category-manager">
                 <div class="category-manager-header">
                     <h3><i class="fas fa-tags"></i> Catégories du Menu</h3>
+                    <span style="font-size: 12px; color: var(--text-muted); font-weight: 400;">
+                        <i class="fas fa-arrows-alt"></i> Glissez pour réorganiser
+                    </span>
                 </div>
                 <div class="category-list" id="categoryList">
-                    <!-- Categories will be loaded dynamically -->
                     <button class="add-category-inline" onclick="openCategoryModal()">
                         <i class="fas fa-plus"></i>
                         Ajouter
@@ -1193,7 +1227,6 @@
                 </div>
             </div>
 
-            <!-- Filter Bar -->
             <div class="filter-bar">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
@@ -1201,18 +1234,15 @@
                 </div>
                 <div class="filter-tabs" id="filterTabs">
                     <button class="filter-tab active" data-category="all">Tous</button>
-                    <!-- Dynamic categories will be loaded here -->
-                </div>
+                    </div>
             </div>
 
-            <!-- Menu Grid -->
             <div class="menu-grid" id="menuGrid">
                 <div class="loading">
                     <i class="fas fa-spinner fa-spin"></i>
                 </div>
             </div>
 
-            <!-- Empty State -->
             <div class="empty-state" id="emptyState" style="display: none;">
                 <i class="fas fa-utensils"></i>
                 <h3>Aucun plat trouvé</h3>
@@ -1225,7 +1255,6 @@
         </div>
     </main>
 
-    <!-- Add/Edit Modal -->
     <div class="modal" id="menuModal">
         <div class="modal-overlay" onclick="closeModal()"></div>
         <div class="modal-content">
@@ -1256,8 +1285,7 @@
                             <div class="category-input-group">
                                 <select id="itemCategory" required>
                                     <option value="">-- Sélectionnez --</option>
-                                    <!-- Categories will be loaded dynamically -->
-                                </select>
+                                    </select>
                                 <button type="button" class="btn-icon-sm add" onclick="openCategoryModal()" title="Ajouter catégorie">
                                     <i class="fas fa-plus"></i>
                                 </button>
@@ -1306,7 +1334,6 @@
         </div>
     </div>
 
-    <!-- Delete Modal -->
     <div class="modal" id="deleteModal">
         <div class="modal-overlay" onclick="closeDeleteModal()"></div>
         <div class="modal-content" style="max-width: 400px;">
@@ -1331,13 +1358,11 @@
         </div>
     </div>
 
-    <!-- Toast -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage"></span>
     </div>
 
-    <!-- Add Category Modal -->
     <div class="modal modal-small" id="categoryModal">
         <div class="modal-overlay" onclick="closeCategoryModal()"></div>
         <div class="modal-content">
@@ -1365,7 +1390,6 @@
         </div>
     </div>
 
-    <!-- Delete Category Modal -->
     <div class="modal modal-small" id="deleteCategoryModal">
         <div class="modal-overlay" onclick="closeDeleteCategoryModal()"></div>
         <div class="modal-content" style="max-width: 400px;">
@@ -1390,6 +1414,7 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="../js/api-client.js"></script>
     <script>
         // Protect page
@@ -1510,6 +1535,7 @@
             
             renderCategoryManager();
             updateCategorySelect();
+            initCategorySortable(); // Initialize drag and drop
         }
         
         // Save categories to database
@@ -1533,13 +1559,52 @@
             categories.forEach(cat => {
                 const tag = document.createElement('div');
                 tag.className = 'category-tag';
+                // Add data-name for easier retrieval
+                tag.dataset.name = cat;
                 tag.innerHTML = `
+                    <i class="fas fa-grip-vertical drag-handle"></i>
                     <span>${cat}</span>
                     <button class="delete-cat" onclick="confirmDeleteCategory('${cat.replace(/'/g, "\\'")}')" title="Supprimer">
                         <i class="fas fa-times"></i>
                     </button>
                 `;
                 container.insertBefore(tag, addBtn);
+            });
+        }
+        
+        // Initialize SortableJS for categories
+        function initCategorySortable() {
+            const el = document.getElementById('categoryList');
+            new Sortable(el, {
+                animation: 150,
+                handle: '.category-tag', // The whole tag is draggable, or use .drag-handle
+                filter: '.add-category-inline', // Disable dragging for the "Add" button
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                onMove: function (evt) {
+                    // Prevent dropping after the "Add" button
+                    return evt.related.className.indexOf('add-category-inline') === -1;
+                },
+                onEnd: async function () {
+                    // Get all category names in new order
+                    const tags = el.querySelectorAll('.category-tag');
+                    const newOrder = Array.from(tags).map(tag => tag.dataset.name);
+                    
+                    // Update global variable
+                    categories = newOrder;
+                    
+                    // Save to database
+                    await saveCategories();
+                    
+                    // Update UI components
+                    updateCategorySelect();
+                    updateCategoryTabs();
+                    
+                    // Sort menu items in grid based on new category order
+                    loadMenuItems();
+                    
+                    showToast('Ordre des catégories mis à jour');
+                }
             });
         }
         
@@ -1640,8 +1705,10 @@
             }
             
             try {
-                // Load categories first
-                await loadCategories();
+                // Load categories first (if not already loaded)
+                if (categories.length === 0) {
+                    await loadCategories();
+                }
                 
                 const result = await HikariAPI.menu.getAll();
                 menuItems = result.success ? result.data : [];
@@ -1667,10 +1734,12 @@
                 menuItems.sort((a, b) => {
                     const indexA = categories.indexOf(a.category);
                     const indexB = categories.indexOf(b.category);
-                    if (indexA === -1 && indexB === -1) return 0;
-                    if (indexA === -1) return 1;
-                    if (indexB === -1) return -1;
-                    return indexA - indexB;
+                    
+                    // Items with unknown category go to end
+                    const valA = indexA === -1 ? 9999 : indexA;
+                    const valB = indexB === -1 ? 9999 : indexB;
+                    
+                    return valA - valB;
                 });
                 
                 updateCategoryTabs();
