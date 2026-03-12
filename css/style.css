@@ -890,7 +890,7 @@ input, textarea, select {
   align-items: center;
   
   /* Đặt kích thước cố định cho vòng tròn (điều chỉnh theo nhu cầu) */
-  width: 140px; /* Thử nghiệm với kích thước này */
+  width: 180px; /* Thử nghiệm với kích thước này */
   height: 90px;
   
   /* Đảm bảo nội dung không bị tràn */
