@@ -774,111 +774,7 @@
                     </div>
                 </form>
 
-                <!-- Specialties Section -->
-                <form id="specialtiesForm" class="content-card full-width">
-                    <div class="content-card-header">
-                        <i class="fas fa-utensils"></i>
-                        <div>
-                            <h2>Nos Spécialités</h2>
-                            <p>3 plats spéciaux mis en avant</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <!-- Specialty 1 (Large) -->
-                        <h4 style="color: var(--gold); margin-bottom: 1rem;">🌟 Spécialité 1 (Grande carte)</h4>
-                        <div class="form-group">
-                            <label>Image</label>
-                            <div class="image-upload-container">
-                                <input type="file" id="specialty1_image_file" accept="image/*" style="display:none">
-                                <div class="image-preview" id="specialty1_image_preview">
-                                    <i class="fas fa-image"></i>
-                                    <span>Cliquez pour télécharger</span>
-                                </div>
-                            </div>
-                            <input type="hidden" id="specialty1_image">
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Nom</label>
-                                <input type="text" id="specialty1_name" placeholder="HIKARI Roll">
-                            </div>
-                            <div class="form-group">
-                                <label>Tag</label>
-                                <input type="text" id="specialty1_tag" placeholder="Signature du Chef">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="specialty1_description" rows="2" placeholder="Description..."></textarea>
-                        </div>
-
-                        <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
-
-                        <!-- Specialty 2 -->
-                        <h4 style="color: var(--gold); margin-bottom: 1rem;">🍣 Spécialité 2</h4>
-                        <div class="form-group">
-                            <label>Image</label>
-                            <div class="image-upload-container">
-                                <input type="file" id="specialty2_image_file" accept="image/*" style="display:none">
-                                <div class="image-preview" id="specialty2_image_preview">
-                                    <i class="fas fa-image"></i>
-                                    <span>Cliquez pour télécharger</span>
-                                </div>
-                            </div>
-                            <input type="hidden" id="specialty2_image">
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Nom</label>
-                                <input type="text" id="specialty2_name" placeholder="Chirashi Saumon Avocat">
-                            </div>
-                            <div class="form-group">
-                                <label>Tag</label>
-                                <input type="text" id="specialty2_tag" placeholder="Populaire">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="specialty2_description" rows="2" placeholder="Description..."></textarea>
-                        </div>
-
-                        <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
-
-                        <!-- Specialty 3 -->
-                        <h4 style="color: var(--gold); margin-bottom: 1rem;">🍢 Spécialité 3</h4>
-                        <div class="form-group">
-                            <label>Image</label>
-                            <div class="image-upload-container">
-                                <input type="file" id="specialty3_image_file" accept="image/*" style="display:none">
-                                <div class="image-preview" id="specialty3_image_preview">
-                                    <i class="fas fa-image"></i>
-                                    <span>Cliquez pour télécharger</span>
-                                </div>
-                            </div>
-                            <input type="hidden" id="specialty3_image">
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Nom</label>
-                                <input type="text" id="specialty3_name" placeholder="Yakitori">
-                            </div>
-                            <div class="form-group">
-                                <label>Tag</label>
-                                <input type="text" id="specialty3_tag" placeholder="Grill">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="specialty3_description" rows="2" placeholder="Description..."></textarea>
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
+                
 
                 <!-- Reservation Section -->
                 <form id="reservationForm" class="content-card full-width">
@@ -1224,14 +1120,7 @@
         });
 
         // Specialties Form
-        document.getElementById('specialtiesForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fields = [];
-            for (let i = 1; i <= 3; i++) {
-                fields.push(`specialty${i}_image`, `specialty${i}_name`, `specialty${i}_tag`, `specialty${i}_description`);
-            }
-            await saveContent(e.target, fields);
-        });
+
 
         // Gallery Form
         document.getElementById('galleryForm').addEventListener('submit', async (e) => {
@@ -1281,9 +1170,7 @@
             'about_image2': 'about-secondary',
             'signature_image': 'signature',
             'signature_background': 'signature-bg',
-            'specialty1_image': 'specialty-large',
-            'specialty2_image': 'specialty',
-            'specialty3_image': 'specialty',
+
             'reservation_image': 'reservation',
             'reservation_background': 'reservation-bg',
             'gallery1': 'gallery',
@@ -1425,9 +1312,7 @@
         setupContentImageUpload('about_image2_preview', 'about_image2_file', 'about_image2');
         setupContentImageUpload('signature_image_preview', 'signature_image_file', 'signature_image');
         setupContentImageUpload('signature_background_preview', 'signature_background_file', 'signature_background');
-        setupContentImageUpload('specialty1_image_preview', 'specialty1_image_file', 'specialty1_image');
-        setupContentImageUpload('specialty2_image_preview', 'specialty2_image_file', 'specialty2_image');
-        setupContentImageUpload('specialty3_image_preview', 'specialty3_image_file', 'specialty3_image');
+
         setupContentImageUpload('reservation_image_preview', 'reservation_image_file', 'reservation_image');
         setupContentImageUpload('reservation_background_preview', 'reservation_background_file', 'reservation_background');
         setupContentImageUpload('gallery1_preview', 'gallery1_file', 'gallery1');
