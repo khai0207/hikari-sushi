@@ -882,7 +882,7 @@ input, textarea, select {
   background-color: transparent;
   
   /* Đảm bảo nó vẫn là hình tròn */
-  border-radius: 50%;
+  border-radius: 0%;
   
   /* Căn giữa hình ảnh bên trong (sử dụng flexbox) */
   display: flex;
@@ -891,7 +891,7 @@ input, textarea, select {
   
   /* Đặt kích thước cố định cho vòng tròn (điều chỉnh theo nhu cầu) */
   width: 140px; /* Thử nghiệm với kích thước này */
-  height: 120px;
+  height: 90px;
   
   /* Đảm bảo nội dung không bị tràn */
   overflow: hidden;
