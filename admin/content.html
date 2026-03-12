@@ -851,79 +851,7 @@
                 </form>
 
                 <!-- Gallery Section -->
-                <form id="galleryForm" class="content-card full-width">
-                    <div class="content-card-header">
-                        <i class="fas fa-images"></i>
-                        <div>
-                            <h2>Galerie Photos (Notre Univers)</h2>
-                            <p>6 images pour la galerie</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="gallery-upload-grid">
-                            <div class="gallery-upload-item">
-                                <label>Image 1</label>
-                                <input type="file" id="gallery1_file" accept="image/*" style="display:none">
-                                <div class="image-preview" id="gallery1_preview">
-                                    <i class="fas fa-image"></i>
-                                    <span>Photo 1</span>
-                                </div>
-                                <input type="hidden" id="gallery1">
-                            </div>
-                            <div class="gallery-upload-item">
-                                <label>Image 2</label>
-                                <input type="file" id="gallery2_file" accept="image/*" style="display:none">
-                                <div class="image-preview" id="gallery2_preview">
-                                    <i class="fas fa-image"></i>
-                                    <span>Photo 2</span>
-                                </div>
-                                <input type="hidden" id="gallery2">
-                            </div>
-                            <div class="gallery-upload-item">
-                                <label>Image 3</label>
-                                <input type="file" id="gallery3_file" accept="image/*" style="display:none">
-                                <div class="image-preview" id="gallery3_preview">
-                                    <i class="fas fa-image"></i>
-                                    <span>Photo 3</span>
-                                </div>
-                                <input type="hidden" id="gallery3">
-                            </div>
-                            <div class="gallery-upload-item">
-                                <label>Image 4</label>
-                                <input type="file" id="gallery4_file" accept="image/*" style="display:none">
-                                <div class="image-preview" id="gallery4_preview">
-                                    <i class="fas fa-image"></i>
-                                    <span>Photo 4</span>
-                                </div>
-                                <input type="hidden" id="gallery4">
-                            </div>
-                            <div class="gallery-upload-item">
-                                <label>Image 5</label>
-                                <input type="file" id="gallery5_file" accept="image/*" style="display:none">
-                                <div class="image-preview" id="gallery5_preview">
-                                    <i class="fas fa-image"></i>
-                                    <span>Photo 5</span>
-                                </div>
-                                <input type="hidden" id="gallery5">
-                            </div>
-                            <div class="gallery-upload-item">
-                                <label>Image 6</label>
-                                <input type="file" id="gallery6_file" accept="image/*" style="display:none">
-                                <div class="image-preview" id="gallery6_preview">
-                                    <i class="fas fa-image"></i>
-                                    <span>Photo 6</span>
-                                </div>
-                                <input type="hidden" id="gallery6">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
+                
 
                 <!-- Testimonials Section -->
                 <form id="testimonialsForm" class="content-card full-width">
@@ -1123,14 +1051,7 @@
 
 
         // Gallery Form
-        document.getElementById('galleryForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fields = [];
-            for (let i = 1; i <= 6; i++) {
-                fields.push(`gallery${i}`);
-            }
-            await saveContent(e.target, fields);
-        });
+
 
         // Reservation Form
         document.getElementById('reservationForm').addEventListener('submit', async (e) => {
@@ -1173,12 +1094,7 @@
 
             'reservation_image': 'reservation',
             'reservation_background': 'reservation-bg',
-            'gallery1': 'gallery',
-            'gallery2': 'gallery',
-            'gallery3': 'gallery',
-            'gallery4': 'gallery',
-            'gallery5': 'gallery',
-            'gallery6': 'gallery',
+
         };
 
         // Generic image upload handler with automatic resize based on content type
@@ -1315,12 +1231,7 @@
 
         setupContentImageUpload('reservation_image_preview', 'reservation_image_file', 'reservation_image');
         setupContentImageUpload('reservation_background_preview', 'reservation_background_file', 'reservation_background');
-        setupContentImageUpload('gallery1_preview', 'gallery1_file', 'gallery1');
-        setupContentImageUpload('gallery2_preview', 'gallery2_file', 'gallery2');
-        setupContentImageUpload('gallery3_preview', 'gallery3_file', 'gallery3');
-        setupContentImageUpload('gallery4_preview', 'gallery4_file', 'gallery4');
-        setupContentImageUpload('gallery5_preview', 'gallery5_file', 'gallery5');
-        setupContentImageUpload('gallery6_preview', 'gallery6_file', 'gallery6');
+
 
         // Update loadContent to handle all image previews
         function updateImagePreview(key, value) {
