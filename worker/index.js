@@ -123,10 +123,10 @@ async function generateTOTP(secret, timeStep = 30, digits = 6) {
     const timeBuffer = new ArrayBuffer(8);
     const timeView = new DataView(timeBuffer);
     timeView.setBigUint64(0, BigInt(time));
-    
+
     const key = base32Decode(secret);
     const hmac = await hmacSha1(key, new Uint8Array(timeBuffer));
-    
+
     const offset = hmac[hmac.length - 1] & 0x0f;
     const code = (
         ((hmac[offset] & 0x7f) << 24) |
@@ -134,7 +134,7 @@ async function generateTOTP(secret, timeStep = 30, digits = 6) {
         ((hmac[offset + 2] & 0xff) << 8) |
         (hmac[offset + 3] & 0xff)
     ) % Math.pow(10, digits);
-    
+
     return code.toString().padStart(digits, '0');
 }
 
@@ -142,16 +142,16 @@ async function generateTOTP(secret, timeStep = 30, digits = 6) {
 async function verifyTOTP(secret, code, window = 1) {
     const timeStep = 30;
     const currentTime = Math.floor(Date.now() / 1000 / timeStep);
-    
+
     for (let i = -window; i <= window; i++) {
         const time = currentTime + i;
         const timeBuffer = new ArrayBuffer(8);
         const timeView = new DataView(timeBuffer);
         timeView.setBigUint64(0, BigInt(time));
-        
+
         const key = base32Decode(secret);
         const hmac = await hmacSha1(key, new Uint8Array(timeBuffer));
-        
+
         const offset = hmac[hmac.length - 1] & 0x0f;
         const generatedCode = (
             ((hmac[offset] & 0x7f) << 24) |
@@ -159,7 +159,7 @@ async function verifyTOTP(secret, code, window = 1) {
             ((hmac[offset + 2] & 0xff) << 8) |
             (hmac[offset + 3] & 0xff)
         ) % 1000000;
-        
+
         if (generatedCode.toString().padStart(6, '0') === code) {
             return true;
         }
@@ -196,7 +196,7 @@ export default {
             if (path === '/api/auth/create-admin' && method === 'POST') {
                 return await createAdmin(request, env);
             }
-            
+
             // 2FA Setup routes (requires auth)
             if (path === '/api/auth/2fa/setup' && method === 'POST') {
                 return await setup2FA(request, env);
@@ -227,7 +227,10 @@ export default {
             if (path === '/api/reservations' && method === 'POST') {
                 return await createReservation(request, env);
             }
-            
+            if (path === '/api/orders' && method === 'POST') {
+                return await createOrder(request, env);
+            }
+
             // Serve images from R2 with optional resizing
             // Format: /assets/menu/image.jpg?w=300&h=300&q=85
             if (path.startsWith('/assets/') && method === 'GET') {
@@ -290,6 +293,15 @@ export default {
                 return await deleteReservation(env, id);
             }
 
+            // Orders Management
+            if (path === '/api/admin/orders' && method === 'GET') {
+                return await getAdminOrders(request, env);
+            }
+            if (path.startsWith('/api/admin/orders/') && method === 'PUT') {
+                const id = path.split('/').pop();
+                return await updateOrderStatus(request, env, id);
+            }
+
             // Gallery Management
             if (path === '/api/admin/gallery' && method === 'POST') {
                 return await createGalleryItem(request, env);
@@ -313,12 +325,12 @@ export default {
             if (path === '/api/admin/upload' && method === 'POST') {
                 return await uploadImage(request, env);
             }
-            
+
             // Content Image Upload to R2 (pre-resized for specific content types)
             if (path === '/api/admin/upload-content' && method === 'POST') {
                 return await uploadContentImage(request, env);
             }
-            
+
             // Get image size configuration
             if (path === '/api/admin/image-sizes' && method === 'GET') {
                 return jsonResponse({ success: true, sizes: IMAGE_SIZES });
@@ -329,7 +341,7 @@ export default {
                 const key = path.replace('/api/admin/upload/', '');
                 return await deleteImage(env, key);
             }
-            
+
             // Migration: Generate thumbnails for existing images
             if (path === '/api/admin/migrate-thumbnails' && method === 'POST') {
                 return await migrateThumbnails(env);
@@ -347,12 +359,12 @@ export default {
     // Runs at 3:00 AM daily (configured in wrangler.json)
     async scheduled(event, env, ctx) {
         console.log('🕐 Cron job started at:', new Date().toISOString());
-        
+
         try {
             // Refresh all KV cache
             const result = await refreshCacheInternal(env);
             console.log('✅ KV Cache refreshed successfully');
-            
+
             // Warm CDN cache for images
             await warmImageCache(env, result.menu, result.content);
             console.log('✅ Image CDN cache warmed');
@@ -368,14 +380,14 @@ export default {
 async function warmImageCache(env, menuItems, content) {
     const imageUrls = new Set();
     const baseUrl = 'https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev';
-    
+
     // Collect menu item images
     menuItems.forEach(item => {
         if (item.image && item.image.includes('/assets/')) {
             imageUrls.add(item.image);
         }
     });
-    
+
     // Collect content images (gallery, about, etc.)
     Object.values(content).forEach(section => {
         if (typeof section === 'object') {
@@ -386,26 +398,26 @@ async function warmImageCache(env, menuItems, content) {
             });
         }
     });
-    
+
     console.log(`🖼️ Warming cache for ${imageUrls.size} images...`);
-    
+
     // Fetch all images in parallel (max 10 concurrent)
     const urlArray = Array.from(imageUrls);
     const batchSize = 10;
-    
+
     for (let i = 0; i < urlArray.length; i += batchSize) {
         const batch = urlArray.slice(i, i + batchSize);
         await Promise.allSettled(
             batch.map(url => {
                 const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
-                return fetch(fullUrl, { 
+                return fetch(fullUrl, {
                     method: 'GET',
                     cf: { cacheTtl: 86400, cacheEverything: true }
                 });
             })
         );
     }
-    
+
     return imageUrls.size;
 }
 
@@ -442,12 +454,12 @@ async function refreshCacheInternal(env) {
 async function refreshAllCache(env) {
     try {
         const result = await refreshCacheInternal(env);
-        
+
         // Also warm image CDN cache
         const imageCount = await warmImageCache(env, result.menu, result.content);
-        
-        return jsonResponse({ 
-            success: true, 
+
+        return jsonResponse({
+            success: true,
             message: 'Cache refreshed',
             lastUpdate: await env.hikari_cache.get(CACHE_KEYS.LAST_UPDATE),
             stats: {
@@ -466,13 +478,13 @@ async function refreshAllCache(env) {
 
 async function handleLogin(request, env) {
     const { email, password } = await request.json();
-    
+
     if (!email || !password) {
         return errorResponse('Email and password required');
     }
 
     const passwordHash = await hashPassword(password);
-    
+
     const user = await env.hikari_db.prepare(
         'SELECT * FROM admin_users WHERE email = ? AND password_hash = ?'
     ).bind(email, passwordHash).first();
@@ -486,11 +498,11 @@ async function handleLogin(request, env) {
         // Return a temporary token for 2FA verification
         const tempToken = 'pending-2fa-' + generateToken();
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
-        
+
         await env.hikari_db.prepare(
             'INSERT INTO sessions (user_id, token, expires_at) VALUES (?, ?, ?)'
         ).bind(user.id, tempToken, expiresAt).run();
-        
+
         return jsonResponse({
             success: true,
             requires2FA: true,
@@ -522,49 +534,49 @@ async function handleLogin(request, env) {
 // Verify 2FA code during login
 async function verify2FALogin(request, env) {
     const { tempToken, code } = await request.json();
-    
+
     if (!tempToken || !code) {
         return errorResponse('Token and code required');
     }
-    
+
     // Verify temp token is valid pending-2fa token
     if (!tempToken.startsWith('pending-2fa-')) {
         return errorResponse('Invalid token', 401);
     }
-    
+
     const session = await env.hikari_db.prepare(`
         SELECT s.*, u.id as user_id, u.email, u.name, u.totp_secret
         FROM sessions s 
         JOIN admin_users u ON s.user_id = u.id 
         WHERE s.token = ? AND s.expires_at > datetime('now')
     `).bind(tempToken).first();
-    
+
     if (!session) {
         return errorResponse('Session expired, please login again', 401);
     }
-    
+
     // Verify TOTP code
     const isValid = await verifyTOTP(session.totp_secret, code);
     if (!isValid) {
         return errorResponse('Invalid 2FA code', 401);
     }
-    
+
     // Delete temp session
     await env.hikari_db.prepare('DELETE FROM sessions WHERE token = ?').bind(tempToken).run();
-    
+
     // Create full session
     const token = generateToken();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-    
+
     await env.hikari_db.prepare(
         'INSERT INTO sessions (user_id, token, expires_at) VALUES (?, ?, ?)'
     ).bind(session.user_id, token, expiresAt).run();
-    
+
     // Update last login
     await env.hikari_db.prepare(
         'UPDATE admin_users SET last_login = CURRENT_TIMESTAMP WHERE id = ?'
     ).bind(session.user_id).run();
-    
+
     return jsonResponse({
         success: true,
         token,
@@ -574,7 +586,7 @@ async function verify2FALogin(request, env) {
 
 async function handleLogout(request, env) {
     const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-    
+
     if (token) {
         await env.hikari_db.prepare('DELETE FROM sessions WHERE token = ?').bind(token).run();
     }
@@ -589,7 +601,7 @@ async function verifySession(request, env) {
 
 async function checkAuth(request, env) {
     const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-    
+
     if (!token) {
         return { valid: false };
     }
@@ -605,15 +617,15 @@ async function checkAuth(request, env) {
         return { valid: false };
     }
 
-    return { 
-        valid: true, 
+    return {
+        valid: true,
         user: { id: session.user_id, email: session.email, name: session.name }
     };
 }
 
 async function createAdmin(request, env) {
     const { email, password, name, secret } = await request.json();
-    
+
     // Simple secret key protection for creating admin
     if (secret !== 'hikari-admin-2024') {
         return errorResponse('Invalid secret', 403);
@@ -644,11 +656,11 @@ async function get2FAStatus(request, env) {
     if (!auth.valid) {
         return errorResponse('Unauthorized', 401);
     }
-    
+
     const user = await env.hikari_db.prepare(
         'SELECT totp_enabled FROM admin_users WHERE id = ?'
     ).bind(auth.user.id).first();
-    
+
     return jsonResponse({
         success: true,
         enabled: user?.totp_enabled === 1
@@ -661,18 +673,18 @@ async function setup2FA(request, env) {
     if (!auth.valid) {
         return errorResponse('Unauthorized', 401);
     }
-    
+
     // Generate new secret
     const secret = generate2FASecret();
-    
+
     // Store pending secret (not enabled yet)
     await env.hikari_db.prepare(
         'UPDATE admin_users SET totp_secret = ?, totp_enabled = 0 WHERE id = ?'
     ).bind(secret, auth.user.id).run();
-    
+
     // Generate otpauth URL for QR code
     const otpauthUrl = `otpauth://totp/HIKARI:${encodeURIComponent(auth.user.email)}?secret=${secret}&issuer=HIKARI&algorithm=SHA1&digits=6&period=30`;
-    
+
     return jsonResponse({
         success: true,
         secret,
@@ -687,32 +699,32 @@ async function verify2FASetup(request, env) {
     if (!auth.valid) {
         return errorResponse('Unauthorized', 401);
     }
-    
+
     const { code } = await request.json();
     if (!code) {
         return errorResponse('Code required');
     }
-    
+
     // Get user's pending secret
     const user = await env.hikari_db.prepare(
         'SELECT totp_secret FROM admin_users WHERE id = ?'
     ).bind(auth.user.id).first();
-    
+
     if (!user?.totp_secret) {
         return errorResponse('Please start 2FA setup first');
     }
-    
+
     // Verify code
     const isValid = await verifyTOTP(user.totp_secret, code);
     if (!isValid) {
         return errorResponse('Invalid code. Please try again.');
     }
-    
+
     // Enable 2FA
     await env.hikari_db.prepare(
         'UPDATE admin_users SET totp_enabled = 1 WHERE id = ?'
     ).bind(auth.user.id).run();
-    
+
     return jsonResponse({
         success: true,
         message: '2FA enabled successfully'
@@ -725,23 +737,23 @@ async function disable2FA(request, env) {
     if (!auth.valid) {
         return errorResponse('Unauthorized', 401);
     }
-    
+
     const { code, password } = await request.json();
-    
+
     // Require password verification
     if (!password) {
         return errorResponse('Password required');
     }
-    
+
     const passwordHash = await hashPassword(password);
     const user = await env.hikari_db.prepare(
         'SELECT * FROM admin_users WHERE id = ? AND password_hash = ?'
     ).bind(auth.user.id, passwordHash).first();
-    
+
     if (!user) {
         return errorResponse('Invalid password');
     }
-    
+
     // If 2FA is enabled, also require current 2FA code
     if (user.totp_enabled && user.totp_secret) {
         if (!code) {
@@ -752,12 +764,12 @@ async function disable2FA(request, env) {
             return errorResponse('Invalid 2FA code');
         }
     }
-    
+
     // Disable 2FA
     await env.hikari_db.prepare(
         'UPDATE admin_users SET totp_secret = NULL, totp_enabled = 0 WHERE id = ?'
     ).bind(auth.user.id).run();
-    
+
     return jsonResponse({
         success: true,
         message: '2FA disabled'
@@ -769,7 +781,7 @@ async function disable2FA(request, env) {
 async function getContent(request, env, useCache = false) {
     const url = new URL(request.url);
     const section = url.searchParams.get('section');
-    
+
     // Try to get from KV cache first (for public requests)
     if (useCache && !section) {
         try {
@@ -782,17 +794,17 @@ async function getContent(request, env, useCache = false) {
             console.log('Cache miss, falling back to D1');
         }
     }
-    
+
     let query = 'SELECT * FROM site_content';
     let params = [];
-    
+
     if (section) {
         query += ' WHERE section = ?';
         params.push(section);
     }
 
     const result = await env.hikari_db.prepare(query).bind(...params).all();
-    
+
     // Convert to object format
     const content = {};
     result.results.forEach(row => {
@@ -810,7 +822,7 @@ async function getAllContent(env) {
 
 async function updateContent(request, env) {
     const { section, key, value, type } = await request.json();
-    
+
     await env.hikari_db.prepare(`
         INSERT INTO site_content (section, key, value, type, updated_at) 
         VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
@@ -833,7 +845,7 @@ async function getMenuItems(request, env, useCache = false) {
     const url = new URL(request.url);
     const category = url.searchParams.get('category');
     const forceRefresh = url.searchParams.get('refresh') === '1';
-    
+
     // Try to get from KV cache first (for public requests without category filter)
     if (useCache && !forceRefresh && (!category || category === 'all')) {
         try {
@@ -846,21 +858,21 @@ async function getMenuItems(request, env, useCache = false) {
             console.log('Cache miss, falling back to D1');
         }
     }
-    
+
     // If force refresh, also update cache
     if (forceRefresh) {
         console.log('🔄 Force refresh requested');
         await refreshCacheInternal(env);
     }
-    
+
     let query = 'SELECT * FROM menu_items WHERE is_active = 1';
     let params = [];
-    
+
     if (category && category !== 'all') {
         query += ' AND category = ?';
         params.push(category);
     }
-    
+
     query += ' ORDER BY category, display_order';
 
     const result = await env.hikari_db.prepare(query).bind(...params).all();
@@ -873,7 +885,7 @@ async function ensureThumbnailColumn(env) {
         // Check if column exists by querying table info
         const tableInfo = await env.hikari_db.prepare("PRAGMA table_info(menu_items)").all();
         const hasThumbCol = tableInfo.results.some(col => col.name === 'thumbnail');
-        
+
         if (!hasThumbCol) {
             await env.hikari_db.prepare('ALTER TABLE menu_items ADD COLUMN thumbnail TEXT').run();
             console.log('📊 Added thumbnail column to menu_items');
@@ -887,10 +899,10 @@ async function ensureThumbnailColumn(env) {
 
 async function createMenuItem(request, env) {
     const data = await request.json();
-    
+
     // Ensure thumbnail column exists
     await ensureThumbnailColumn(env);
-    
+
     const result = await env.hikari_db.prepare(`
         INSERT INTO menu_items (name, description, price, category, image, thumbnail, badge, display_order)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -908,10 +920,10 @@ async function createMenuItem(request, env) {
 
 async function updateMenuItem(request, env, id) {
     const data = await request.json();
-    
+
     // Ensure thumbnail column exists
     await ensureThumbnailColumn(env);
-    
+
     await env.hikari_db.prepare(`
         UPDATE menu_items SET
         name = ?, description = ?, price = ?, category = ?,
@@ -932,11 +944,11 @@ async function updateMenuItem(request, env, id) {
 
 async function deleteMenuItem(env, id) {
     await env.hikari_db.prepare('DELETE FROM menu_items WHERE id = ?').bind(id).run();
-    
+
     // Invalidate menu cache after delete
     await env.hikari_cache.delete(CACHE_KEYS.MENU);
     console.log('🗑️ Menu cache invalidated');
-    
+
     return jsonResponse({ success: true });
 }
 
@@ -944,7 +956,7 @@ async function deleteMenuItem(env, id) {
 
 async function createReservation(request, env) {
     const data = await request.json();
-    
+
     const result = await env.hikari_db.prepare(`
         INSERT INTO reservations (name, phone, email, guests, date, time, message)
         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -960,10 +972,10 @@ async function getAllReservations(request, env) {
     const url = new URL(request.url);
     const status = url.searchParams.get('status');
     const date = url.searchParams.get('date');
-    
+
     let query = 'SELECT * FROM reservations WHERE 1=1';
     let params = [];
-    
+
     if (status && status !== 'all') {
         query += ' AND status = ?';
         params.push(status);
@@ -972,7 +984,7 @@ async function getAllReservations(request, env) {
         query += ' AND date = ?';
         params.push(date);
     }
-    
+
     query += ' ORDER BY created_at DESC';
 
     const result = await env.hikari_db.prepare(query).bind(...params).all();
@@ -981,7 +993,7 @@ async function getAllReservations(request, env) {
 
 async function updateReservation(request, env, id) {
     const { status } = await request.json();
-    
+
     await env.hikari_db.prepare(`
         UPDATE reservations SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
     `).bind(status, id).run();
@@ -991,6 +1003,87 @@ async function updateReservation(request, env, id) {
 
 async function deleteReservation(env, id) {
     await env.hikari_db.prepare('DELETE FROM reservations WHERE id = ?').bind(id).run();
+    return jsonResponse({ success: true });
+}
+
+// ===== ORDERS HANDLERS =====
+
+async function createOrder(request, env) {
+    const data = await request.json();
+
+    // Generate sequential order code for the day
+    // Get count of today's orders
+    let query = "SELECT COUNT(*) as count FROM orders WHERE date(created_at) = date('now')";
+    const countResult = await env.hikari_db.prepare(query).first();
+    const nextOrderNum = (countResult.count + 1).toString().padStart(4, '0');
+
+    const result = await env.hikari_db.prepare(`
+        INSERT INTO orders (order_code, customer_name, phone, pickup_time, total_price, status)
+        VALUES (?, ?, ?, ?, ?, 'pending')
+    `).bind(
+        nextOrderNum, data.customer_name, data.phone, data.pickup_time, data.total_price
+    ).run();
+
+    const orderId = result.meta.last_row_id;
+
+    // Insert order items
+    for (const item of data.items) {
+        await env.hikari_db.prepare(`
+            INSERT INTO order_items (order_id, menu_item_name, quantity, price)
+            VALUES (?, ?, ?, ?)
+        `).bind(orderId, item.name, item.quantity, item.price).run();
+    }
+
+    return jsonResponse({ success: true, order_code: nextOrderNum, id: orderId });
+}
+
+async function getAdminOrders(request, env) {
+    const url = new URL(request.url);
+    const date = url.searchParams.get('date');
+    const status = url.searchParams.get('status');
+    let query = `
+        SELECT o.*, 
+        (SELECT json_group_array(json_object('name', menu_item_name, 'quantity', quantity, 'price', price)) 
+         FROM order_items WHERE order_id = o.id) as items
+        FROM orders o WHERE 1=1
+    `;
+    let params = [];
+
+    if (date) {
+        query += " AND date(o.created_at) = ?";
+        params.push(date);
+    } else {
+        query += " AND date(o.created_at) = date('now')";
+    }
+
+    if (status && status !== 'all') {
+        query += " AND o.status = ?";
+        params.push(status);
+    }
+
+    query += " ORDER BY o.created_at DESC";
+
+    const result = await env.hikari_db.prepare(query).bind(...params).all();
+
+    // Parse the JSON array of items back to JS objects
+    const orders = result.results.map(order => {
+        try {
+            order.items = JSON.parse(order.items);
+        } catch (e) {
+            order.items = [];
+        }
+        return order;
+    });
+
+    return jsonResponse({ success: true, items: orders });
+}
+
+async function updateOrderStatus(request, env, id) {
+    const { status } = await request.json();
+    await env.hikari_db.prepare(`
+        UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+    `).bind(status, id).run();
+
     return jsonResponse({ success: true });
 }
 
@@ -1005,7 +1098,7 @@ async function getGallery(env) {
 
 async function createGalleryItem(request, env) {
     const data = await request.json();
-    
+
     const result = await env.hikari_db.prepare(`
         INSERT INTO gallery (title, image_url, thumbnail_url, display_order)
         VALUES (?, ?, ?, ?)
@@ -1034,9 +1127,9 @@ async function getSettings(env, useCache = true) {
             console.log('Cache miss, falling back to D1');
         }
     }
-    
+
     const result = await env.hikari_db.prepare('SELECT * FROM settings').all();
-    
+
     const settings = {};
     result.results.forEach(row => {
         settings[row.key] = row.type === 'json' ? JSON.parse(row.value) : row.value;
@@ -1047,7 +1140,7 @@ async function getSettings(env, useCache = true) {
 
 async function updateSettings(request, env) {
     const data = await request.json();
-    
+
     for (const [key, value] of Object.entries(data)) {
         await env.hikari_db.prepare(`
             INSERT INTO settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)
@@ -1086,31 +1179,31 @@ async function getStats(env) {
 async function uploadImage(request, env) {
     try {
         const contentType = request.headers.get('Content-Type') || '';
-        
+
         let imageData, mimeType, fileName, thumbnailData;
         let isMenuImage = false;
-        
+
         if (contentType.includes('application/json')) {
             // Handle base64 upload
             const { image, filename, type, thumbnail } = await request.json();
-            
+
             if (!image) {
                 return errorResponse('No image provided');
             }
-            
+
             isMenuImage = type === 'menu';
-            
+
             // Parse main image base64
             const matches = image.match(/^data:(.+);base64,(.+)$/);
             if (!matches) {
                 return errorResponse('Invalid image format');
             }
-            
+
             mimeType = matches[1];
             const base64Data = matches[2];
             imageData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
             fileName = filename || `image-${Date.now()}`;
-            
+
             // Parse thumbnail if provided
             if (thumbnail) {
                 const thumbMatches = thumbnail.match(/^data:(.+);base64,(.+)$/);
@@ -1124,32 +1217,32 @@ async function uploadImage(request, env) {
             const type = formData.get('type');
             const thumbFile = formData.get('thumbnail');
             const customFolder = formData.get('folder'); // For migration tool
-            
+
             if (!file) {
                 return errorResponse('No image provided');
             }
-            
+
             isMenuImage = type === 'menu';
             imageData = new Uint8Array(await file.arrayBuffer());
             mimeType = file.type;
             fileName = file.name || `image-${Date.now()}`;
-            
+
             if (thumbFile) {
                 thumbnailData = new Uint8Array(await thumbFile.arrayBuffer());
             }
-            
+
             // If custom folder specified (for migration), upload directly to that folder
             if (customFolder) {
                 const cleanFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '');
                 const customKey = `${customFolder}/${cleanFileName}`;
-                
+
                 await env.hikari_assets.put(customKey, imageData, {
                     httpMetadata: { contentType: mimeType || 'image/webp' }
                 });
-                
+
                 const customUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${customKey}`;
                 console.log(`🖼️ Image uploaded to custom folder: ${customKey} (${Math.round(imageData.byteLength / 1024)}KB)`);
-                
+
                 return jsonResponse({
                     success: true,
                     url: customUrl,
@@ -1160,20 +1253,20 @@ async function uploadImage(request, env) {
         } else {
             return errorResponse('Unsupported content type');
         }
-        
+
         // Generate unique key
         const timestamp = Date.now();
         const random = Math.random().toString(36).substring(7);
         const key = `menu/${timestamp}-${random}.webp`;
-        
+
         let thumbnailKey = null;
         let thumbnailUrl = null;
-        
+
         // Upload main image
         await env.hikari_assets.put(key, imageData, {
             httpMetadata: { contentType: 'image/webp' }
         });
-        
+
         // Upload thumbnail if provided (save to menu-thumbnails folder)
         if (thumbnailData && isMenuImage) {
             thumbnailKey = `menu-thumbnails/${timestamp}-${random}.webp`;
@@ -1183,11 +1276,11 @@ async function uploadImage(request, env) {
             thumbnailUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${thumbnailKey}`;
             console.log(`📷 Thumbnail uploaded: ${thumbnailKey} (${Math.round(thumbnailData.byteLength / 1024)}KB)`);
         }
-        
+
         const publicUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${key}`;
-        
+
         console.log(`🖼️ Image uploaded: ${key} (${Math.round(imageData.byteLength / 1024)}KB)`);
-        
+
         return jsonResponse({
             success: true,
             url: publicUrl,
@@ -1205,10 +1298,10 @@ async function deleteImage(env, key) {
     try {
         // Decode the key (in case it's URL encoded)
         const decodedKey = decodeURIComponent(key);
-        
+
         // Delete original image
         await env.hikari_assets.delete(decodedKey);
-        
+
         // Also delete thumbnail if exists (in menu-thumbnails folder)
         const filename = decodedKey.split('/').pop().replace(/\.[^.]+$/, '.webp');
         const thumbKey = `menu-thumbnails/${filename}`;
@@ -1218,9 +1311,9 @@ async function deleteImage(env, key) {
         } catch (e) {
             // Thumbnail might not exist, ignore error
         }
-        
+
         console.log('🗑️ Image deleted:', decodedKey);
-        
+
         return jsonResponse({ success: true });
     } catch (error) {
         console.error('Delete error:', error);
@@ -1234,27 +1327,27 @@ async function deleteImage(env, key) {
 async function uploadContentImage(request, env) {
     try {
         const { image, contentType, filename } = await request.json();
-        
+
         if (!image) {
             return errorResponse('No image provided');
         }
-        
+
         // Validate content type
         const validTypes = Object.keys(IMAGE_SIZES);
         if (contentType && !validTypes.includes(contentType)) {
             return errorResponse(`Invalid content type. Valid types: ${validTypes.join(', ')}`);
         }
-        
+
         // Parse base64 image
         const matches = image.match(/^data:(.+);base64,(.+)$/);
         if (!matches) {
             return errorResponse('Invalid image format');
         }
-        
+
         const mimeType = matches[1];
         const base64Data = matches[2];
         const imageData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-        
+
         // Determine folder based on content type
         let folder = 'content';
         if (contentType) {
@@ -1270,26 +1363,26 @@ async function uploadContentImage(request, env) {
                 folder = 'gallery';
             }
         }
-        
+
         // Generate unique key
         const timestamp = Date.now();
         const random = Math.random().toString(36).substring(7);
         const cleanFilename = (filename || 'image').replace(/[^a-zA-Z0-9.-]/g, '');
         const key = `${folder}/${timestamp}-${random}-${cleanFilename}.webp`;
-        
+
         // Upload to R2
         await env.hikari_assets.put(key, imageData, {
             httpMetadata: { contentType: 'image/webp' }
         });
-        
+
         const publicUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${key}`;
         const sizeKB = Math.round(imageData.byteLength / 1024);
-        
+
         console.log(`🖼️ Content image uploaded: ${key} (${sizeKB}KB) - Type: ${contentType || 'unknown'}`);
-        
+
         // Get expected dimensions for logging
         const expectedSize = contentType ? IMAGE_SIZES[contentType] : null;
-        
+
         return jsonResponse({
             success: true,
             url: publicUrl,
@@ -1311,7 +1404,7 @@ async function migrateThumbnails(env) {
     try {
         // Ensure thumbnail column exists
         await ensureThumbnailColumn(env);
-        
+
         // Get all menu items with images but no thumbnails
         const items = await env.hikari_db.prepare(`
             SELECT id, name, image FROM menu_items 
@@ -1320,7 +1413,7 @@ async function migrateThumbnails(env) {
             AND image LIKE '%/assets/%'
             AND (thumbnail IS NULL OR thumbnail = '')
         `).all();
-        
+
         const results = {
             total: items.results.length,
             success: 0,
@@ -1328,7 +1421,7 @@ async function migrateThumbnails(env) {
             skipped: 0,
             details: []
         };
-        
+
         for (const item of items.results) {
             try {
                 // Extract key from URL
@@ -1338,16 +1431,16 @@ async function migrateThumbnails(env) {
                     results.details.push({ id: item.id, name: item.name, status: 'skipped', reason: 'Invalid URL' });
                     continue;
                 }
-                
+
                 const key = match[1];
-                
+
                 // Create thumbnail key in menu-thumbnails folder
                 const filename = key.split('/').pop().replace(/\.[^.]+$/, '.webp');
                 const thumbKey = `menu-thumbnails/${filename}`;
-                
+
                 // Check if thumbnail already exists
                 const existingThumb = await env.hikari_assets.head(thumbKey);
-                
+
                 if (existingThumb) {
                     // Thumbnail exists, just update database
                     const thumbnailUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${thumbKey}`;
@@ -1357,7 +1450,7 @@ async function migrateThumbnails(env) {
                     results.details.push({ id: item.id, name: item.name, status: 'linked', thumbnail: thumbnailUrl });
                     continue;
                 }
-                
+
                 // Get original image from R2
                 const originalImage = await env.hikari_assets.get(key);
                 if (!originalImage) {
@@ -1365,60 +1458,60 @@ async function migrateThumbnails(env) {
                     results.details.push({ id: item.id, name: item.name, status: 'skipped', reason: 'Image not found in R2' });
                     continue;
                 }
-                
+
                 // Get image data
                 const imageData = await originalImage.arrayBuffer();
                 const sizeKB = Math.round(imageData.byteLength / 1024);
-                
+
                 // Skip small images (< 50KB)
                 if (sizeKB < 50) {
                     results.skipped++;
                     results.details.push({ id: item.id, name: item.name, status: 'skipped', reason: `Too small (${sizeKB}KB)` });
                     continue;
                 }
-                
+
                 // Create a simple resized version as thumbnail
                 // Note: This creates a copy with same format but we'll mark it as thumb
                 // For proper resize, frontend should re-upload
                 await env.hikari_assets.put(thumbKey, imageData, {
                     httpMetadata: { contentType: originalImage.httpMetadata?.contentType || 'image/webp' }
                 });
-                
+
                 const thumbnailUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${thumbKey}`;
-                
+
                 // Update database
                 await env.hikari_db.prepare('UPDATE menu_items SET thumbnail = ? WHERE id = ?')
                     .bind(thumbnailUrl, item.id).run();
-                
+
                 results.success++;
-                results.details.push({ 
-                    id: item.id, 
-                    name: item.name, 
-                    status: 'created', 
+                results.details.push({
+                    id: item.id,
+                    name: item.name,
+                    status: 'created',
                     thumbnail: thumbnailUrl,
                     originalSize: `${sizeKB}KB`
                 });
-                
+
                 console.log(`📷 Thumbnail created for ${item.name}: ${thumbKey}`);
-                
+
             } catch (e) {
                 results.failed++;
                 results.details.push({ id: item.id, name: item.name, status: 'failed', error: e.message });
             }
         }
-        
+
         // Refresh cache completely (not just delete)
         await refreshCacheInternal(env);
         console.log('🔄 Cache refreshed after migration');
-        
+
         console.log(`✅ Migration complete: ${results.success} success, ${results.failed} failed, ${results.skipped} skipped`);
-        
+
         return jsonResponse({
             success: true,
             message: `Migration complete: ${results.success} thumbnails created/linked`,
             results
         });
-        
+
     } catch (error) {
         console.error('Migration error:', error);
         return errorResponse('Migration failed: ' + error.message, 500);
@@ -1430,9 +1523,9 @@ async function migrateThumbnails(env) {
 async function serveImage(env, key, options = {}, request = null) {
     try {
         const { width, height, quality = 85 } = options;
-        
+
         const object = await env.hikari_assets.get(key);
-        
+
         if (!object) {
             // If og-image.jpg not found, generate placeholder or use first menu item image
             if (key === 'og-image.jpg') {
@@ -1447,8 +1540,8 @@ async function serveImage(env, key, options = {}, request = null) {
                             return Response.redirect(firstWithImage.image, 302);
                         }
                     }
-                } catch (e) {}
-                
+                } catch (e) { }
+
                 // Return 1200x630 placeholder SVG for og:image
                 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
                     <rect fill="#1a1a1a" width="1200" height="630"/>
@@ -1465,11 +1558,11 @@ async function serveImage(env, key, options = {}, request = null) {
             }
             return new Response('Image not found', { status: 404 });
         }
-        
+
         // If resize requested and Cloudflare Image Resizing is available
         if ((width || height) && request) {
             const contentType = object.httpMetadata?.contentType || 'image/jpeg';
-            
+
             // Only resize JPEG/PNG/WebP images
             if (contentType.match(/image\/(jpeg|jpg|png|webp)/i)) {
                 // Build resize options for sharp quality (2x for retina)
@@ -1486,21 +1579,21 @@ async function serveImage(env, key, options = {}, request = null) {
                         }
                     }
                 };
-                
+
                 // Create a new request to fetch resized image through Cloudflare
                 const imageUrl = `https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev/assets/${key}`;
-                
+
                 try {
                     // Fetch the original image and let Cloudflare resize it
                     const resizedResponse = await fetch(imageUrl, resizeOptions);
-                    
+
                     if (resizedResponse.ok) {
                         const headers = new Headers(resizedResponse.headers);
                         headers.set('Cache-Control', 'public, max-age=31536000, immutable');
                         headers.set('Access-Control-Allow-Origin', '*');
                         headers.set('Vary', 'Accept, Accept-Encoding');
                         headers.set('X-Resized', `${width}x${height}@${quality}`);
-                        
+
                         return new Response(resizedResponse.body, { headers });
                     }
                 } catch (e) {
@@ -1508,14 +1601,14 @@ async function serveImage(env, key, options = {}, request = null) {
                 }
             }
         }
-        
+
         // Return original image if no resize or resize failed
         const headers = new Headers();
         headers.set('Content-Type', object.httpMetadata?.contentType || 'image/jpeg');
         headers.set('Cache-Control', 'public, max-age=31536000, immutable'); // 1 year immutable
         headers.set('Access-Control-Allow-Origin', '*');
         headers.set('Vary', 'Accept-Encoding');
-        
+
         return new Response(object.body, { headers });
     } catch (error) {
         console.error('Serve image error:', error);

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commander en Ligne - HIKARI Sushi & Roll</title>
+
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <meta name="theme-color" content="#c9a962">
+
+    <!-- Fonts and Icons (same as index.html) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .commander-container {
+            display: flex;
+            flex-wrap: wrap;
+            padding-top: 100px;
+            /* spacing for header */
+            min-height: calc(100vh - 200px);
+            background: var(--bg-dark);
+        }
+
+        /* Left Side: Menu */
+        .commander-menu {
+            flex: 1 1 60%;
+            padding: 2rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .commander-menu .menu-tabs {
+            justify-content: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        /* Right Side: Cart */
+        .commander-cart {
+            flex: 1 1 35%;
+            padding: 2rem;
+            position: sticky;
+            top: 100px;
+            height: calc(100vh - 100px);
+            overflow-y: auto;
+            background: var(--bg-darker);
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cart-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+        }
+
+        .cart-header h2 {
+            font-family: var(--font-title);
+            color: var(--primary);
+            font-size: 2rem;
+        }
+
+        .cart-items {
+            min-height: 200px;
+            margin-bottom: 2rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cart-item-name {
+            flex: 1;
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .qty-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-light);
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .qty-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .cart-item-price {
+            width: 70px;
+            text-align: right;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .cart-summary {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.5rem;
+            font-family: var(--font-title);
+            color: var(--primary);
+        }
+
+        .cart-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .cart-form input,
+        .cart-form select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: white;
+            font-family: var(--font-text);
+        }
+
+        .cart-form input:focus,
+        .cart-form select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .btn-order-submit {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-order-submit:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-order-submit:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Order Success View */
+        .order-success {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .order-success i {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .order-code-box {
+            background: rgba(201, 169, 98, 0.1);
+            border: 2px dashed var(--primary);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .order-code {
+            font-family: var(--font-title);
+            font-size: 3rem;
+            color: var(--primary);
+            letter-spacing: 5px;
+        }
+
+        /* Add to cart button override for menu cards */
+        .menu-card {
+            position: relative;
+        }
+
+        .btn-add-cart {
+            width: 100%;
+            padding: 10px;
+            background: rgba(201, 169, 98, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            cursor: pointer;
+            margin-top: 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-cart:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 991px) {
+            .commander-container {
+                flex-direction: column;
+            }
+
+            .commander-menu,
+            .commander-cart {
+                flex: 1 1 100%;
+                border-right: none;
+            }
+
+            .commander-cart {
+                height: auto;
+                border-left: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header" id="header" style="background: rgba(0,0,0,0.9); padding: 10px 0;">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <img src="images/logo.png" alt="HIKARI Sushi Logo" class="logo-img">
+                    <span class="logo-name">HIKARI</span>
+                </a>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Retour à l'accueil</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="commander-container container">
+
+        <!-- Left: Menu -->
+        <div class="commander-menu">
+            <div class="section-header" style="text-align: left;">
+                <h2 class="section-title">Notre Carte</h2>
+            </div>
+
+            <div class="menu-tabs">
+                <button class="tab-btn active" data-tab="sushi">Sushis</button>
+                <button class="tab-btn" data-tab="maki">Makis & Rolls</button>
+                <button class="tab-btn" data-tab="plats">Plats Chauds</button>
+                <button class="tab-btn" data-tab="desserts">Desserts</button>
+            </div>
+
+            <div class="menu-content" id="commander-menu-content">
+                <div class="menu-loading" style="text-align: center; padding: 3rem; color: var(--text-light);">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>Chargement du menu...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Cart -->
+        <div class="commander-cart">
+
+            <div id="cart-view">
+                <div class="cart-header">
+                    <h2>Mon Panier</h2>
+                </div>
+
+                <div class="cart-items" id="cart-items">
+                    <p style="color: var(--text-light); text-align: center; margin-top: 2rem;">Votre panier est vide</p>
+                </div>
+
+                <div class="cart-summary">
+                    <div class="summary-line">
+                        <span>Sous-total</span>
+                        <span id="cart-subtotal">0.00€</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span id="cart-total">0.00€</span>
+                    </div>
+                </div>
+
+                <form class="cart-form" id="order-form">
+                    <div class="form-group">
+                        <label>Nom Complet *</label>
+                        <input type="text" id="order-name" required placeholder="Votre nom">
+                    </div>
+                    <div class="form-group">
+                        <label>Numéro de Téléphone *</label>
+                        <input type="tel" id="order-phone" required placeholder="Votre numéro">
+                    </div>
+                    <div class="form-group">
+                        <label>Heure de Retrait *</label>
+                        <select id="order-time" required>
+                            <option value="">Sélectionnez une heure...</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:30">19:30</option>
+                            <option value="20:00">20:00</option>
+                            <option value="20:30">20:30</option>
+                            <option value="21:00">21:00</option>
+                            <option value="21:30">21:30</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-order-submit" id="btn-submit-order" disabled>Confirmer la
+                        Commande</button>
+                </form>
+            </div>
+
+            <!-- Success View -->
+            <div class="order-success" id="order-success-view">
+                <i class="fas fa-check-circle"></i>
+                <h2 style="font-family: var(--font-title); color: white; margin-bottom: 1rem;">Commande Confirmée !</h2>
+                <p style="color: var(--text-light);">Merci pour votre commande. Voici votre code de retrait à présenter
+                    au restaurant :</p>
+
+                <div class="order-code-box">
+                    <div class="order-code" id="success-order-code">0000</div>
+                </div>
+
+                <p style="color: var(--text-light); margin-bottom: 2rem;">Heure de retrait prévue : <strong
+                        id="success-pickup-time" style="color: white;">19:00</strong></p>
+
+                <button class="btn btn-primary" onclick="window.location.reload()" style="width: 100%;">Nouvelle
+                    Commande</button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <footer class="footer" style="margin-top: auto;">
+        <div class="footer-bottom">
+            <div class="container">
+                <p>© 2024 HIKARI Sushi & Roll. Tous droits réservés</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/api-client.js"></script>
+    <script src="js/commander.js"></script>
+
+</body>
+
+</html>

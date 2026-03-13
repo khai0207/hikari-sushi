@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commandes - HIKARI Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        /* Reuse dashboard variables but include inline for standalone safety if needed */
+        :root {
+            --gold: #c9a962;
+            --gold-light: #dbb872;
+            --gold-dark: #a88b4a;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --bg-card-hover: #1a1a1a;
+            --bg-input: #1a1a1a;
+            --text-light: #ffffff;
+            --text-muted: #888888;
+            --border-color: #2a2a2a;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar styles copied directly from dashboard.html */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #0d0d0d 0%, #0a0a0a 100%);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .sidebar-logo img {
+            width: 45px;
+            height: 45px;
+        }
+
+        .sidebar-logo span {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 0.15em;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item a:hover,
+        .nav-item.active a {
+            background: rgba(201, 169, 98, 0.1);
+            color: var(--gold);
+            border-left-color: var(--gold);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-logout {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        /* General UI components reused */
+        .btn-primary,
+        .btn-secondary,
+        .btn-icon {
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(201, 169, 98, 0.3);
+        }
+
+        /* Stats Grid specific to Orders */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: black;
+        }
+
+        .stat-icon.success {
+            background: linear-gradient(135deg, var(--success), #16a34a);
+            color: #fff;
+        }
+
+        .stat-icon.warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: #fff;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Orders Grid */
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .order-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .order-card.pending {
+            border-top: 4px solid var(--warning);
+        }
+
+        .order-card.received {
+            border-top: 4px solid var(--success);
+            opacity: 0.7;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .order-code {
+            font-size: 1.5rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .order-time {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .order-customer {
+            margin-bottom: 1rem;
+        }
+
+        .order-customer strong {
+            font-size: 1.1rem;
+            display: block;
+        }
+
+        .order-customer span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .order-items {
+            list-style: none;
+            margin-bottom: 1rem;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .order-items li {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        .order-total {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gold);
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+
+        .order-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-action-received {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .btn-action-received:hover {
+            opacity: 0.8;
+        }
+
+        .already-received {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="../index.html" class="sidebar-logo">
+                <img src="../images/logo.png" alt="HIKARI">
+                <span>HIKARI</span>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item"><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                <li class="nav-item active"><a href="orders.html"><i
+                            class="fas fa-shopping-bag"></i><span>Commandes</span></a></li>
+                <li class="nav-item"><a href="menu.html"><i class="fas fa-utensils"></i><span>Menu</span></a></li>
+                <li class="nav-item"><a href="content.html"><i class="fas fa-edit"></i><span>Contenu</span></a></li>
+                <li class="nav-item"><a href="settings.html"><i class="fas fa-cog"></i><span>Paramètres</span></a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="logoutBtn"><i
+                    class="fas fa-sign-out-alt"></i><span>Déconnexion</span></button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1>Commandes en Ligne</h1>
+            </div>
+            <div>
+                <span id="currentTime"
+                    style="color: var(--gold); font-family: monospace; font-size: 1.1rem; border: 1px solid var(--gold); padding: 5px 10px; border-radius: 5px;">00:00:00</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-pending">0</span>
+                        <span class="stat-label">En Attente</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success"><i class="fas fa-check"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-received">0</span>
+                        <span class="stat-label">Reçues (Aujourd'hui)</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-euro-sign"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-revenue">0.00€</span>
+                        <span class="stat-label">Chiffre d'affaires (Aujourd'hui)</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2 style="margin-bottom: 1rem; font-family: 'Playfair Display', serif;">Historique des Commandes
+                (Aujourd'hui)</h2>
+            <div class="orders-grid" id="orders-container">
+                <!-- Orders will be loaded here -->
+                <p style="color: var(--text-muted);">Chargement des commandes...</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/api-client.js"></script>
+    <script src="js/orders.js"></script>
+</body>
+
+</html>

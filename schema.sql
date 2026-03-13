@@ -69,8 +69,34 @@ CREATE TABLE IF NOT EXISTS admin_users (
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     name TEXT,
+    role TEXT DEFAULT 'admin', -- 'admin' or 'order_admin'
+    totp_secret TEXT,
+    totp_enabled INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_login DATETIME
+);
+
+-- Orders Table
+CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_code TEXT NOT NULL,
+    customer_name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    pickup_time TEXT NOT NULL,
+    total_price REAL NOT NULL,
+    status TEXT DEFAULT 'pending', -- pending, received, cancelled
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Order Items Table
+CREATE TABLE IF NOT EXISTS order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL,
+    menu_item_name TEXT NOT NULL,
+    quantity INTEGER NOT NULL,
+    price REAL NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id)
 );
 
 -- Sessions Table (for auth)
