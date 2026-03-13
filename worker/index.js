@@ -227,9 +227,6 @@ export default {
             if (path === '/api/reservations' && method === 'POST') {
                 return await createReservation(request, env);
             }
-            if (path === '/api/orders' && method === 'POST') {
-                return await createOrder(request, env);
-            }
 
             // Serve images from R2 with optional resizing
             // Format: /assets/menu/image.jpg?w=300&h=300&q=85
@@ -291,15 +288,6 @@ export default {
             if (path.startsWith('/api/admin/reservations/') && method === 'DELETE') {
                 const id = path.split('/').pop();
                 return await deleteReservation(env, id);
-            }
-
-            // Orders Management
-            if (path === '/api/admin/orders' && method === 'GET') {
-                return await getAdminOrders(request, env);
-            }
-            if (path.startsWith('/api/admin/orders/') && method === 'PUT') {
-                const id = path.split('/').pop();
-                return await updateOrderStatus(request, env, id);
             }
 
             // Gallery Management
@@ -1003,87 +991,6 @@ async function updateReservation(request, env, id) {
 
 async function deleteReservation(env, id) {
     await env.hikari_db.prepare('DELETE FROM reservations WHERE id = ?').bind(id).run();
-    return jsonResponse({ success: true });
-}
-
-// ===== ORDERS HANDLERS =====
-
-async function createOrder(request, env) {
-    const data = await request.json();
-
-    // Generate sequential order code for the day
-    // Get count of today's orders
-    let query = "SELECT COUNT(*) as count FROM orders WHERE date(created_at) = date('now')";
-    const countResult = await env.hikari_db.prepare(query).first();
-    const nextOrderNum = (countResult.count + 1).toString().padStart(4, '0');
-
-    const result = await env.hikari_db.prepare(`
-        INSERT INTO orders (order_code, customer_name, phone, pickup_time, total_price, status)
-        VALUES (?, ?, ?, ?, ?, 'pending')
-    `).bind(
-        nextOrderNum, data.customer_name, data.phone, data.pickup_time, data.total_price
-    ).run();
-
-    const orderId = result.meta.last_row_id;
-
-    // Insert order items
-    for (const item of data.items) {
-        await env.hikari_db.prepare(`
-            INSERT INTO order_items (order_id, menu_item_name, quantity, price)
-            VALUES (?, ?, ?, ?)
-        `).bind(orderId, item.name, item.quantity, item.price).run();
-    }
-
-    return jsonResponse({ success: true, order_code: nextOrderNum, id: orderId });
-}
-
-async function getAdminOrders(request, env) {
-    const url = new URL(request.url);
-    const date = url.searchParams.get('date');
-    const status = url.searchParams.get('status');
-    let query = `
-        SELECT o.*, 
-        (SELECT json_group_array(json_object('name', menu_item_name, 'quantity', quantity, 'price', price)) 
-         FROM order_items WHERE order_id = o.id) as items
-        FROM orders o WHERE 1=1
-    `;
-    let params = [];
-
-    if (date) {
-        query += " AND date(o.created_at) = ?";
-        params.push(date);
-    } else {
-        query += " AND date(o.created_at) = date('now')";
-    }
-
-    if (status && status !== 'all') {
-        query += " AND o.status = ?";
-        params.push(status);
-    }
-
-    query += " ORDER BY o.created_at DESC";
-
-    const result = await env.hikari_db.prepare(query).bind(...params).all();
-
-    // Parse the JSON array of items back to JS objects
-    const orders = result.results.map(order => {
-        try {
-            order.items = JSON.parse(order.items);
-        } catch (e) {
-            order.items = [];
-        }
-        return order;
-    });
-
-    return jsonResponse({ success: true, items: orders });
-}
-
-async function updateOrderStatus(request, env, id) {
-    const { status } = await request.json();
-    await env.hikari_db.prepare(`
-        UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
-    `).bind(status, id).run();
-
     return jsonResponse({ success: true });
 }
 
