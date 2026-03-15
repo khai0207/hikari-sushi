@@ -30,7 +30,7 @@
 
 # Images - long cache (rarely change)
 /images/*
-  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800, immutable
+  Cache-Control: public, max-age=3600, must-revalidate
 
 # Fonts - immutable long cache
 /*.woff2
@@ -43,4 +43,4 @@
 
 # R2 Assets (uploaded images) - long cache
 /assets/*
-  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+  Cache-Control: public, max-age=3600, must-revalidate
