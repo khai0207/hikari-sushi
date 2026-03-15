@@ -18,14 +18,6 @@ const cacheHeaders = {
     'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400'
 };
 
-// NEW: Headers chống cache tuyệt đối cho Safari
-const noCacheHeaders = {
-    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
-    'Pragma': 'no-cache',
-    'Expires': '0',
-    'Surrogate-Control': 'no-store'
-};
-
 // Cache keys
 const CACHE_KEYS = {
     CONTENT: 'cache:content',
@@ -48,21 +40,21 @@ const IMAGE_SIZES = {
     'gallery': { width: 600, height: 400, quality: 85 },           // Gallery images - resize to 600x400
 };
 
-// Helper: JSON response with caching (Modified to force no-cache if cache=false)
+// Helper: JSON response with caching
 function jsonResponse(data, status = 200, cache = false) {
     return new Response(JSON.stringify(data), {
         status,
         headers: {
             'Content-Type': 'application/json',
             ...corsHeaders,
-            ...(cache ? cacheHeaders : noCacheHeaders)
+            ...(cache ? cacheHeaders : {})
         }
     });
 }
 
 // Helper: Error response
 function errorResponse(message, status = 400) {
-    return jsonResponse({ success: false, error: message }, status, false);
+    return jsonResponse({ success: false, error: message }, status);
 }
 
 // Helper: Hash password (simple for demo - use bcrypt in production)
@@ -221,16 +213,16 @@ export default {
 
             // ===== PUBLIC ROUTES =====
             if (path === '/api/content' && method === 'GET') {
-                return await getContent(request, env, false); // Force NO CACHE for Safari
+                return await getContent(request, env, true); // Enable caching
             }
             if (path === '/api/menu' && method === 'GET') {
-                return await getMenuItems(request, env, false); // Force NO CACHE for Safari
+                return await getMenuItems(request, env, true); // Enable caching
             }
             if (path === '/api/gallery' && method === 'GET') {
                 return await getGallery(env);
             }
             if (path === '/api/settings' && method === 'GET') {
-                return await getSettings(env, false); // Force NO CACHE for Safari
+                return await getSettings(env);
             }
             if (path === '/api/reservations' && method === 'POST') {
                 return await createReservation(request, env);
@@ -271,7 +263,7 @@ export default {
 
             // Menu Management
             if (path === '/api/admin/menu' && method === 'GET') {
-                return await getMenuItems(request, env, false);
+                return await getMenuItems(request, env);
             }
             if (path === '/api/admin/menu' && method === 'POST') {
                 return await createMenuItem(request, env);
@@ -329,7 +321,7 @@ export default {
 
             // Get image size configuration
             if (path === '/api/admin/image-sizes' && method === 'GET') {
-                return jsonResponse({ success: true, sizes: IMAGE_SIZES }, 200, false);
+                return jsonResponse({ success: true, sizes: IMAGE_SIZES });
             }
 
             // Delete image from R2
@@ -464,7 +456,7 @@ async function refreshAllCache(env) {
                 settingsKeys: Object.keys(result.settings).length,
                 imagesWarmed: imageCount
             }
-        }, 200, false);
+        });
     } catch (error) {
         return errorResponse('Cache refresh failed: ' + error.message, 500);
     }
@@ -504,7 +496,7 @@ async function handleLogin(request, env) {
             requires2FA: true,
             tempToken,
             message: 'Please enter your 2FA code'
-        }, 200, false);
+        });
     }
 
     // No 2FA - create full session
@@ -524,7 +516,7 @@ async function handleLogin(request, env) {
         success: true,
         token,
         user: { id: user.id, email: user.email, name: user.name }
-    }, 200, false);
+    });
 }
 
 // Verify 2FA code during login
@@ -577,7 +569,7 @@ async function verify2FALogin(request, env) {
         success: true,
         token,
         user: { id: session.user_id, email: session.email, name: session.name }
-    }, 200, false);
+    });
 }
 
 async function handleLogout(request, env) {
@@ -587,12 +579,12 @@ async function handleLogout(request, env) {
         await env.hikari_db.prepare('DELETE FROM sessions WHERE token = ?').bind(token).run();
     }
 
-    return jsonResponse({ success: true }, 200, false);
+    return jsonResponse({ success: true });
 }
 
 async function verifySession(request, env) {
     const result = await checkAuth(request, env);
-    return jsonResponse({ valid: result.valid, user: result.user || null }, 200, false);
+    return jsonResponse({ valid: result.valid, user: result.user || null });
 }
 
 async function checkAuth(request, env) {
@@ -638,7 +630,7 @@ async function createAdmin(request, env) {
             'INSERT INTO admin_users (email, password_hash, name) VALUES (?, ?, ?)'
         ).bind(email, passwordHash, name || 'Admin').run();
 
-        return jsonResponse({ success: true, message: 'Admin created' }, 200, false);
+        return jsonResponse({ success: true, message: 'Admin created' });
     } catch (e) {
         return errorResponse('Email already exists', 400);
     }
@@ -660,7 +652,7 @@ async function get2FAStatus(request, env) {
     return jsonResponse({
         success: true,
         enabled: user?.totp_enabled === 1
-    }, 200, false);
+    });
 }
 
 // Start 2FA setup - generate secret and QR data
@@ -686,7 +678,7 @@ async function setup2FA(request, env) {
         secret,
         otpauthUrl,
         qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(otpauthUrl)}`
-    }, 200, false);
+    });
 }
 
 // Verify 2FA setup with a code from authenticator app
@@ -724,7 +716,7 @@ async function verify2FASetup(request, env) {
     return jsonResponse({
         success: true,
         message: '2FA enabled successfully'
-    }, 200, false);
+    });
 }
 
 // Disable 2FA
@@ -769,7 +761,7 @@ async function disable2FA(request, env) {
     return jsonResponse({
         success: true,
         message: '2FA disabled'
-    }, 200, false);
+    });
 }
 
 // ===== CONTENT HANDLERS =====
@@ -784,8 +776,7 @@ async function getContent(request, env, useCache = false) {
             const cached = await env.hikari_cache.get(CACHE_KEYS.CONTENT);
             if (cached) {
                 console.log('📦 Serving content from cache');
-                // Ép trả về false cho Safari KHÔNG LƯU CACHE TĨNH
-                return jsonResponse({ success: true, content: JSON.parse(cached), cached: true }, 200, false);
+                return jsonResponse({ success: true, content: JSON.parse(cached), cached: true }, 200, true);
             }
         } catch (e) {
             console.log('Cache miss, falling back to D1');
@@ -809,12 +800,12 @@ async function getContent(request, env, useCache = false) {
         content[row.section][row.key] = row.type === 'json' ? JSON.parse(row.value) : row.value;
     });
 
-    return jsonResponse({ success: true, content }, 200, false);
+    return jsonResponse({ success: true, content }, 200, useCache);
 }
 
 async function getAllContent(env) {
     const result = await env.hikari_db.prepare('SELECT * FROM site_content ORDER BY section, key').all();
-    return jsonResponse({ success: true, items: result.results }, 200, false);
+    return jsonResponse({ success: true, items: result.results });
 }
 
 async function updateContent(request, env) {
@@ -833,7 +824,7 @@ async function updateContent(request, env) {
     await env.hikari_cache.delete(CACHE_KEYS.CONTENT);
     console.log('🗑️ Content cache invalidated');
 
-    return jsonResponse({ success: true, timestamp: Date.now() }, 200, false);
+    return jsonResponse({ success: true });
 }
 
 // ===== MENU HANDLERS =====
@@ -849,7 +840,7 @@ async function getMenuItems(request, env, useCache = false) {
             const cached = await env.hikari_cache.get(CACHE_KEYS.MENU);
             if (cached) {
                 console.log('📦 Serving menu from cache');
-                return jsonResponse({ success: true, items: JSON.parse(cached), cached: true }, 200, false);
+                return jsonResponse({ success: true, items: JSON.parse(cached), cached: true }, 200, true);
             }
         } catch (e) {
             console.log('Cache miss, falling back to D1');
@@ -873,7 +864,7 @@ async function getMenuItems(request, env, useCache = false) {
     query += ' ORDER BY category, display_order';
 
     const result = await env.hikari_db.prepare(query).bind(...params).all();
-    return jsonResponse({ success: true, items: result.results }, 200, false);
+    return jsonResponse({ success: true, items: result.results }, 200, useCache);
 }
 
 // Helper: Ensure thumbnail column exists
@@ -912,7 +903,7 @@ async function createMenuItem(request, env) {
     await env.hikari_cache.delete(CACHE_KEYS.MENU);
     console.log('🗑️ Menu cache invalidated');
 
-    return jsonResponse({ success: true, id: result.meta.last_row_id, timestamp: Date.now() }, 200, false);
+    return jsonResponse({ success: true, id: result.meta.last_row_id });
 }
 
 async function updateMenuItem(request, env, id) {
@@ -936,7 +927,7 @@ async function updateMenuItem(request, env, id) {
     await env.hikari_cache.delete(CACHE_KEYS.MENU);
     console.log('🗑️ Menu cache invalidated');
 
-    return jsonResponse({ success: true, timestamp: Date.now() }, 200, false);
+    return jsonResponse({ success: true });
 }
 
 async function deleteMenuItem(env, id) {
@@ -946,7 +937,7 @@ async function deleteMenuItem(env, id) {
     await env.hikari_cache.delete(CACHE_KEYS.MENU);
     console.log('🗑️ Menu cache invalidated');
 
-    return jsonResponse({ success: true, timestamp: Date.now() }, 200, false);
+    return jsonResponse({ success: true });
 }
 
 // ===== RESERVATIONS HANDLERS =====
@@ -962,7 +953,7 @@ async function createReservation(request, env) {
         data.date, data.time, data.message || ''
     ).run();
 
-    return jsonResponse({ success: true, id: result.meta.last_row_id }, 200, false);
+    return jsonResponse({ success: true, id: result.meta.last_row_id });
 }
 
 async function getAllReservations(request, env) {
@@ -985,7 +976,7 @@ async function getAllReservations(request, env) {
     query += ' ORDER BY created_at DESC';
 
     const result = await env.hikari_db.prepare(query).bind(...params).all();
-    return jsonResponse({ success: true, items: result.results }, 200, false);
+    return jsonResponse({ success: true, items: result.results });
 }
 
 async function updateReservation(request, env, id) {
@@ -995,12 +986,12 @@ async function updateReservation(request, env, id) {
         UPDATE reservations SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
     `).bind(status, id).run();
 
-    return jsonResponse({ success: true }, 200, false);
+    return jsonResponse({ success: true });
 }
 
 async function deleteReservation(env, id) {
     await env.hikari_db.prepare('DELETE FROM reservations WHERE id = ?').bind(id).run();
-    return jsonResponse({ success: true }, 200, false);
+    return jsonResponse({ success: true });
 }
 
 // ===== GALLERY HANDLERS =====
@@ -1009,7 +1000,7 @@ async function getGallery(env) {
     const result = await env.hikari_db.prepare(
         'SELECT * FROM gallery WHERE is_active = 1 ORDER BY display_order'
     ).all();
-    return jsonResponse({ success: true, items: result.results }, 200, false);
+    return jsonResponse({ success: true, items: result.results });
 }
 
 async function createGalleryItem(request, env) {
@@ -1020,12 +1011,12 @@ async function createGalleryItem(request, env) {
         VALUES (?, ?, ?, ?)
     `).bind(data.title, data.image_url, data.thumbnail_url, data.display_order || 0).run();
 
-    return jsonResponse({ success: true, id: result.meta.last_row_id }, 200, false);
+    return jsonResponse({ success: true, id: result.meta.last_row_id });
 }
 
 async function deleteGalleryItem(env, id) {
     await env.hikari_db.prepare('DELETE FROM gallery WHERE id = ?').bind(id).run();
-    return jsonResponse({ success: true }, 200, false);
+    return jsonResponse({ success: true });
 }
 
 // ===== SETTINGS HANDLERS =====
@@ -1037,7 +1028,7 @@ async function getSettings(env, useCache = true) {
             const cached = await env.hikari_cache.get(CACHE_KEYS.SETTINGS);
             if (cached) {
                 console.log('📦 Serving settings from cache');
-                return jsonResponse({ success: true, settings: JSON.parse(cached), cached: true }, 200, false);
+                return jsonResponse({ success: true, settings: JSON.parse(cached), cached: true });
             }
         } catch (e) {
             console.log('Cache miss, falling back to D1');
@@ -1051,7 +1042,7 @@ async function getSettings(env, useCache = true) {
         settings[row.key] = row.type === 'json' ? JSON.parse(row.value) : row.value;
     });
 
-    return jsonResponse({ success: true, settings }, 200, false);
+    return jsonResponse({ success: true, settings });
 }
 
 async function updateSettings(request, env) {
@@ -1068,7 +1059,7 @@ async function updateSettings(request, env) {
     await env.hikari_cache.delete(CACHE_KEYS.SETTINGS);
     console.log('🗑️ Settings cache invalidated');
 
-    return jsonResponse({ success: true, timestamp: Date.now() }, 200, false);
+    return jsonResponse({ success: true });
 }
 
 // ===== STATS HANDLER =====
@@ -1087,7 +1078,7 @@ async function getStats(env) {
             pendingReservations: pendingRes.count,
             todayReservations: todayRes.count
         }
-    }, 200, false);
+    });
 }
 
 // ===== R2 IMAGE UPLOAD HANDLER =====
@@ -1164,7 +1155,7 @@ async function uploadImage(request, env) {
                     url: customUrl,
                     key: customKey,
                     size: imageData.byteLength
-                }, 200, false);
+                });
             }
         } else {
             return errorResponse('Unsupported content type');
@@ -1203,7 +1194,7 @@ async function uploadImage(request, env) {
             key: key,
             thumbnail: thumbnailUrl,
             thumbnailKey: thumbnailKey
-        }, 200, false);
+        });
     } catch (error) {
         console.error('Upload error:', error);
         return errorResponse('Upload failed: ' + error.message, 500);
@@ -1230,7 +1221,7 @@ async function deleteImage(env, key) {
 
         console.log('🗑️ Image deleted:', decodedKey);
 
-        return jsonResponse({ success: true }, 200, false);
+        return jsonResponse({ success: true });
     } catch (error) {
         console.error('Delete error:', error);
         return errorResponse('Delete failed: ' + error.message, 500);
@@ -1308,7 +1299,7 @@ async function uploadContentImage(request, env) {
             size: imageData.byteLength,
             sizeKB: sizeKB,
             expectedDimensions: expectedSize ? `${expectedSize.width}x${expectedSize.height}` : null
-        }, 200, false);
+        });
     } catch (error) {
         console.error('Content upload error:', error);
         return errorResponse('Upload failed: ' + error.message, 500);
@@ -1426,7 +1417,7 @@ async function migrateThumbnails(env) {
             success: true,
             message: `Migration complete: ${results.success} thumbnails created/linked`,
             results
-        }, 200, false);
+        });
 
     } catch (error) {
         console.error('Migration error:', error);
