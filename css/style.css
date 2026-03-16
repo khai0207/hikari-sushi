@@ -311,12 +311,23 @@ input, textarea, select {
     align-items: center;
     gap: 12px;
 }
+.logo-with-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
 .logo-img {
     width: 45px;
     height: 45px;
     object-fit: contain;
 }
+.logo-with-name-img {
+    width: 164px;
+    height: 62px;
+    object-fit: contain;
+}
+
 
 .logo-text {
     font-size: 40px;
