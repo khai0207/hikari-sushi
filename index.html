@@ -218,7 +218,7 @@
         .sakura {
             position: absolute;
             top: -20px;
-            z-index: 2;
+            z-zindex: 2;
             /* Nằm trên background mờ nhưng dưới nội dung text (z-index 5) */
             pointer-events: none;
             /* Không chặn click chuột */
@@ -1026,47 +1026,60 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const aboutSection = document.getElementById('about');
+    document.addEventListener('DOMContentLoaded', function () {
+        const aboutSection = document.getElementById('about');
 
-            if (aboutSection) {
-                function createSakuraPetal() {
-                    const petal = document.createElement('span');
-                    petal.classList.add('sakura');
+        if (aboutSection) {
+            // Thiết lập tốc độ rơi: 5cm/s tương đương ~189 pixels/giây
+            const speedPxPerSec = 189; 
 
-                    // Kích thước ngẫu nhiên (từ 15px đến 25px)
-                    const size = Math.random() * 10 + 15;
-                    petal.style.width = `${size}px`;
-                    petal.style.height = `${size}px`;
+            function createSakuraPetal() {
+                const petal = document.createElement('span');
+                petal.classList.add('sakura');
 
-                    // Vị trí xuất hiện ngẫu nhiên theo chiều ngang (left: 0% -> 100%)
-                    petal.style.left = Math.random() * 100 + '%';
+                // Kích thước ngẫu nhiên (từ 15px đến 25px)
+                const size = Math.random() * 10 + 15;
+                petal.style.width = `${size}px`;
+                petal.style.height = `${size}px`;
 
-                    // Thời gian rơi ngẫu nhiên (chậm: từ 6s đến 11s)
-                    const duration = Math.random() * 5 + 6;
+                // Vị trí xuất hiện ngẫu nhiên theo chiều ngang (0% -> 100%)
+                petal.style.left = Math.random() * 100 + '%';
 
-                    // Thời gian lắc lư ngẫu nhiên
-                    const swayDuration = Math.random() * 2 + 2;
+                /* =========================================================
+                   TÍNH TOÁN THỜI GIAN ĐỂ ĐẠT TỐC ĐỘ 5CM/S CỐ ĐỊNH
+                   ========================================================= */
+                // 1. Lấy chiều cao thực tế của vùng hiển thị
+                const containerHeight = aboutSection.offsetHeight > 0 ? aboutSection.offsetHeight : window.innerHeight;
+                
+                // 2. Tính tổng quãng đường rơi (từ -10% đến 110% = 120% chiều cao)
+                const totalDistance = containerHeight * 1.2; 
+                
+                // 3. Tính thời gian (Thời gian = Quãng đường / Vận tốc)
+                const fallDuration = totalDistance / speedPxPerSec;
 
-                    petal.style.animationDuration = `${duration}s, ${swayDuration}s`;
-                    petal.style.animationName = 'fall, sway';
+                // Thời gian lắc lư ngẫu nhiên để các cánh hoa không bị đồng điệu như robot
+                const swayDuration = Math.random() * 2 + 2;
 
-                    // Độ trễ ngẫu nhiên
-                    petal.style.animationDelay = `0s, ${Math.random()}s`;
+                // Áp dụng thời gian tính toán được vào CSS animation
+                petal.style.animationDuration = `${fallDuration}s, ${swayDuration}s`;
+                petal.style.animationName = 'fall, sway';
 
-                    aboutSection.appendChild(petal);
+                // Độ trễ khởi tạo ngẫu nhiên
+                petal.style.animationDelay = `0s, ${Math.random()}s`;
 
-                    // Xóa cánh hoa sau khi rơi xong để tránh đầy bộ nhớ
-                    setTimeout(() => {
-                        petal.remove();
-                    }, duration * 1000);
-                }
+                aboutSection.appendChild(petal);
 
-                // Tạo cánh hoa mới mỗi 400ms
-                setInterval(createSakuraPetal, 400);
+                // Dọn dẹp DOM: Xóa cánh hoa sau khi nó rơi xong
+                setTimeout(() => {
+                    petal.remove();
+                }, fallDuration * 1000);
             }
-        });
-    </script>
+
+            // Tạo cánh hoa mới mỗi 400ms
+            setInterval(createSakuraPetal, 400);
+        }
+    });
+</script>
 
     <script>; (function (d, s, id) { const el = d.getElementsByTagName(s)[0]; if (d.getElementById(id) || el.parentNode == null) { return; } var js = d.createElement(s); js.id = id; js.async = true; js.src = 'https://sdk.zenchef.com/v1/sdk.min.js'; el.parentNode.insertBefore(js, el); })(document, 'script', 'zenchef-sdk')</script>
     <div class="zc-widget-config" data-restaurant="377915" data-open="2000"></div>
