@@ -315,6 +315,7 @@ input, textarea, select {
     display: flex;
     align-items: center;
     gap: 12px;
+    line-height: 1.8;
 }
 
 .logo-img {
