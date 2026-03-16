@@ -2118,10 +2118,21 @@ input, textarea, select {
     gap: 12px;
     margin-bottom: 25px;
 }
+.footer-logo-with-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
 
 .footer-logo-img {
     width: 50px;
     height: 50px;
+    object-fit: contain;
+}
+.footer-logo-with-name-img {
+    width: 185px;
+    height: 75px;
     object-fit: contain;
 }
 
