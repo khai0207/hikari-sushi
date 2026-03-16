@@ -2531,6 +2531,11 @@ input, textarea, select {
         width: 38px;
         height: 38px;
     }
+    .logo-with-name-img {
+    width: 173px;
+    height: 63px;
+    object-fit: contain;
+}
     
     .logo-name {
         font-size: 18px;
@@ -2844,8 +2849,8 @@ input, textarea, select {
         height: 32px;
     }
     .logo-with-name-img {
-    width: 130px;
-    height: 32px;
+    width: 157px;
+    height: 57px;
     object-fit: contain;
 }
     
