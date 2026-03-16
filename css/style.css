@@ -315,7 +315,6 @@ input, textarea, select {
     display: flex;
     align-items: center;
     gap: 12px;
-    line-height: 1.8;
 }
 
 .logo-img {
@@ -324,7 +323,7 @@ input, textarea, select {
     object-fit: contain;
 }
 .logo-with-name-img {
-    width: 180px;
+    width: 190px;
     height: 70px;
     object-fit: contain;
 }
@@ -2544,7 +2543,7 @@ input, textarea, select {
         height: 38px;
     }
     .logo-with-name-img {
-    width: 173px;
+    width: 183px;
     height: 63px;
     object-fit: contain;
 }
@@ -2861,7 +2860,7 @@ input, textarea, select {
         height: 32px;
     }
     .logo-with-name-img {
-    width: 157px;
+    width: 167px;
     height: 57px;
     object-fit: contain;
 }
