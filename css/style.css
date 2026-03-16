@@ -2843,6 +2843,11 @@ input, textarea, select {
         width: 32px;
         height: 32px;
     }
+    .logo-with-name-img {
+    width: 130px;
+    height: 32px;
+    object-fit: contain;
+}
     
     .logo-name {
         font-size: 15px;
