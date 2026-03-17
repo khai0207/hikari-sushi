@@ -789,13 +789,19 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
 
             try {
+                // Lấy token xác thực từ sessionStorage
+                const token = sessionStorage.getItem('hikari_auth_token');
+
                 for (const field of fields) {
                     const el = document.getElementById(field);
                     if (el) {
                         const value = el.value;
                         const response = await fetch(`${API_URL}/api/content`, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}` // THÊM HEADER NÀY ĐỂ XÁC THỰC
+                            },
                             body: JSON.stringify({ key: field, value: value })
                         });
                         const result = await response.json();
