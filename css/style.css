@@ -893,7 +893,7 @@ input, textarea, select {
   background-color: transparent;
   
   /* Đảm bảo nó vẫn là hình tròn */
-  border-radius: 50%;
+  border-radius: 100%;
   
   /* Căn giữa hình ảnh bên trong (sử dụng flexbox) */
   display: flex;
