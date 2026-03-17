@@ -847,7 +847,7 @@
             await saveContent(e.target, ['social_facebook', 'social_instagram', 'social_tripadvisor', 'social_google']);
         });
 
-        // Xử lý LƯU GIỜ GIẤC riêng để đảm bảo cấu trúc object JSON
+        // Xử lý LƯU GIỜ GIẤC (đã fix stringify)
         document.getElementById('hoursForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
@@ -861,11 +861,10 @@
                     const lunchVal = document.getElementById(`hours_${day}_lunch`).value;
                     const dinnerVal = document.getElementById(`hours_${day}_dinner`).value;
 
-                    // Tạo object JSON chuẩn cho từng ngày
-                    const hoursObj = { lunch: lunchVal, dinner: dinnerVal };
+                    // Chuyển object thành chuỗi JSON để D1 có thể lưu được
+                    const hoursString = JSON.stringify({ lunch: lunchVal, dinner: dinnerVal });
                     
-                    // Gọi updateDirect với type = 'json'
-                    const result = await HikariAPI.content.updateDirect('hours', day, hoursObj, 'json');
+                    const result = await HikariAPI.content.updateDirect('hours', day, hoursString, 'json');
                     
                     if (!result.success) {
                         throw new Error(result.error || `Erreur pour ${day}`);
