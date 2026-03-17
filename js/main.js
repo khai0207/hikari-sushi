@@ -780,13 +780,13 @@ async function loadDynamicContent() {
                 if (content.contact.phone) {
                     const phoneClean = content.contact.phone.replace(/\s/g, '');
                     
-                    // All phone links
+                    // All phone links (href)
                     document.querySelectorAll('a[href^="tel:"]').forEach(link => {
                         link.href = `tel:${phoneClean}`;
                     });
                     
-                    // Phone text displays
-                    document.querySelectorAll('.footer-contact a[href^="tel:"]').forEach(el => {
+                    // Phone text displays (Cập nhật cho cả Footer VÀ Top-bar)
+                    document.querySelectorAll('.footer-contact a[href^="tel:"], .top-info a[href^="tel:"]').forEach(el => {
                         el.textContent = content.contact.phone;
                     });
                     
@@ -806,11 +806,11 @@ async function loadDynamicContent() {
                     });
                 }
                 
-                // Address
+                // Address (Sửa lỗi target sai thẻ)
                 if (content.contact.address) {
-                    const addressSpan = document.querySelector('.footer-contact li:first-child span');
-                    if (addressSpan) {
-                        addressSpan.innerHTML = content.contact.address.replace(', ', '<br>');
+                    const addressLink = document.querySelector('.footer-contact li:first-child a');
+                    if (addressLink) {
+                        addressLink.innerHTML = content.contact.address.replace(', ', '<br>');
                     }
                 }
             }
@@ -1071,11 +1071,11 @@ async function loadDynamicContent() {
             // Preload gallery images
             if (galleryUrls.length > 0) preloadImages(galleryUrls);
             
-            // ===== MAP EMBED =====
+            // ===== MAP EMBED (Đã nới lỏng điều kiện kiểm tra URL) =====
             if (content.contact && content.contact.map_embed) {
                 const mapIframe = document.querySelector('.map-wrapper iframe');
-                // Only accept valid Google Maps embed URLs
-                if (mapIframe && content.contact.map_embed.includes('google.com/maps/embed')) {
+                // Sửa lại: chỉ cần URL có chứa chữ google là được chấp nhận
+                if (mapIframe && content.contact.map_embed.includes('google')) {
                     mapIframe.src = content.contact.map_embed;
                 }
             }
