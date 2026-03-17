@@ -400,10 +400,8 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="../index.html" class="sidebar-logo">
@@ -449,7 +447,6 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <header class="admin-header">
             <div class="header-left">
@@ -462,7 +459,6 @@
 
         <div class="content-area">
             <div class="settings-grid">
-                <!-- Contact Info -->
                 <div class="settings-card">
                     <div class="settings-card-header">
                         <i class="fas fa-phone"></i>
@@ -500,7 +496,6 @@
                     </form>
                 </div>
 
-                <!-- Social Links -->
                 <div class="settings-card">
                     <div class="settings-card-header">
                         <i class="fas fa-share-alt"></i>
@@ -537,7 +532,6 @@
                     </form>
                 </div>
 
-                <!-- Opening Hours -->
                 <div class="settings-card">
                     <div class="settings-card-header">
                         <i class="fas fa-clock"></i>
@@ -600,7 +594,6 @@
                     </form>
                 </div>
                 
-                <!-- 2FA Security -->
                 <div class="settings-card">
                     <div class="settings-card-header">
                         <i class="fas fa-shield-alt"></i>
@@ -610,13 +603,11 @@
                         </div>
                     </div>
                     <div class="settings-card-body">
-                        <!-- 2FA Status -->
                         <div id="twoFAStatus" style="text-align: center; padding: 2rem;">
                             <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--gold);"></i>
                             <p style="margin-top: 1rem; color: var(--text-muted);">Chargement...</p>
                         </div>
                         
-                        <!-- 2FA Disabled State -->
                         <div id="twoFADisabled" style="display: none; text-align: center; padding: 1rem;">
                             <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
                                 <i class="fas fa-unlock" style="font-size: 2rem; color: var(--danger);"></i>
@@ -629,7 +620,6 @@
                             </button>
                         </div>
                         
-                        <!-- 2FA Enabled State -->
                         <div id="twoFAEnabled" style="display: none; text-align: center; padding: 1rem;">
                             <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(34, 197, 94, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
                                 <i class="fas fa-lock" style="font-size: 2rem; color: var(--success);"></i>
@@ -642,7 +632,6 @@
                             </button>
                         </div>
                         
-                        <!-- 2FA Setup Flow -->
                         <div id="twoFASetupFlow" style="display: none;">
                             <div style="text-align: center; margin-bottom: 2rem;">
                                 <p style="color: var(--text-muted); margin-bottom: 1rem;">Scannez ce QR code avec votre application d'authentification (Google Authenticator, Authy, etc.)</p>
@@ -667,7 +656,6 @@
                             </div>
                         </div>
                         
-                        <!-- 2FA Disable Flow -->
                         <div id="twoFADisableFlow" style="display: none;">
                             <div style="text-align: center; margin-bottom: 1.5rem;">
                                 <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--warning); margin-bottom: 1rem;"></i>
@@ -694,7 +682,6 @@
                     </div>
                 </div>
                 
-                <!-- Migration Tools -->
                 <div class="settings-card">
                     <div class="settings-header">
                         <div class="settings-icon">
@@ -702,7 +689,7 @@
                         </div>
                         <div class="settings-title">
                             <h2>Outils de Migration</h2>
-                            <p>Outils d'administration pour optimiser les images</p>
+                            <p>Outils d'administration pour optimiser images</p>
                         </div>
                     </div>
                     <div class="settings-content">
@@ -732,7 +719,6 @@
         </div>
     </main>
 
-    <!-- Toast -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage"></span>
@@ -781,7 +767,7 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // Save content helper (same as content.html)
+        // Save content helper
         async function saveContent(form, fields) {
             const btn = form.querySelector('button[type="submit"]');
             const originalText = btn.innerHTML;
@@ -789,22 +775,12 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
 
             try {
-                // Lấy token xác thực từ sessionStorage
-                const token = sessionStorage.getItem('hikari_auth_token');
-
                 for (const field of fields) {
                     const el = document.getElementById(field);
                     if (el) {
                         const value = el.value;
-                        const response = await fetch(`${API_URL}/api/content`, {
-                            method: 'POST',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${token}` // THÊM HEADER NÀY ĐỂ XÁC THỰC
-                            },
-                            body: JSON.stringify({ key: field, value: value })
-                        });
-                        const result = await response.json();
+                        // Tận dụng API Client có sẵn thay vì tự gọi fetch
+                        const result = await HikariAPI.content.update(field, value);
                         if (!result.success) {
                             throw new Error(result.error || 'Failed to save ' + field);
                         }
