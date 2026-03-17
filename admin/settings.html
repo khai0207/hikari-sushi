@@ -689,7 +689,7 @@
                         </div>
                         <div class="settings-title">
                             <h2>Outils de Migration</h2>
-                            <p>Outils d'administration pour optimiser images</p>
+                            <p>Outils d'administration pour optimiser les images</p>
                         </div>
                     </div>
                     <div class="settings-content">
@@ -767,7 +767,7 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // Save content helper
+        // Save content helper cho các form cơ bản (không dùng cho form giờ giấc)
         async function saveContent(form, fields) {
             const btn = form.querySelector('button[type="submit"]');
             const originalText = btn.innerHTML;
@@ -779,7 +779,6 @@
                     const el = document.getElementById(field);
                     if (el) {
                         const value = el.value;
-                        // Tận dụng API Client có sẵn thay vì tự gọi fetch
                         const result = await HikariAPI.content.update(field, value);
                         if (!result.success) {
                             throw new Error(result.error || 'Failed to save ' + field);
@@ -848,14 +847,38 @@
             await saveContent(e.target, ['social_facebook', 'social_instagram', 'social_tripadvisor', 'social_google']);
         });
 
+        // Xử lý LƯU GIỜ GIẤC riêng để đảm bảo cấu trúc object JSON
         document.getElementById('hoursForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-            const fields = [];
-            days.forEach(day => {
-                fields.push(`hours_${day}_lunch`, `hours_${day}_dinner`);
-            });
-            await saveContent(e.target, fields);
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+
+            try {
+                const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                for (const day of days) {
+                    const lunchVal = document.getElementById(`hours_${day}_lunch`).value;
+                    const dinnerVal = document.getElementById(`hours_${day}_dinner`).value;
+
+                    // Tạo object JSON chuẩn cho từng ngày
+                    const hoursObj = { lunch: lunchVal, dinner: dinnerVal };
+                    
+                    // Gọi updateDirect với type = 'json'
+                    const result = await HikariAPI.content.updateDirect('hours', day, hoursObj, 'json');
+                    
+                    if (!result.success) {
+                        throw new Error(result.error || `Erreur pour ${day}`);
+                    }
+                }
+                showToast('Horaires enregistrés!');
+            } catch (error) {
+                console.error('Save hours error:', error);
+                showToast('Erreur: ' + error.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
         });
 
         // Initialize
