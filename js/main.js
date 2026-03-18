@@ -287,7 +287,7 @@ setTimeout(type, 1500);
 const header = document.querySelector('.header');
 const topBar = document.querySelector('.top-bar');
 const backToTop = document.querySelector('.back-to-top');
-const topAnnouncement = document.getElementById('topAnnouncement'); // ADDED
+const topAnnouncement = document.getElementById('topAnnouncement'); 
 
 // Use passive listener for better scroll performance
 let ticking = false;
@@ -300,13 +300,13 @@ function updateHeaderOnScroll() {
         header.classList.add('scrolled');
         header.classList.add('top-hidden');
         topBar.classList.add('hidden');
-        if (topAnnouncement) topAnnouncement.classList.add('hidden'); // ẨN CÙNG VỚI TOP-BAR
+        if (topAnnouncement) topAnnouncement.classList.add('hidden'); // Ẩn cùng top-bar
         backToTop.classList.add('visible');
     } else {
         header.classList.remove('scrolled');
         header.classList.remove('top-hidden');
         topBar.classList.remove('hidden');
-        if (topAnnouncement) topAnnouncement.classList.remove('hidden'); // HIỆN CÙNG VỚI TOP-BAR
+        if (topAnnouncement) topAnnouncement.classList.remove('hidden'); // Hiện cùng top-bar
         backToTop.classList.remove('visible');
     }
     ticking = false;
@@ -704,14 +704,18 @@ async function loadDynamicContent() {
             const content = result.content;
             
             // ===== ANNOUNCEMENT BANNER =====
-            if (content.announcement && content.announcement.text) {
-                const announcementDiv = document.getElementById('topAnnouncement');
-                const announcementText = document.getElementById('announcementText');
-                if (announcementDiv && announcementText) {
-                    // Cập nhật text từ DB
-                    announcementText.textContent = content.announcement.text;
-                    // Bật hiển thị banner
+            // Kiểm tra cả 2 trường hợp tên biến trả về từ DB (Dạng chuỗi thuần hoặc Object lồng)
+            const announcementVal = content.announcement_text || (content.announcement ? content.announcement.text : '');
+            
+            const announcementDiv = document.getElementById('topAnnouncement');
+            const announcementText = document.getElementById('announcementText');
+            
+            if (announcementDiv && announcementText) {
+                if (announcementVal && announcementVal.trim() !== '') {
+                    announcementText.textContent = announcementVal;
                     announcementDiv.classList.add('active');
+                } else {
+                    announcementDiv.classList.remove('active');
                 }
             }
 
