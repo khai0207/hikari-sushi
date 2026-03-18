@@ -2093,7 +2093,10 @@ input, textarea, select {
 
 .contact-cta {
     display: flex;
+    justify-content: center;
     gap: 20px;
+    width: 100%; /* Đảm bảo khối này rộng bằng đúng phần bản đồ ở trên */
+    margin-top: 15px; /* (Tùy chọn) Cách bản đồ ra một chút cho thoáng */
 }
 
 /* ===== FOOTER ===== */
