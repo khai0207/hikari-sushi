@@ -938,9 +938,11 @@ input, textarea, select {
 
 .about-cta {
     display: flex;
+    justify-content: center;
     gap: 20px;
     align-items: center;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .btn-call {
