@@ -12,7 +12,13 @@
         content="sushi toulouse, restaurant japonais toulouse, meilleur sushi toulouse, hikari sushi, maki, sashimi, yakitori, cuisine japonaise, livraison sushi">
     <meta name="author" content="HIKARI Sushi & Roll">
 
-    <meta name="robots" content="noindex, nofollow">
+    <meta name="robots" content="index, follow" id="dynamic-robots">
+    
+    <script>
+        if (window.location.hostname.includes('pages.dev')) {
+            document.getElementById('dynamic-robots').setAttribute('content', 'noindex, nofollow');
+        }
+    </script>
 
     <link rel="canonical" href="https://hikari-sushi.fr/">
 
