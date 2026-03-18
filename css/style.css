@@ -2576,6 +2576,8 @@ transform: translateX(-50%);
     
     .nav-menu {
         position: fixed;
+        left: auto;
+        transform: none;
         top: 0;
         right: -100%;
         width: 280px;
