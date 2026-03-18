@@ -308,7 +308,6 @@ align-items: center;
 
 justify-content: space-between;
 
-position: relative; /* Bắt buộc thêm thuộc tính này để làm gốc tọa độ cho nav-menu */
 
 }
 
@@ -355,6 +354,7 @@ display: flex;
 
 gap: 35px; /* Khoảng cách 35px bạn đã thiết lập */
 
+position: absolute;
 
 left: 50%;
 
@@ -2412,13 +2412,11 @@ transform: translateX(-50%);
         opacity: 1;
         visibility: visible;
     }
-    .navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+
     .nav-menu {
         position: fixed;
+        left: auto;
+        transform: none;
         top: 0;
         right: -100%;
         width: 280px;
