@@ -2,7 +2,6 @@
   "name": "hikari-sushi",
   "main": "worker/index.js",
   "compatibility_date": "2025-12-01",
-  "pages_build_output_dir": ".",
   "d1_databases": [
     {
       "binding": "hikari_db",
