@@ -105,16 +105,6 @@
         .sidebar-footer {
             padding: 1rem 1.5rem;
             border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            padding: 12px;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
         }
 
         .btn-logout {
@@ -565,8 +555,10 @@
     </style>
 </head>
 <body>
+    <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     
+    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="../index.html" class="sidebar-logo">
@@ -612,6 +604,7 @@
         </div>
     </aside>
 
+    <!-- Main Content -->
     <main class="main-content">
         <header class="admin-header">
             <div class="header-left">
@@ -623,6 +616,7 @@
         </header>
 
         <div class="content-area">
+            <!-- Info Banner -->
             <div class="info-banner">
                 <i class="fas fa-info-circle"></i>
                 <p>
@@ -630,30 +624,9 @@
                 </p>
             </div>
 
+            <!-- Content Grid -->
             <div class="content-grid">
-
-                <form id="announcementForm" class="content-card full-width">
-                    <div class="content-card-header">
-                        <i class="fas fa-bullhorn" style="background: linear-gradient(135deg, var(--danger), #b91c1c); color: white;"></i>
-                        <div>
-                            <h2>Bandeau d'Annonce</h2>
-                            <p>Message d'alerte en haut du site (ex: fermeture exceptionnelle)</p>
-                        </div>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="form-group">
-                            <label>Texte de l'annonce (Laissez vide pour masquer le message sur le site)</label>
-                            <input type="text" id="announcement_text" placeholder="Fermeture exceptionnelle ce soir...">
-                        </div>
-                    </div>
-                    <div class="content-card-footer">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-
+                <!-- Hero Section -->
                 <form id="heroForm" class="content-card">
                     <div class="content-card-header">
                         <i class="fas fa-home"></i>
@@ -689,6 +662,7 @@
                     </div>
                 </form>
 
+                <!-- About Section -->
                 <form id="aboutForm" class="content-card">
                     <div class="content-card-header">
                         <i class="fas fa-info-circle"></i>
@@ -738,6 +712,9 @@
                     </div>
                 </form>
 
+
+
+                <!-- Plat Signature Section -->
                 <form id="signatureForm" class="content-card">
                     <div class="content-card-header">
                         <i class="fas fa-star"></i>
@@ -793,6 +770,9 @@
                     </div>
                 </form>
 
+                
+
+                <!-- Reservation Section -->
                 <form id="reservationForm" class="content-card full-width">
                     <div class="content-card-header">
                         <i class="fas fa-calendar-alt"></i>
@@ -866,6 +846,10 @@
                     </div>
                 </form>
 
+                <!-- Gallery Section -->
+                
+
+                <!-- Testimonials Section -->
                 <form id="testimonialsForm" class="content-card full-width">
                     <div class="content-card-header">
                         <i class="fas fa-comments"></i>
@@ -876,6 +860,7 @@
                     </div>
                     <div class="content-card-body">
                         <div class="services-edit-grid">
+                            <!-- Testimonial 1 -->
                             <div class="service-edit-item">
                                 <h4 style="color: var(--gold); margin-bottom: 1rem;">⭐ Témoignage 1</h4>
                                 <div class="form-group">
@@ -895,6 +880,7 @@
                                     <input type="number" id="testimonial1_rating" min="1" max="5" placeholder="5">
                                 </div>
                             </div>
+                            <!-- Testimonial 2 -->
                             <div class="service-edit-item">
                                 <h4 style="color: var(--gold); margin-bottom: 1rem;">⭐ Témoignage 2</h4>
                                 <div class="form-group">
@@ -914,6 +900,7 @@
                                     <input type="number" id="testimonial2_rating" min="1" max="5" placeholder="5">
                                 </div>
                             </div>
+                            <!-- Testimonial 3 -->
                             <div class="service-edit-item">
                                 <h4 style="color: var(--gold); margin-bottom: 1rem;">⭐ Témoignage 3</h4>
                                 <div class="form-group">
@@ -946,6 +933,7 @@
         </div>
     </main>
 
+    <!-- Toast -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage"></span>
@@ -1012,8 +1000,7 @@
             try {
                 for (const field of fields) {
                     const element = document.getElementById(field);
-                    // Bỏ điều kiện .value.trim() để cho phép lưu giá trị rỗng (ví dụ để xóa thông báo)
-                    if (element) {
+                    if (element && element.value.trim()) {
                         let value = element.value.trim();
                         
                         // Convert typed_words from comma-separated to JSON array
@@ -1039,11 +1026,6 @@
         }
 
         // Form handlers
-        document.getElementById('announcementForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await saveContent(e.target, ['announcement_text']);
-        });
-
         document.getElementById('heroForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await saveContent(e.target, ['hero_badge', 'hero_title', 'hero_typed_words', 'hero_subtitle']);
@@ -1054,11 +1036,18 @@
             await saveContent(e.target, ['about_subtitle', 'about_title', 'about_description', 'about_description2', 'about_description3', 'about_image']);
         });
 
+
         // Signature Form
         document.getElementById('signatureForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await saveContent(e.target, ['signature_image', 'signature_background', 'signature_name', 'signature_description', 'signature_new_price']);
         });
+
+        // Specialties Form
+
+
+        // Gallery Form
+
 
         // Reservation Form
         document.getElementById('reservationForm').addEventListener('submit', async (e) => {
@@ -1098,8 +1087,10 @@
             'about_image2': 'about-secondary',
             'signature_image': 'signature',
             'signature_background': 'signature-bg',
+
             'reservation_image': 'reservation',
             'reservation_background': 'reservation-bg',
+
         };
 
         // Generic image upload handler with automatic resize based on content type
@@ -1233,6 +1224,7 @@
         setupContentImageUpload('about_image2_preview', 'about_image2_file', 'about_image2');
         setupContentImageUpload('signature_image_preview', 'signature_image_file', 'signature_image');
         setupContentImageUpload('signature_background_preview', 'signature_background_file', 'signature_background');
+
         setupContentImageUpload('reservation_image_preview', 'reservation_image_file', 'reservation_image');
         setupContentImageUpload('reservation_background_preview', 'reservation_background_file', 'reservation_background');
 
