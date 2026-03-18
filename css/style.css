@@ -345,7 +345,10 @@ input, textarea, select {
 
 .nav-menu {
     display: flex;
-    gap: 35px;
+    gap: 35px; /* Khoảng cách 35px bạn đã thiết lập */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .nav-link {
@@ -859,13 +862,11 @@ input, textarea, select {
     color: var(--white);
     margin-bottom: 20px;
     font-weight: 500;
-    text-align: justify;
 }
 
 .about-text p {
     margin-bottom: 20px;
     color: var(--gray-light);
-    text-align: justify;
 }
 
 .about-features {
