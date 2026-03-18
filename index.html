@@ -131,32 +131,45 @@
 
     <style>
         /* === FIX CĂN GIỮA TUYỆT ĐỐI CHO PHẦN FEATURES === */
+
+        /* Chuyển Container sang Flexbox để dễ kiểm soát việc căn giữa hơn Grid */
         .features .features-grid {
             display: flex !important;
             flex-wrap: wrap !important;
+            /* Tự động xuống dòng trên mobile */
             justify-content: center !important;
+            /* Căn giữa toàn bộ các thẻ theo chiều ngang */
             gap: 30px !important;
+            /* Khoảng cách giữa các thẻ */
             text-align: center !important;
         }
 
+        /* Cấu hình thẻ con */
         .features .feature-card {
             flex: 0 0 300px !important;
+            /* Chiều rộng cố định nền tảng (khoảng 300px) */
             max-width: 90vw !important;
+            /* Đảm bảo không bị tràn trên mobile */
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
+            /* Căn giữa nội dung bên trong thẻ theo trục ngang */
             margin: 0 !important;
+            /* Reset margin, dùng gap của cha để căn khoảng cách */
         }
 
+        /* Căn giữa icon */
         .features .feature-icon-wrapper {
             margin: 0 auto 1.5rem auto !important;
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
             width: 80px !important;
+            /* Đảm bảo icon có không gian chuẩn */
             height: 80px !important;
         }
 
+        /* Căn giữa tiêu đề và đoạn văn */
         .features .feature-card h3,
         .features .feature-card p {
             text-align: center !important;
@@ -169,6 +182,7 @@
         #about {
             position: relative !important;
             overflow: hidden;
+            /* Ngăn hình ảnh và hiệu ứng tràn ra ngoài khung */
         }
 
         #about::before {
@@ -178,42 +192,110 @@
             left: 0;
             width: 100%;
             height: 100%;
+            /* Đường dẫn tới hình ảnh bạn đã lưu */
+
             background-position: left center;
+            /* Căn hình bên trái, giữa theo chiều dọc */
             background-repeat: no-repeat;
             background-size: contain;
+            /* Co giãn hình để vừa vặn, không bị cắt */
             opacity: 0.2;
+            /* Độ mờ 20% để không làm rối chữ */
             z-index: 1;
+            /* Nằm trên nền màu gốc nhưng dưới chữ */
             pointer-events: none;
+            /* Cho phép click xuyên qua hình nền */
         }
 
+        /* Đảm bảo nội dung chữ và ảnh minh họa nằm trên lớp nền trang trí */
         #about .container {
             position: relative;
             z-index: 5;
+            /* Cao hơn nền và hiệu ứng sakura */
         }
 
         /* === HIỆU ỨNG HOA ANH ĐÀO RƠI (SAKURA) === */
         .sakura {
             position: absolute;
             top: -20px;
+            
+            /* Nằm trên background mờ nhưng dưới nội dung text (z-index 5) */
             pointer-events: none;
+            /* Không chặn click chuột */
             background-repeat: no-repeat;
             background-size: contain;
             opacity: 0.7;
+            /* Sử dụng SVG Data URI để đảm bảo độ sắc nét cao nhất */
             background-image: url("/images/sakura.png?v=2");
             will-change: transform, top;
         }
 
+        /* Animation rơi xuống */
         @keyframes fall {
-            0% { top: -10%; }
-            100% { top: 110%; }
+            0% {
+                top: -10%;
+            }
+
+            100% {
+                top: 110%;
+                /* Rơi qua khỏi khung nhìn */
+            }
         }
 
+        /* Animation lắc lư nhẹ nhàng */
         @keyframes sway {
-            0% { transform: translateX(0px) rotate(0deg); }
-            25% { transform: translateX(20px) rotate(15deg); }
-            50% { transform: translateX(-20px) rotate(-15deg); }
-            75% { transform: translateX(10px) rotate(5deg); }
-            100% { transform: translateX(0px) rotate(0deg); }
+            0% {
+                transform: translateX(0px) rotate(0deg);
+            }
+
+            25% {
+                transform: translateX(20px) rotate(15deg);
+            }
+
+            50% {
+                transform: translateX(-20px) rotate(-15deg);
+            }
+
+            75% {
+                transform: translateX(10px) rotate(5deg);
+            }
+
+            100% {
+                transform: translateX(0px) rotate(0deg);
+            }
+        }
+
+        /* === THÔNG BÁO ĐẦU TRANG (ANNOUNCEMENT) === */
+        .top-announcement {
+            background-color: var(--bg-dark);
+            text-align: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: none; /* Ẩn mặc định, JS sẽ bật lên nếu có text */
+            transition: all 0.3s ease;
+            width: 100%;
+            z-index: 999;
+        }
+        .top-announcement.active {
+            display: block;
+        }
+        .top-announcement.hidden {
+            display: none !important;
+        }
+        .announcement-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(239, 68, 68, 0.08); /* Nền đỏ rất nhạt */
+            border: 1px solid var(--danger); /* Viền đỏ */
+            color: var(--danger); /* Chữ đỏ */
+            border-radius: 50px;
+            padding: 8px 24px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.15); /* Hiệu ứng sáng mờ */
         }
     </style>
 </head>
@@ -245,6 +327,12 @@
                     <a href="#" aria-label="Google"><i class="fab fa-google"></i></a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="topAnnouncement" class="top-announcement">
+        <div class="announcement-pill">
+            <span id="announcementText"></span>
         </div>
     </div>
 
@@ -494,7 +582,6 @@
             </div>
         </div>
     </section>
-    
     <section class="reservation section" id="reservation">
         <div class="reservation-bg">
             <div class="reservation-overlay"></div>
@@ -641,6 +728,10 @@
         </div>
     </section>
 
+
+
+
+
     <div class="lightbox" id="lightbox">
         <button class="lightbox-close" onclick="closeLightbox()" aria-label="Fermer"><i
                 class="fas fa-times"></i></button>
@@ -652,6 +743,8 @@
             <img id="lightboxImg" src="" alt="Gallery image">
         </div>
     </div>
+
+
 
     <section class="contact section" id="contact">
         <div class="container">
@@ -677,40 +770,32 @@
                             <p>• Soir : 19h à 22h</p>
                         </div>
                     </div>
-                    
                     <div class="contact-card">
                         <div class="contact-card-icon">
                             <i class="fas fa-car"></i>
                         </div>
                         <h4>Parking</h4>
-                        <div id="display_parking">
-                            <p>Parking sur les contres allées de la rue et autour du grand rond</p>
-                            <p>Parking Indigo Carmes et François Verdier (13 et 10 min à pieds)</p>
-                        </div>
+                        <p>Parking sur les contres allées de la rue et autour du grand rond</p>
+                        <p>Parking Indigo Carmes et François Verdier (13 et 10 min à pieds)</p>
                     </div>
                     <div class="contact-card">
                         <div class="contact-card-icon">
                             <i class="fas fa-subway"></i>
                         </div>
                         <h4>En Métro</h4>
-                        <div id="display_metro">
-                            <p>Metro ligne B François Verdier (10 min)</p>
-                            <p>Metro ligne B Carmes (13 min)</p>
-                            <p>Metro ligne B Palais de Justice (13 min)</p>
-                        </div>
+                        <p>Metro ligne B François Verdier (10 min)</p>
+                        <p>Metro ligne B Carmes (13 min)</p>
+                        <p>Metro ligne B Palais de Justice (13 min)</p>
                     </div>
                     <div class="contact-card">
                         <div class="contact-card-icon">
                             <i class="fas fa-bicycle"></i>
                         </div>
                         <h4>En Vélo & Bus</h4>
-                        <div id="display_velo_bus">
-                            <p>Park Vélib Port Saint Sauveur (3 min)</p>
-                            <p>Ligne de Bus : L9 - L7 - 44 (2 min)</p>
-                        </div>
+                        <p>Park Vélib Port Saint Sauveur (3 min)</p>
+                        <p>Ligne de Bus : L9 - L7 - 44 (2 min)</p>
                     </div>
                 </div>
-                
                 <div class="contact-map" data-aos="fade-left">
                     <div class="map-wrapper">
                         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2889.5794747410996!2d1.4522572774182128!3d43.59447485622523!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12aebd3accdf7fd5%3A0xbc12ffca2c0b185b!2sHIKARI%20Sushi%20%26%20Roll!5e0!3m2!1sfr!2sfr!4v1773760657706!5m2!1sfr!2sfr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -763,7 +848,7 @@
                         <ul>
                             <li>
                                 <i class="fas fa-map-marker-alt"></i>
-                                <a href="https://www.google.com/maps/search/?api=1&query=HIKARI+Sushi+%26+Roll&query_place_id=ChIJ1X_fzDq9rhIRWxgLLMr_Erw&hl=fr" target="_blank" style="text-decoration: none; color: inherit;">17 allée des Soupirs<br>31000 Toulouse</a>
+                                <a href="https://maps.app.goo.gl/i3ec58wGXH1Xyjwd9" target="_blank" style="text-decoration: none; color: inherit;">17 allée des Soupirs<br>31000 Toulouse</a>
                             </li>
                             <li>
                                 <i class="fas fa-phone-alt"></i>
@@ -915,6 +1000,48 @@
                 requestIdleCallback ? requestIdleCallback(() => AOS.refresh()) : setTimeout(() => AOS.refresh(), 50);
             }
         }
+
+        // Reservation form handler
+        document.getElementById('reservationForm')?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+            submitBtn.disabled = true;
+
+            const data = {
+                name: form.name.value,
+                phone: form.phone.value,
+                email: form.email?.value || '',
+                guests: parseInt(form.guests.value),
+                date: form.date.value,
+                time: form.time.value,
+                message: form.message?.value || ''
+            };
+
+            try {
+                const result = await HikariAPI.reservations.create(data);
+
+                if (result.success) {
+                    form.innerHTML = `
+                        <div class="success-message" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-check-circle" style="font-size: 60px; color: var(--gold); margin-bottom: 20px;"></i>
+                            <h3 style="color: var(--gold); margin-bottom: 10px;">Réservation Envoyée!</h3>
+                            <p>Nous vous confirmerons par téléphone.</p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(result.error || 'Erreur');
+                }
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
     </script>
 
     <script>
@@ -953,22 +1080,37 @@
                 // Vị trí xuất hiện ngẫu nhiên theo chiều ngang (0% -> 100%)
                 petal.style.left = Math.random() * 100 + '%';
 
+                /* =========================================================
+                   TÍNH TOÁN THỜI GIAN ĐỂ ĐẠT TỐC ĐỘ 5CM/S CỐ ĐỊNH
+                   ========================================================= */
+                // 1. Lấy chiều cao thực tế của vùng hiển thị
                 const containerHeight = aboutSection.offsetHeight > 0 ? aboutSection.offsetHeight : window.innerHeight;
+                
+                // 2. Tính tổng quãng đường rơi (từ -10% đến 110% = 120% chiều cao)
                 const totalDistance = containerHeight * 1.2; 
+                
+                // 3. Tính thời gian (Thời gian = Quãng đường / Vận tốc)
                 const fallDuration = totalDistance / speedPxPerSec;
+
+                // Thời gian lắc lư ngẫu nhiên để các cánh hoa không bị đồng điệu như robot
                 const swayDuration = Math.random() * 2 + 2;
 
+                // Áp dụng thời gian tính toán được vào CSS animation
                 petal.style.animationDuration = `${fallDuration}s, ${swayDuration}s`;
                 petal.style.animationName = 'fall, sway';
+
+                // Độ trễ khởi tạo ngẫu nhiên
                 petal.style.animationDelay = `0s, ${Math.random()}s`;
 
                 aboutSection.appendChild(petal);
 
+                // Dọn dẹp DOM: Xóa cánh hoa sau khi nó rơi xong
                 setTimeout(() => {
                     petal.remove();
                 }, fallDuration * 1000);
             }
 
+            // Tạo cánh hoa mới mỗi 400ms
             setInterval(createSakuraPetal, 400);
         }
     });

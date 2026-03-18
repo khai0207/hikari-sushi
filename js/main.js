@@ -287,6 +287,7 @@ setTimeout(type, 1500);
 const header = document.querySelector('.header');
 const topBar = document.querySelector('.top-bar');
 const backToTop = document.querySelector('.back-to-top');
+const topAnnouncement = document.getElementById('topAnnouncement'); // ADDED
 
 // Use passive listener for better scroll performance
 let ticking = false;
@@ -299,11 +300,13 @@ function updateHeaderOnScroll() {
         header.classList.add('scrolled');
         header.classList.add('top-hidden');
         topBar.classList.add('hidden');
+        if (topAnnouncement) topAnnouncement.classList.add('hidden'); // ẨN CÙNG VỚI TOP-BAR
         backToTop.classList.add('visible');
     } else {
         header.classList.remove('scrolled');
         header.classList.remove('top-hidden');
         topBar.classList.remove('hidden');
+        if (topAnnouncement) topAnnouncement.classList.remove('hidden'); // HIỆN CÙNG VỚI TOP-BAR
         backToTop.classList.remove('visible');
     }
     ticking = false;
@@ -521,6 +524,10 @@ document.body.addEventListener('click', function(e) {
     }
 });
 
+// ===== PARALLAX EFFECT (Disabled for performance) =====
+// Parallax removed to improve scroll performance
+// The visual effect was minimal but caused significant jank
+
 // ===== COUNTER ANIMATION =====
 function animateCounter(el, target, duration = 2000) {
     let start = 0;
@@ -540,6 +547,8 @@ function animateCounter(el, target, duration = 2000) {
 }
 
 // ===== INTERSECTION OBSERVER FOR ANIMATIONS =====
+// Simplified - AOS handles most animation needs
+// Only keep counter animation observer
 const counterObserverOptions = {
     threshold: 0.5,
     rootMargin: '0px'
@@ -558,12 +567,15 @@ const counterObserver = new IntersectionObserver((entries) => {
     });
 }, counterObserverOptions);
 
+// Only observe elements with counters
 document.querySelectorAll('[data-count]').forEach(el => {
     const parent = el.closest('section');
     if (parent) counterObserver.observe(parent);
 });
 
 // ===== IMAGE LAZY LOADING =====
+// Using native loading="lazy" attribute in HTML
+// Only use JS observer as fallback for data-src images
 const lazyImages = document.querySelectorAll('img[data-src]');
 
 if (lazyImages.length > 0 && 'IntersectionObserver' in window) {
@@ -580,6 +592,20 @@ if (lazyImages.length > 0 && 'IntersectionObserver' in window) {
 
     lazyImages.forEach(img => imageObserver.observe(img));
 }
+
+// ===== MOUSE CURSOR EFFECT (Disabled for performance) =====
+// Custom cursor removed to improve INP and animation performance
+// This feature caused significant overhead on mouse move events
+
+// ===== MENU ITEM HOVER EFFECT =====
+// Removed JS hover - using CSS :hover for better performance
+// CSS transform is hardware-accelerated and more efficient
+
+// ===== SPECIALTY CARDS HOVER =====
+// Removed JS hover - using CSS :hover for better performance
+
+// ===== REVEAL ON SCROLL =====
+// Removed - AOS library handles this more efficiently
 
 // ===== FORM INPUT ANIMATION =====
 const formInputs = document.querySelectorAll('.form-group input, .form-group select, .form-group textarea');
@@ -677,20 +703,41 @@ async function loadDynamicContent() {
         if (result.success && result.content) {
             const content = result.content;
             
+            // ===== ANNOUNCEMENT BANNER =====
+            if (content.announcement && content.announcement.text) {
+                const announcementDiv = document.getElementById('topAnnouncement');
+                const announcementText = document.getElementById('announcementText');
+                if (announcementDiv && announcementText) {
+                    // Cập nhật text từ DB
+                    announcementText.textContent = content.announcement.text;
+                    // Bật hiển thị banner
+                    announcementDiv.classList.add('active');
+                }
+            }
+
             // ===== HERO SECTION =====
             if (content.hero) {
+                // Badge
                 const badge = document.querySelector('.hero-badge span:last-child');
-                if (badge && content.hero.badge) badge.textContent = content.hero.badge;
+                if (badge && content.hero.badge) {
+                    badge.textContent = content.hero.badge;
+                }
                 
+                // Title (before typed text)
                 const heroTitleLine = document.querySelector('.hero-title .line:first-child');
-                if (heroTitleLine && content.hero.title) heroTitleLine.textContent = content.hero.title;
+                if (heroTitleLine && content.hero.title) {
+                    heroTitleLine.textContent = content.hero.title;
+                }
                 
+                // Typed words - update the words array (may be JSON string or array)
                 if (content.hero.typed_words) {
                     let typedWords = content.hero.typed_words;
+                    // Parse if it's a JSON string
                     if (typeof typedWords === 'string') {
                         try {
                             typedWords = JSON.parse(typedWords);
                         } catch (e) {
+                            // If not valid JSON, split by comma
                             typedWords = typedWords.split(',').map(w => w.trim());
                         }
                     }
@@ -700,8 +747,11 @@ async function loadDynamicContent() {
                     }
                 }
                 
+                // Subtitle
                 const heroSubtitle = document.querySelector('.hero-subtitle');
-                if (heroSubtitle && content.hero.subtitle) heroSubtitle.textContent = content.hero.subtitle;
+                if (heroSubtitle && content.hero.subtitle) {
+                    heroSubtitle.textContent = content.hero.subtitle;
+                }
             }
             
             // ===== ABOUT SECTION =====
@@ -716,54 +766,49 @@ async function loadDynamicContent() {
                     aboutTitle.innerHTML = content.about.title.replace(/\n/g, '<br>');
                 }
                 
+                // About paragraph 1 (lead)
                 const aboutLead = document.querySelector('#about .about-text .lead');
-                if (aboutLead && content.about.description) aboutLead.textContent = content.about.description;
+                if (aboutLead && content.about.description) {
+                    aboutLead.textContent = content.about.description;
+                }
                 
+                // About paragraphs 2 and 3 (after lead)
                 const aboutParagraphs = document.querySelectorAll('#about .about-text > p:not(.lead)');
-                if (aboutParagraphs.length >= 1 && content.about.description2) aboutParagraphs[0].textContent = content.about.description2;
-                if (aboutParagraphs.length >= 2 && content.about.description3) aboutParagraphs[1].textContent = content.about.description3;
+                if (aboutParagraphs.length >= 1 && content.about.description2) {
+                    aboutParagraphs[0].textContent = content.about.description2;
+                }
+                if (aboutParagraphs.length >= 2 && content.about.description3) {
+                    aboutParagraphs[1].textContent = content.about.description3;
+                }
                 
+                // About image - use original quality (no resize to avoid blur)
                 const aboutMainImg = document.querySelector('.about-img-main img');
                 if (aboutMainImg && content.about.image) {
-                    aboutMainImg.src = content.about.image;
+                    aboutMainImg.src = content.about.image; // Direct URL, no resize
                     aboutMainImg.classList.remove('img-skeleton');
                 }
             }
             
-            // ===== CONTACT INFO (WITH TRANSPORTS) =====
+            // ===== CONTACT INFO =====
             if (content.contact) {
-                // Helper to convert multiline text into paragraphs
-                const textToParagraphs = (text) => {
-                    return text.split('\n')
-                               .filter(line => line.trim() !== '')
-                               .map(line => `<p>${line}</p>`)
-                               .join('');
-                };
-
-                // Parking
-                if (content.contact.parking) {
-                    const parkingEl = document.getElementById('display_parking');
-                    if (parkingEl) parkingEl.innerHTML = textToParagraphs(content.contact.parking);
-                }
-                
-                // Metro
-                if (content.contact.metro) {
-                    const metroEl = document.getElementById('display_metro');
-                    if (metroEl) metroEl.innerHTML = textToParagraphs(content.contact.metro);
-                }
-                
-                // Velo & Bus
-                if (content.contact.velo_bus) {
-                    const veloEl = document.getElementById('display_velo_bus');
-                    if (veloEl) veloEl.innerHTML = textToParagraphs(content.contact.velo_bus);
-                }
-
-                // Phone
+                // Phone - update all phone links and displays
                 if (content.contact.phone) {
                     const phoneClean = content.contact.phone.replace(/\s/g, '');
-                    document.querySelectorAll('a[href^="tel:"]').forEach(link => link.href = `tel:${phoneClean}`);
-                    document.querySelectorAll('.footer-contact a[href^="tel:"], .top-info a[href^="tel:"]').forEach(el => el.textContent = content.contact.phone);
-                    document.querySelectorAll('.btn-call strong').forEach(el => el.textContent = content.contact.phone);
+                    
+                    // All phone links (href)
+                    document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+                        link.href = `tel:${phoneClean}`;
+                    });
+                    
+                    // Phone text displays (Cập nhật cho cả Footer VÀ Top-bar)
+                    document.querySelectorAll('.footer-contact a[href^="tel:"], .top-info a[href^="tel:"]').forEach(el => {
+                        el.textContent = content.contact.phone;
+                    });
+                    
+                    // btn-call strong
+                    document.querySelectorAll('.btn-call strong').forEach(el => {
+                        el.textContent = content.contact.phone;
+                    });
                 }
                 
                 // Email
@@ -776,60 +821,91 @@ async function loadDynamicContent() {
                     });
                 }
                 
-                // Address
+                // Address (Sửa lỗi target sai thẻ)
                 if (content.contact.address) {
                     const addressLink = document.querySelector('.footer-contact li:first-child a');
                     if (addressLink) {
                         addressLink.innerHTML = content.contact.address.replace(', ', '<br>');
                     }
                 }
-
-                // Map Embed
-                if (content.contact.map_embed) {
-                    const mapIframe = document.querySelector('.map-wrapper iframe');
-                    if (mapIframe && content.contact.map_embed.includes('google')) {
-                        mapIframe.src = content.contact.map_embed;
-                    }
-                }
             }
             
             // ===== SOCIAL LINKS =====
             if (content.social) {
-                const updateSocial = (selector, url) => {
-                    const links = document.querySelectorAll(selector);
-                    links.forEach(link => {
-                        if (url && url.trim()) {
-                            link.href = url;
-                            link.target = '_blank';
-                            link.rel = 'noopener noreferrer';
-                        } else {
-                            link.style.display = 'none';
-                        }
-                    });
-                };
-
-                updateSocial('a[aria-label="Facebook"]', content.social.facebook);
-                updateSocial('a[aria-label="Instagram"]', content.social.instagram);
-                updateSocial('a[aria-label="Tripadvisor"]', content.social.tripadvisor);
-                updateSocial('a[aria-label="Google"]', content.social.google);
+                // Facebook
+                const fbLinks = document.querySelectorAll('a[aria-label="Facebook"]');
+                fbLinks.forEach(link => {
+                    if (content.social.facebook && content.social.facebook.trim()) {
+                        link.href = content.social.facebook;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none'; // Hide if no link
+                    }
+                });
+                
+                // Instagram
+                const igLinks = document.querySelectorAll('a[aria-label="Instagram"]');
+                igLinks.forEach(link => {
+                    if (content.social.instagram && content.social.instagram.trim()) {
+                        link.href = content.social.instagram;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
+                
+                // TripAdvisor
+                const taLinks = document.querySelectorAll('a[aria-label="Tripadvisor"]');
+                taLinks.forEach(link => {
+                    if (content.social.tripadvisor && content.social.tripadvisor.trim()) {
+                        link.href = content.social.tripadvisor;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
+                
+                // Google
+                const googleLinks = document.querySelectorAll('a[aria-label="Google"]');
+                googleLinks.forEach(link => {
+                    if (content.social.google && content.social.google.trim()) {
+                        link.href = content.social.google;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
             }
             
             // ===== HOURS =====
+            // Build hours object from individual content items
             const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
             const dayNames = {
-                monday: 'Lundi', tuesday: 'Mardi', wednesday: 'Mercredi',
-                thursday: 'Jeudi', friday: 'Vendredi', saturday: 'Samedi', sunday: 'Dimanche'
+                monday: 'Lundi',
+                tuesday: 'Mardi',
+                wednesday: 'Mercredi',
+                thursday: 'Jeudi',
+                friday: 'Vendredi',
+                saturday: 'Samedi',
+                sunday: 'Dimanche'
             };
             
             let hoursData = {};
             let hasHours = false;
             
             days.forEach(day => {
+                // Handle both formats: content.hours.monday.lunch OR content.hours.monday_lunch
                 let lunch, dinner;
                 if (content.hours?.[day]) {
+                    // Format: {monday: {lunch: "...", dinner: "..."}}
                     lunch = content.hours[day].lunch;
                     dinner = content.hours[day].dinner;
                 } else {
+                    // Format: {monday_lunch: "...", monday_dinner: "..."}
                     lunch = content.hours?.[`${day}_lunch`];
                     dinner = content.hours?.[`${day}_dinner`];
                 }
@@ -841,6 +917,7 @@ async function loadDynamicContent() {
             });
             
             if (hasHours) {
+                // Update contact section hours
                 const hoursCard = document.getElementById('contact-hours-card');
                 if (hoursCard) {
                     const hoursContent = hoursCard.querySelector('.hours-content');
@@ -851,9 +928,13 @@ async function loadDynamicContent() {
                             const dinner = hoursData[day]?.dinner || '';
                             
                             let timeText = 'Fermé';
-                            if (lunch && dinner) timeText = `${lunch} / ${dinner}`;
-                            else if (lunch) timeText = lunch;
-                            else if (dinner) timeText = `Fermé / ${dinner}`;
+                            if (lunch && dinner) {
+                                timeText = `${lunch} / ${dinner}`;
+                            } else if (lunch) {
+                                timeText = lunch;
+                            } else if (dinner) {
+                                timeText = `Fermé / ${dinner}`;
+                            }
                             
                             html += `<li><span>${dayNames[day]}</span><span>${timeText}</span></li>`;
                         });
@@ -862,6 +943,7 @@ async function loadDynamicContent() {
                     }
                 }
                 
+                // Update footer hours
                 const footerHoursList = document.querySelector('.footer-hours .hours-list');
                 if (footerHoursList) {
                     let html = '';
@@ -870,9 +952,13 @@ async function loadDynamicContent() {
                         const dinner = hoursData[day]?.dinner || '';
                         
                         let timeText = 'Fermé';
-                        if (lunch && dinner) timeText = `${lunch} / ${dinner}`;
-                        else if (lunch) timeText = lunch;
-                        else if (dinner) timeText = dinner;
+                        if (lunch && dinner) {
+                            timeText = `${lunch} / ${dinner}`;
+                        } else if (lunch) {
+                            timeText = lunch;
+                        } else if (dinner) {
+                            timeText = dinner;
+                        }
                         
                         html += `<li><span>${dayNames[day]}</span><span>${timeText}</span></li>`;
                     });
@@ -883,7 +969,9 @@ async function loadDynamicContent() {
             // ===== FOOTER DESCRIPTION =====
             if (content.footer && content.footer.description) {
                 const footerDesc = document.querySelector('.footer-brand > p');
-                if (footerDesc) footerDesc.textContent = content.footer.description;
+                if (footerDesc) {
+                    footerDesc.textContent = content.footer.description;
+                }
             }
             
             // ===== MENU CATEGORIES =====
@@ -894,6 +982,7 @@ async function loadDynamicContent() {
                         : content.menu.categories;
                     
                     if (Array.isArray(categories) && categories.length > 0) {
+                        // Load menu items from API
                         await loadMenuFromAPI(categories);
                     }
                 } catch (e) {
@@ -901,30 +990,43 @@ async function loadDynamicContent() {
                 }
             }
             
+
+            
             // ===== PLAT SIGNATURE =====
             if (content.signature) {
                 const signatureImg = document.querySelector('.special-image img');
                 if (signatureImg && content.signature.image) {
-                    signatureImg.src = content.signature.image;
+                    signatureImg.src = content.signature.image; // Direct URL, no resize for quality
                     signatureImg.classList.remove('img-skeleton');
                 }
                 
+                // Background image for special section
                 if (content.signature.background) {
                     const specialBg = document.querySelector('.special-bg');
-                    if (specialBg) specialBg.style.backgroundImage = `url('${content.signature.background}')`;
+                    if (specialBg) {
+                        specialBg.style.backgroundImage = `url('${content.signature.background}')`;
+                    }
                 }
                 
                 const signatureName = document.querySelector('.special-title');
-                if (signatureName && content.signature.name) signatureName.textContent = content.signature.name;
+                if (signatureName && content.signature.name) {
+                    signatureName.textContent = content.signature.name;
+                }
                 
                 const signatureDesc = document.querySelector('.special-desc');
-                if (signatureDesc && content.signature.description) signatureDesc.textContent = content.signature.description;
+                if (signatureDesc && content.signature.description) {
+                    signatureDesc.textContent = content.signature.description;
+                }
                 
                 const oldPrice = document.querySelector('.special-price .old-price');
-                if (oldPrice && content.signature.old_price) oldPrice.textContent = content.signature.old_price;
+                if (oldPrice && content.signature.old_price) {
+                    oldPrice.textContent = content.signature.old_price;
+                }
                 
                 const newPrice = document.querySelector('.special-price .new-price');
-                if (newPrice && content.signature.new_price) newPrice.textContent = content.signature.new_price;
+                if (newPrice && content.signature.new_price) {
+                    newPrice.textContent = content.signature.new_price;
+                }
             }
             
             // ===== SPECIALTIES (3 cards) =====
@@ -933,12 +1035,14 @@ async function loadDynamicContent() {
                 const key = `specialty${i}`;
                 if (content[key]) {
                     const card = specialtyCards[i - 1];
+                    
                     if (card) {
                         const img = card.querySelector('.specialty-image img');
                         if (img && content[key].image) {
-                            img.src = content[key].image;
+                            img.src = content[key].image; // Direct URL, no resize for quality
                             img.classList.remove('img-skeleton');
                         }
+                        
                         const tag = card.querySelector('.specialty-tag');
                         if (tag && content[key].tag) tag.textContent = content[key].tag;
                         
@@ -957,10 +1061,13 @@ async function loadDynamicContent() {
             for (let i = 1; i <= 6; i++) {
                 const key = `gallery${i}`;
                 if (content[key]) {
+                    // Handle both formats: content.gallery1 = "url" OR content.gallery1 = {gallery1: "url"}
                     let imageUrl = content[key];
                     if (typeof content[key] === 'object' && content[key][key]) {
                         imageUrl = content[key][key];
                     }
+                    
+                    // Use optimized URL (direct for pre-resized, resize params for legacy)
                     const optimizedUrl = getOptimizedImageUrl(imageUrl, IMAGE_SIZES.gallery.w, IMAGE_SIZES.gallery.h, IMAGE_SIZES.gallery.q);
                     if (imageUrl) galleryUrls.push(optimizedUrl);
                     
@@ -972,12 +1079,23 @@ async function loadDynamicContent() {
                             img.classList.remove('img-skeleton');
                         }
                     }
+                    // Also update lightbox galleryImages array (full size for lightbox)
                     if (imageUrl) galleryImages[i - 1] = imageUrl;
                 }
             }
+            // Preload gallery images
             if (galleryUrls.length > 0) preloadImages(galleryUrls);
             
-            // ===== TESTIMONIALS (3 cards) =====
+            // ===== MAP EMBED (Đã nới lỏng điều kiện kiểm tra URL) =====
+            if (content.contact && content.contact.map_embed) {
+                const mapIframe = document.querySelector('.map-wrapper iframe');
+                // Sửa lại: chỉ cần URL có chứa chữ google là được chấp nhận
+                if (mapIframe && content.contact.map_embed.includes('google')) {
+                    mapIframe.src = content.contact.map_embed;
+                }
+            }
+            
+            // ===== TESTIMONIALS (3 cards) - Load from database =====
             const testimonialCards = document.querySelectorAll('.testimonial-card');
             for (let i = 1; i <= 3; i++) {
                 const key = `testimonial${i}`;
@@ -993,15 +1111,20 @@ async function loadDynamicContent() {
                         const text = card.querySelector('.testimonial-text');
                         if (text && content[key].text) text.textContent = content[key].text;
                         
+                        // Rating stars
                         if (content[key].rating) {
                             const starsContainer = card.querySelector('.stars');
                             if (starsContainer) {
                                 const rating = parseInt(content[key].rating) || 5;
                                 let starsHTML = '';
                                 for (let s = 1; s <= 5; s++) {
-                                    if (s <= rating) starsHTML += '<i class="fas fa-star"></i>';
-                                    else if (s - 0.5 <= rating) starsHTML += '<i class="fas fa-star-half-alt"></i>';
-                                    else starsHTML += '<i class="far fa-star"></i>';
+                                    if (s <= rating) {
+                                        starsHTML += '<i class="fas fa-star"></i>';
+                                    } else if (s - 0.5 <= rating) {
+                                        starsHTML += '<i class="fas fa-star-half-alt"></i>';
+                                    } else {
+                                        starsHTML += '<i class="far fa-star"></i>';
+                                    }
                                 }
                                 starsContainer.innerHTML = starsHTML;
                             }
@@ -1010,31 +1133,45 @@ async function loadDynamicContent() {
                 }
             }
             
+            // NOTE: Services and Features are kept as static content for better performance
+            
             // ===== RESERVATION SECTION =====
             if (content.reservation) {
+                // Image (use direct URL - original quality)
                 const reservationImg = document.querySelector('.reservation-image img');
                 if (reservationImg && content.reservation.image) {
-                    reservationImg.src = content.reservation.image;
+                    reservationImg.src = content.reservation.image; // Direct URL, no resize
                     reservationImg.classList.remove('img-skeleton');
                 }
                 
+                // Background image for reservation section
                 if (content.reservation.background) {
                     const reservationBg = document.querySelector('.reservation-bg');
-                    if (reservationBg) reservationBg.style.backgroundImage = `url('${content.reservation.background}')`;
+                    if (reservationBg) {
+                        reservationBg.style.backgroundImage = `url('${content.reservation.background}')`;
+                    }
                 }
                 
+                // Badge text
                 const badgeSpans = document.querySelectorAll('.badge-reservation span');
                 if (badgeSpans.length >= 2) {
                     if (content.reservation.badge1) badgeSpans[0].textContent = content.reservation.badge1;
                     if (content.reservation.badge2) badgeSpans[1].textContent = content.reservation.badge2;
                 }
                 
+                // Title
                 const reservationTitle = document.querySelector('.reservation-title');
-                if (reservationTitle && content.reservation.title) reservationTitle.textContent = content.reservation.title;
+                if (reservationTitle && content.reservation.title) {
+                    reservationTitle.textContent = content.reservation.title;
+                }
                 
+                // Description
                 const reservationDesc = document.querySelector('.reservation-desc');
-                if (reservationDesc && content.reservation.description) reservationDesc.textContent = content.reservation.description;
+                if (reservationDesc && content.reservation.description) {
+                    reservationDesc.textContent = content.reservation.description;
+                }
                 
+                // Features (3)
                 const features = document.querySelectorAll('.reservation-feature span');
                 if (features.length >= 1 && content.reservation.feature1) features[0].textContent = content.reservation.feature1;
                 if (features.length >= 2 && content.reservation.feature2) features[1].textContent = content.reservation.feature2;
@@ -1048,13 +1185,16 @@ async function loadDynamicContent() {
     }
 }
 
-// Load menu items from API and render
+// Load menu items from API and render (optimized for INP)
 async function loadMenuFromAPI(categories) {
     try {
+        // Wait for initial preload to complete first
         await preloadPromise;
+        
         const response = await fetch(`${API_URL}/api/menu`);
         const result = await response.json();
         
+        // API returns {success: true, items: [...]}
         if (!result.success || !result.items || result.items.length === 0) {
             console.log('ℹ️ No menu items from API, keeping static content');
             return;
@@ -1062,6 +1202,8 @@ async function loadMenuFromAPI(categories) {
         
         const menuItems = result.items;
         
+        // All images should already be cached from preloadCriticalImages
+        // But preload any missing ones just in case
         const uncachedUrls = menuItems
             .map(item => item.image)
             .filter(url => url && !imageCache.has(url));
@@ -1076,27 +1218,34 @@ async function loadMenuFromAPI(categories) {
         
         if (!menuTabs || !menuContent) return;
         
+        // Use DocumentFragment for batch DOM updates (better INP)
         const tabsFragment = document.createDocumentFragment();
         const contentFragment = document.createDocumentFragment();
+        
         const defaultImage = 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=300&fit=crop';
         
+        // Build all HTML at once for better performance
         categories.forEach((cat, index) => {
             const tabId = cat.toLowerCase().replace(/[^a-z0-9àáâãäåçèéêëìíîïñòóôõöùúûü]/g, '').replace(/\s+/g, '-');
             
+            // Create tab button (no individual event listeners - use delegation)
             const btn = document.createElement('button');
             btn.className = 'tab-btn' + (index === 0 ? ' active' : '');
             btn.dataset.tab = tabId;
             btn.textContent = cat;
             tabsFragment.appendChild(btn);
             
+            // Create tab content
             const tabContent = document.createElement('div');
             tabContent.className = 'menu-tab-content' + (index === 0 ? ' active' : '');
             tabContent.id = tabId;
             
+            // Filter items for this category
             const categoryItems = menuItems.filter(item => 
                 item.category && item.category.toLowerCase() === cat.toLowerCase()
             );
             
+            // Build menu grid HTML string (faster than createElement for many items)
             let gridHTML = '<div class="menu-grid">';
             
             if (categoryItems.length === 0) {
@@ -1108,9 +1257,10 @@ async function loadMenuFromAPI(categories) {
                 `;
             } else {
                 categoryItems.forEach((item, i) => {
+                    // Use thumbnail if available, otherwise fallback to full image
                     const thumbnailUrl = item.thumbnail || item.image || defaultImage;
                     const fullImageUrl = item.image || defaultImage;
-                    const delay = Math.min((i + 1) * 50, 300);
+                    const delay = Math.min((i + 1) * 50, 300); // Cap delay for faster perceived load
                     const isCached = imageCache.has(thumbnailUrl);
                     
                     gridHTML += `
@@ -1140,15 +1290,18 @@ async function loadMenuFromAPI(categories) {
             contentFragment.appendChild(tabContent);
         });
         
+        // Single DOM update (much better for INP)
         menuTabs.innerHTML = '';
         menuContent.innerHTML = '';
         menuTabs.appendChild(tabsFragment);
         menuContent.appendChild(contentFragment);
         
+        // Use event delegation for tabs (1 listener instead of N)
         menuTabs.addEventListener('click', function(e) {
             const btn = e.target.closest('.tab-btn');
             if (!btn) return;
             
+            // Use requestAnimationFrame for smooth UI update
             requestAnimationFrame(() => {
                 document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
                 btn.classList.add('active');
@@ -1158,6 +1311,7 @@ async function loadMenuFromAPI(categories) {
             });
         });
         
+        // Defer AOS refresh to not block main thread
         requestIdleCallback ? requestIdleCallback(() => {
             if (typeof AOS !== 'undefined') AOS.refresh();
         }) : setTimeout(() => {
