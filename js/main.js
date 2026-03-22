@@ -101,13 +101,16 @@ async function preloadCriticalImages() {
 // Start preloading immediately
 const preloadPromise = preloadCriticalImages();
 
-// ===== CAPTURE INITIAL HASH =====
-// Store the hash so we can scroll to it after initial load
-const initialHash = window.location.hash;
-
-// ===== INITIAL SCROLL SETUP =====
+// ===== ALWAYS START AT TOP ON PAGE LOAD =====
+// Reset scroll position and URL hash on page load/refresh
 if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
+
+// Clear hash from URL on page load
+if (window.location.hash) {
+    history.replaceState(null, null, window.location.pathname);
 }
 
 // ===== PRELOADER =====
@@ -115,10 +118,8 @@ window.addEventListener('load', async () => {
     const preloader = document.querySelector('.preloader');
     document.body.classList.add('loading');
     
-    // Only force scroll to top if there is no specific hash to scroll to
-    if (!initialHash) {
-        window.scrollTo(0, 0);
-    }
+    // Ensure we're at the top
+    window.scrollTo(0, 0);
     
     // Wait for critical images (max 3 seconds)
     const timeout = new Promise(resolve => setTimeout(resolve, 3000));
@@ -127,17 +128,7 @@ window.addEventListener('load', async () => {
     // Hide preloader
     preloader.classList.add('hidden');
     document.body.classList.remove('loading');
-    setTimeout(() => {
-        preloader.remove();
-        
-        // If there was a hash, scroll to that section smoothly
-        if (initialHash) {
-            const targetElement = document.querySelector(initialHash);
-            if (targetElement) {
-                targetElement.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-    }, 500);
+    setTimeout(() => preloader.remove(), 500);
 });
 
 // ===== HERO SLIDESHOW =====
