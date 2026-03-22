@@ -4,6 +4,15 @@
  * Client-side API for Cloudflare D1 database
  */
 
+// Tối ưu console.log: Chỉ hiện trên môi trường dev/staging (pages.dev, localhost), ẩn trên production chính thức
+if (window.location.hostname && !window.location.hostname.includes('pages.dev') && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+    console.log = function() {};
+    console.info = function() {};
+    console.debug = function() {};
+    console.time = function() {};
+    console.timeEnd = function() {};
+}
+
 const API_BASE = 'https://hikari-sushi-api.nguyenphuockhai1234123.workers.dev';
 
 // Storage for auth token - using sessionStorage so token is cleared on tab close/refresh

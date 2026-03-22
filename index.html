@@ -18,6 +18,15 @@
         if (window.location.hostname.includes('pages.dev')) {
             document.getElementById('dynamic-robots').setAttribute('content', 'noindex, nofollow');
         }
+
+        // Tối ưu console.log: Chỉ hiện trên môi trường dev/staging (pages.dev, localhost), ẩn trên production chính thức (hikari-sushi.fr)
+        if (window.location.hostname && !window.location.hostname.includes('pages.dev') && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+            console.log = function() {};
+            console.info = function() {};
+            console.debug = function() {};
+            console.time = function() {};
+            console.timeEnd = function() {};
+        }
     </script>
 
     <link rel="canonical" href="https://hikari-sushi.fr/">
